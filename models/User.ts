@@ -31,10 +31,6 @@ const UserSchema = new mongoose.Schema({
   fullName:{
     type:String
   },
-  pets:[{
-    type: mongoose.Schema.Types.ObjectId,
-    ref:'Pet' 
-  }]
 }, {timestamps:true})
 
 UserSchema.pre('save', function(next){

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import {topBar, nav} from './styles'
-import petLogo from '../../public/Pet_logo_with_flowers.png'
+//import petLogo from '../../public/Pet_logo_with_flowers.png'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import * as GS from '../../globalStyles'
@@ -38,12 +38,12 @@ export default function Header(): JSX.Element{
             <div style={{display:'flex'}}>
                 <Link href="/">
                     <a>
-                        <Image
+                        LOGO{/* <Image
                             height={'80px'}
                             width={'80px'}
                             src={petLogo}
                             alt="pet care logo"
-                        />  
+                        /> */}  
                     </a>
                 </Link>
                 {isLoggedIn() && <h2>Hello {`${user.firstName}`}!</h2>}

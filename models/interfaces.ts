@@ -8,21 +8,6 @@ export interface ImageInterface{
   url:string
 }
 
-export interface PetInterface{
-  _id: Types.ObjectId;
-  name: string;
-  owner: UserInterface;
-  owner_name: string;
-  species: string;
-  age: number;
-  poddy_trained: boolean;
-  diet: string[];
-  image: ImageInterface;
-  likes: string[];
-  dislikes: string[];
-  imageUrl?:string;
-}
-  
 
 export interface UserInterface {
   _id: Types.ObjectId;
@@ -32,7 +17,7 @@ export interface UserInterface {
   firstName: string;
   lastName: string;
   fullName?: string;
-  pets?: PetInterface[];
+
 }
 
 export type SuccessfulResponse<T> = { data: T; error?: never; statusCode?: number };
