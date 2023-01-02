@@ -5,7 +5,6 @@ interface UserContextProps{
     user: ReducedUser;
     loginUser: () => Promise<void>;
     logoutUser: () => void;
-    getBaseUrl: () => Promise<string>;
     isLoggedIn: () => boolean;
 }
 

@@ -1,11 +1,11 @@
 import Link from 'next/link'
 
 import {topBar, nav} from './styles'
-//import petLogo from '../../public/Pet_logo_with_flowers.png'
+import logo from '../../public/logo_placeholder.png'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import * as GS from '../../globalStyles'
-
+import * as apiEndpoints from '../../lib/apiEndpoints'
 
 import {useUser} from '../../hooks/useUser'
 import { useEffect } from 'react'
@@ -13,13 +13,12 @@ import { useEffect } from 'react'
 
 export default function Header(): JSX.Element{
     const router = useRouter()
-    const {user, loginUser, logoutUser, getBaseUrl, isLoggedIn} = useUser()
+    const {user, loginUser, logoutUser, isLoggedIn} = useUser()
 
     const logout = async() => {
         
         try {
-            const baseUrl = await getBaseUrl()
-            await fetch(`${baseUrl}api/auth/logout`)
+            await fetch(apiEndpoints.logoutUrl)
         } catch (error) {
             console.log(error)
         }
@@ -38,20 +37,17 @@ export default function Header(): JSX.Element{
             <div style={{display:'flex'}}>
                 <Link href="/">
                     <a>
-                        LOGO{/* <Image
+                        <Image
                             height={'80px'}
                             width={'80px'}
-                            src={petLogo}
+                            src={logo}
                             alt="pet care logo"
-                        /> */}  
+                        />  
                     </a>
                 </Link>
                 {isLoggedIn() && <h2>Hello {`${user.firstName}`}!</h2>}
             </div>
             <div style={nav}>
-            {isLoggedIn() &&<Link href="/my-pets">
-                <a style={GS.buttonStyle}>My Pets</a>
-            </Link>}
             {!isLoggedIn() && <Link href="/login">
                 <a style={GS.buttonStyle}>
                     Sign in

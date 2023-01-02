@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useUser } from '../hooks/useUser'
 
 interface UserLoginForm {
-  username:string;
+  email:string;
   password:string;
 }
 
@@ -13,8 +13,8 @@ export default function LoginForm({}){
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState('')
   const {loginUser} = useUser()
-  const [form, setForm] = useState({
-    username:'',
+  const [form, setForm] = useState<UserLoginForm>({
+    email:'',
     password:'',
   })
 
@@ -41,7 +41,7 @@ export default function LoginForm({}){
     } 
     catch (error) {
       console.log(error)
-      alert('wrong username/password')
+      alert('wrong email/password')
     }
   }
 
@@ -56,8 +56,8 @@ export default function LoginForm({}){
 
   /* Makes sure pet info is filled for pet name, owner name, species, and image url*/
   const formValidate = () => {
-    let err : UserLoginForm = {username:'', password:''}
-    if (!form.username) err.username = 'username is required'
+    let err : UserLoginForm = {email:'', password:''}
+    if (!form.email) err.email = 'email is required'
     if (!form.password) err.password = 'password is required'
 
     return err
@@ -66,7 +66,7 @@ export default function LoginForm({}){
   const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const errs = formValidate()
-    if (errs.username == '' && errs.username == '') {
+    if (errs.email == '' && errs.email == '') {
       postData(form)
     } else {
       setErrors({ errs })
@@ -76,12 +76,12 @@ export default function LoginForm({}){
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="username">Username</label>
+        <label htmlFor="email">Email</label>
         <input
-          type="text"
-          maxLength={20}
-          name="username"
-          value={form.username}
+          type="email"
+          maxLength={60}
+          name="email"
+          value={form.email}
           onChange={handleChange}
           required
         />

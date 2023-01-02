@@ -1,34 +1,37 @@
 import { ChangeEvent, FormEvent, useState } from 'react'
 import { useRouter } from 'next/router'
+import { useUser } from '../hooks/useUser';
 //import { mutate } from 'swr'
 
-interface UserRegisterForm{
+interface IUserRegisterForm{
   firstName:string;
   lastName:string;
   email:string;
-  username:string;
   password:string;
   confirmPassword:string;
+  roles:Role[]
 }
+
+type Role = 'Tecnico' | 'Administrativo Tecnico' | 'Administrativo Contable' | 'Auditor'
 
 const RegisterForm = ({}) => {
   const router = useRouter()
   const contentType = 'application/json'
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState('')
-
-  const [form, setForm] = useState({
+  const {loginUser} = useUser()
+  const [form, setForm] = useState<IUserRegisterForm>({
     firstName:'',
     lastName:'',
     email:'',
-    username:'',
     password:'',
-    confirmPassword:''
+    confirmPassword:'',
+    roles:[]
   })
 
 
   /* The POST method adds a new entry in the mongodb database. */
-  const postData = async (form:UserRegisterForm) => {
+  const postData = async (form:IUserRegisterForm) => {
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -49,11 +52,12 @@ const RegisterForm = ({}) => {
           Accept: contentType,
           'Content-Type':contentType,
         },
-        body:JSON.stringify({username: form.username, password:form.password })
+        body:JSON.stringify({email: form.email, password:form.password })
       })
+      loginUser()
       router.push('/')
     } catch (error) {
-      setMessage('Failed to add pet')
+      setMessage('Failed to login')
     }
   }
 
@@ -68,8 +72,7 @@ const RegisterForm = ({}) => {
 
   /* Makes sure pet info is filled for pet name, owner name, species, and image url*/
   const formValidate = () => {
-    let err:UserRegisterForm = {username:'', password:'', confirmPassword:'', firstName:'', lastName:'', email:''}
-    if (!form.username) err.username = 'username is required'
+    let err:IUserRegisterForm = {password:'', confirmPassword:'', firstName:'', lastName:'', email:'', roles:[]}
     if (!form.password) err.password = 'password is required'
     if (!form.email) err.email = 'email is required'
     if (!form.firstName) err.firstName = 'first name is required'
@@ -80,8 +83,8 @@ const RegisterForm = ({}) => {
     return err
   }
 
-  const isValidForm = (errors:UserRegisterForm) =>{
-    return errors.confirmPassword == '' && errors.email == '' && errors.firstName == '' && errors.lastName == '' && errors.username == '' && errors.password == ''
+  const isValidForm = (errors:IUserRegisterForm) =>{
+    return errors.confirmPassword == '' && errors.email == '' && errors.firstName == '' && errors.lastName == '' && errors.password == ''
   }
 
   const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
@@ -123,16 +126,6 @@ const RegisterForm = ({}) => {
           maxLength={40}
           name="email"
           value={form.email}
-          onChange={handleChange}
-          required
-        />
-        
-        <label htmlFor="username">Username</label>
-        <input
-          type="text"
-          maxLength={20}
-          name="username"
-          value={form.username}
           onChange={handleChange}
           required
         />

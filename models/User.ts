@@ -1,16 +1,11 @@
 import mongoose from 'mongoose'
 import bcryptjs from 'bcryptjs'
 
-
+type Role = 'Tecnico' | 'Administrativo Tecnico' | 'Administrativo Contable' | 'Auditor'
 
 
 /* UserSchema will correspond to a collection in your MongoDB database. */
 const UserSchema = new mongoose.Schema({
-  username:{
-    type:String,
-    required: true,
-    unique:true
-  },
   password:{
     type:String,
     required:true
@@ -31,6 +26,9 @@ const UserSchema = new mongoose.Schema({
   fullName:{
     type:String
   },
+  role:[{
+    type:String,
+  }]
 }, {timestamps:true})
 
 UserSchema.pre('save', function(next){

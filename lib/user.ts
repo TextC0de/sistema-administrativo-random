@@ -1,6 +1,7 @@
-import { JwtPayload, UserNameJwtPayload, verify } from 'jsonwebtoken'
+import { JwtPayload, UserIdJwtPayload, verify } from 'jsonwebtoken'
 import { NextApiRequest } from 'next'
 import { ReducedUser } from '../context/userContext/interfaces'
+import { UserInterface } from '../models/interfaces'
 import User from '../models/User'
 import dbConnect from './dbConnect'
 
@@ -28,21 +29,25 @@ export const userIdFromJWT = (jwtToken: string): string | undefined => {
 
 //function for getting the user on GetServerSideProps
 
-export default async function getUserServer(req:NextApiRequest): Promise<ReducedUser>{
+export async function getUserServer(req:NextApiRequest): Promise<ReducedUser>{
     await dbConnect()
     const {cookies} = req
-    let user:ReducedUser = {username:'', firstName: '', lastName:'', _id:''}
+    let user:ReducedUser = {email:'', firstName: '', lastName:'', _id:''}
     if(cookies.access_token){
         const jwt = cookies.access_token
-        const result = <UserNameJwtPayload>verify(jwt, secret)
+        const result = <UserIdJwtPayload>verify(jwt, secret)
         if(result){
-            const username = result.username
-            const {firstName, lastName, _id} = await User.findOne({username})
-            user = {username, firstName, lastName, _id:_id.toString()}
+            const _id = result._id
+            const {firstName, lastName, email} = await User.findById(_id)
+            user = {email, firstName, lastName, _id}
             //console.log(user)
             return user
         }
         else return user
     }
     return user
+}
+
+export function userToReducedUser(user:UserInterface): ReducedUser{
+    return {email:user.email, firstName:user.firstName, lastName:user.lastName, _id:user._id.toString()}
 }

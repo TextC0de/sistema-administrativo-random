@@ -1,0 +1,6 @@
+export const baseUrl = process.env.BASE_URL || 'http://localhost:3000/'
+export const baseApiUrl = baseUrl + 'api/'
+export const authUrl = baseApiUrl + 'auth/'
+export const logoutUrl = authUrl + 'logout/'
+export const registerUrl = authUrl + 'register/'
+export const loggedInUser = authUrl + 'user/'

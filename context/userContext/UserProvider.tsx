@@ -1,63 +1,40 @@
 import {useState} from 'react'
-import {FullUrlJson, UserJson, ReducedUser} from './interfaces'
+import {ReducedUser} from './interfaces'
 import UserContext from './UserContext'
+import * as apiEndpoints from '../../lib/apiEndpoints'
+import { ResponseData } from '../../controllers/types'
 
 interface UserProviderProps{
     children:JSX.Element | JSX.Element[]
 }
 
 const INITIAL_STATE = {
-    username:'',
+    email:'',
     firstName:'',
     lastName:'',
     _id:''
 }
 
 const UserProvider = ({children}:UserProviderProps) => {
-    const url = 'http://localhost:3000/api/full-url' //protocol + domain name + path
 
     const [user, setUser] = useState(INITIAL_STATE)
-
-    //function 
-    async function getFullUrl():Promise<string>{  
-        try {
-            const res: Response = await fetch(url)
-            const json: FullUrlJson = await res.json()
-            return json.data
-            
-        } catch (error) {
-            console.log(error)
-            return ''
-        }
-    }
-    
-    //function that gets the base url(protocol+hostname)
-    async function getBaseUrl(): Promise<string>{
-        const url = await getFullUrl()
-        const splitUrl = url.split('')
-        let count = 0
-        let i = 0
-        while(count < 3 && i<splitUrl.length){
-            if(splitUrl[i] === '/'){
-                count++
-            }
-            i++
-        }
-        return splitUrl.slice(0, i).join('')
-    }
     
     async function getUser():Promise<ReducedUser>{
-        const baseUrl = await getBaseUrl()
-    
-        const res = await fetch(baseUrl+'api/auth/user')
+        //console.log('getting user at: ', apiEndpoints.loggedInUser);
+        
+        const res = await fetch(apiEndpoints.loggedInUser)
         if(res.ok){
-            const json:UserJson = await res.json()
+            const json:ResponseData = await res.json()
             if(json.data){
-                const {username, firstName, lastName, _id} = json.data
-                const user:ReducedUser = {username, firstName, lastName, _id: _id.toString()}
+                const user = json.data.user
+
+
+                
                 return user
             }
+            
         }
+
         return INITIAL_STATE    
     }
 
@@ -66,14 +43,14 @@ const UserProvider = ({children}:UserProviderProps) => {
     }
 
     function isLoggedIn(){
-        return user.username!=''
+        return user.email!=''
     }
 
     function logoutUser(){
         setUser(INITIAL_STATE)
     }
     return(
-        <UserContext.Provider value={{user, loginUser, logoutUser, getBaseUrl, isLoggedIn}}>
+        <UserContext.Provider value={{user, loginUser, logoutUser, isLoggedIn}}>
             {children}
         </UserContext.Provider>
     )

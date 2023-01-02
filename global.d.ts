@@ -5,10 +5,13 @@ declare global {
 }
 
 declare module 'jsonwebtoken'{
-    export interface UserNameJwtPayload extends JwtPayload{
-        username:string
+    export interface UserIdJwtPayload extends JwtPayload{
+        userId:string
     }
 }
+
+
+
 
 export const mongoose = global.mongoose || new Connection()
 
