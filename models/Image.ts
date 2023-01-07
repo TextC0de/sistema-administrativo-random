@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
+import { IImage, IImageMethods, ImageModel } from './interfaces'
 
-const ImageSchema = new mongoose.Schema({
+
+export const ImageSchema = new mongoose.Schema<IImage, ImageModel, IImageMethods>({
     name:{
         required:true,
         type:String
@@ -12,4 +14,4 @@ const ImageSchema = new mongoose.Schema({
     }
 })
 
-export default mongoose.models.Image || mongoose.model('Image', ImageSchema)
+export default mongoose.models.Image as ImageModel || mongoose.model<IImage, ImageModel>('Image', ImageSchema)

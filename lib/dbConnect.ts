@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
-
+/* import mongooseNanoid from 'mongoose-nanoid'
+mongoose.plugin(mongooseNanoid, 16) */
 const MONGODB_URI:string = process.env.MONGODB_URI || ''
 if (!MONGODB_URI) {
   throw new Error(

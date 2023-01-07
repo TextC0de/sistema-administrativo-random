@@ -1,11 +1,16 @@
 import { GetServerSidePropsContext } from 'next'
-
+import Link from 'next/link'
 
 const Index = () => {
-  return(<>
-    {/* Create a card for each pet */}
-    
-  </>)
+  return(
+    <>
+      <Link href="/test">
+        <a>
+          Get to Testing!
+        </a>
+      </Link>
+    </>
+  )
 }
 
 /* Retrieves pet(s) data from mongodb database */

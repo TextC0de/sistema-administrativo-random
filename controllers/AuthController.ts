@@ -9,7 +9,7 @@ import { getToken } from '../lib/jwt';
 import { ReducedUser } from '../context/userContext/interfaces';
 import { UserData } from './interfaces';
 import { userToReducedUser } from '../lib/user';
-import { UserInterface } from '../models/interfaces';
+import { IUser } from '../models/interfaces';
 
 
 export const login = async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
