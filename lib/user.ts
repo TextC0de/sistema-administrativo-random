@@ -4,7 +4,7 @@ import { ReducedUser } from '../context/userContext/interfaces'
 import { IUser } from '../models/interfaces'
 import User from '../models/User'
 import dbConnect from './dbConnect'
-import {formatIds} from './models'
+import {formatIds} from './utils'
 
 const secret = process.env.SECRET || ''
 

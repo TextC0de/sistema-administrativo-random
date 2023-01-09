@@ -1,6 +1,6 @@
 import nc from 'next-connect'
 import { onError, onNoMatch } from '../controllers/NextConnectController';
 
-const baseRoute = nc({onError,onNoMatch});
+const baseHandler = () => nc({onError,onNoMatch});
 
-export default baseRoute
+export default baseHandler()

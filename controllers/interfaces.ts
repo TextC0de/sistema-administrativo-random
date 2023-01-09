@@ -3,6 +3,7 @@ import { Role } from '../models/types';
 
 export interface NextConnectApiRequest extends NextApiRequest {
     files: Express.Multer.File[];
+    userId: string
 }
 
 export interface UserData{

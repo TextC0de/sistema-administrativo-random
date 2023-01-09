@@ -10,7 +10,7 @@ import { ReducedUser } from '../context/userContext/interfaces';
 import { UserData } from './interfaces';
 
 import { IUser } from '../models/interfaces';
-import { formatIds } from '../lib/models';
+import { formatIds } from '../lib/utils';
 
 
 export const login = async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
