@@ -7,6 +7,7 @@ declare global {
 declare module 'jsonwebtoken'{
     export interface UserIdJwtPayload extends JwtPayload{
         userId:string
+        userRoles:string[]
     }
 }
 

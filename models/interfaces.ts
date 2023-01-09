@@ -8,9 +8,9 @@ export interface IUser {
   email: string;
   firstName: string;
   lastName: string;
-  city:ICity;
+  city?:ICity;
   fullName?: string;
-  role?:types.Role[]
+  roles?:types.Role[]
   password?:string;
 }
 //User methods

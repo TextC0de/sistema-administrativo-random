@@ -4,7 +4,8 @@ import { NextApiResponse } from "next"
 import { ResponseData } from "../controllers/types"
 import { UserIdJwtPayload } from "jsonwebtoken"
 import { getPayload } from "../lib/jwt"
-import User from "../models/User"
+import { Role } from "../models/types"
+import * as apiEndpoints from '../lib/apiEndpoints'
 
 // with this middleware I want to check authorization, since authentication is achieved on login
 // here I can verify the JWT and add it's payload to the request object
@@ -16,6 +17,8 @@ import User from "../models/User"
 // e.g. only an Auditor should be able to change the status of a Service or Expense from Sent to Approved
 
 const accessControl = async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>, next:any) => {
+    console.log(req.url);
+    
     const {body, cookies} = req
 
     const jwt = /* appRequest? body.access_token : */cookies.access_token
@@ -36,3 +39,8 @@ const accessControl = async (req:NextConnectApiRequest, res:NextApiResponse<Resp
 }
 
 export default accessControl
+
+//takes a pathname and the user's list of roles, it checks for every 
+const isAuthorized = (pathname:string, roles:Role[], method:string)=>{
+    
+}

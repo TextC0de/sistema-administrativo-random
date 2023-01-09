@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>({
   fullName:{
     type:String
   },
-  role:[{
+  roles:[{
     type:String,
   }],
   city:{

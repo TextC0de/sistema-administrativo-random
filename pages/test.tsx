@@ -83,7 +83,7 @@ function CityCard ({city}:{city:ICity}){
 
 
 export default function Test({services}:{services:IService[]}){
-    console.log(services);
+    //console.log(services);
     
     return(
         <>
@@ -106,7 +106,7 @@ export async function getServerSideProps({req,res}:GetServerSidePropsContext) {
     docServices[0].openedAt = new Date(Date.now())
     
     const services = formatIds(docServices)
-    console.log(services[0].openedAt);
+    //console.log(services[0].openedAt);
     
     return { props: {services} }
 

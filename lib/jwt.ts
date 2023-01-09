@@ -5,7 +5,8 @@ const secret = process.env.SECRET || ''
 export const getToken = (user:IUser) => {
     return sign({
       exp: Math.floor(Date.now() / 1000) + 60 *60 * 24 * 30, //30 days
-      userId:user._id.toString()
+      userId:user._id.toString(),
+      userRoles:user.roles
     }, secret)
 }
 
