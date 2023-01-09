@@ -34,7 +34,9 @@ export default function LoginForm({}){
 
       // Throw error with status code in case Fetch API req failed
       if (!res.ok) {
+        console.log(res);
         throw new Error('failed to login')
+        
       }
       loginUser()
       router.push('/')

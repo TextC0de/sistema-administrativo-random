@@ -51,7 +51,7 @@ const ExpenseSchema = new mongoose.Schema<IExpense, ExpenseModel, IExpenseMethod
         required:false
     },
 
-})
+},{timestamps:true})
 
 ExpenseSchema.statics.populateParameter = function(){
     return [

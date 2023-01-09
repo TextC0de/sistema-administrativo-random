@@ -42,10 +42,10 @@ export async function getUserServer(req:NextApiRequest): Promise<IUser|undefined
         return undefined
     }
     const _id = result._id
-    const rawUser = await User.findById(_id)
-    if (!rawUser) {
+    const docUser = await User.findById(_id)
+    if (!docUser) {
         return undefined
     }
-    const user = formatIds(rawUser)
+    const user = formatIds(docUser)
     return user
 }

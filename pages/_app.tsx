@@ -5,13 +5,13 @@ import type { AppProps } from 'next/app'
 
 import Head from 'next/head'
 import Header from '../components/Header/Header'
-import  UserProvider from '../context/userContext/UserProvider'
+import UserProvider from '../context/userContext/UserProvider'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-          <title>Pet Care App</title>
+          <title>Sistema Administrativo Random S.R.L</title>
       </Head>
       <UserProvider>
         <Header />

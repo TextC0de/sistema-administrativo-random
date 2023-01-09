@@ -9,7 +9,7 @@ const BusinessSchema = new mongoose.Schema<IBusiness,BusinessModel, IBusinessMet
         type:String,
         required:true,
     }
-})
+},{timestamps:true})
 
 BusinessSchema.methods.getServices = async function(this:IBusiness){
     await dbConnect()

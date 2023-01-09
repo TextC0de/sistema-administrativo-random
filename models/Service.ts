@@ -31,7 +31,7 @@ const ServiceSchema = new mongoose.Schema<IService,ServiceModel, IServiceMethods
         required:true,
     },
     openedAt:{
-        type:mongoose.Schema.Types.Date,
+        type:Date,
         required:true,
     },
     status:{
@@ -62,12 +62,17 @@ const ServiceSchema = new mongoose.Schema<IService,ServiceModel, IServiceMethods
         ref:'Image',
         required:false
     },
+    workOrderNumber:{
+        type:Number,
+        required:false,
+        unique:true
+    },
     closedAt:{
-        type:mongoose.Schema.Types.Date,
+        type:Date,
         required:false,
     }
 
-})
+},{timestamps:true})
 
 ServiceSchema.statics.populateParameter = function(){
     return [

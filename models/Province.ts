@@ -9,9 +9,9 @@ const ProvinceSchema = new mongoose.Schema<IProvince, ProvinceModel, IProvinceMe
     name:{
         type:String,
         required:true,
+        unique:true
     }
-
-})
+},{timestamps:true})
 
 ProvinceSchema.methods.getCities = async function(this:IProvince):Promise<ICity[]>{
     await dbConnect()

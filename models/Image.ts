@@ -12,6 +12,6 @@ export const ImageSchema = new mongoose.Schema<IImage, ImageModel, IImageMethods
         type:String,
         unique:true
     }
-})
+},{timestamps:true})
 
 export default mongoose.models.Image as ImageModel || mongoose.model<IImage, ImageModel>('Image', ImageSchema)

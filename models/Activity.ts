@@ -16,7 +16,7 @@ const ActivitySchema = new mongoose.Schema<IActivity, ActivityModel, IActivityMe
         required:true
     },
     startDate:{
-        type:mongoose.Schema.Types.Date,
+        type:Date,
         required:true
     },
     openedBy:{
@@ -30,10 +30,10 @@ const ActivitySchema = new mongoose.Schema<IActivity, ActivityModel, IActivityMe
         required:false,
     }],
     finishDate:{
-        type:mongoose.Schema.Types.Date,
+        type:Date,
         required:false
     }
-})
+},{timestamps:true})
 
 ActivitySchema.statics.populateParameter = function():IPopulateParameter[]{
     return [

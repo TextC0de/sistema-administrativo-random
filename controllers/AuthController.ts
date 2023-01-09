@@ -8,8 +8,9 @@ import { cookieOptionsLogin, cookieOptionsLogout } from '../lib/cookies';
 import { getToken } from '../lib/jwt';
 import { ReducedUser } from '../context/userContext/interfaces';
 import { UserData } from './interfaces';
-import { userToReducedUser } from '../lib/user';
+
 import { IUser } from '../models/interfaces';
+import { formatIds } from '../lib/models';
 
 
 export const login = async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
@@ -27,24 +28,30 @@ export const login = async (req:NextConnectApiRequest, res:NextApiResponse<Respo
     if(req.body.appRequest){
       const {email, password} = req.body
       
-      let user = await User.findOne({email})/* find user by email */
+      let user = await User.findOne({email}).select('+password')/* find user by email */
       //console.log(user)
+      if(!user){
+        return res.status(403).json({statusCode:403, error:'Wrong password/email'})
+      }
       if(!user.comparePassword(password)){
-        console.log('wrong password');
+        console.log('Wrong password/email')
         
-        res.status(403).json({statusCode:403, error:'Wrong Password'}) 
+        res.status(403).json({statusCode:403, error:'Wrong password/email'}) 
       } 
       console.log('returned info');
       const access_token = getToken(user)
-      const reducedUser:ReducedUser = userToReducedUser(user)
+      const reducedUser = formatIds(user)
       const data = {access_token, reducedUser}
       res.status(201).json({data, statusCode:201})
     }else{
       const {email, password} = req.body
-      let user = await User.findOne({email})/* find user by email */
-      console.log(user)
-      if(!user.comparePassword(password)){
-        res.status(403).json({statusCode:403, error:'Wrong password'}) 
+      let user = await User.findOne({email}).select('+password')/* find user by email */
+      if (!user){
+        return res.status(403).json({statusCode:403, error:'Wrong password/email'})
+      }
+      const passwordMatch = user.comparePassword(password)
+      if(!passwordMatch){
+        res.status(403).json({statusCode:403, error:'Wrong password/email'}) 
       }
       res.setHeader('Set-Cookie', cookie.serialize(`access_token`, getToken(user), cookieOptionsLogin))
       res.status(201).json({statusCode:201, data:'succesful login'})
@@ -53,25 +60,20 @@ export const login = async (req:NextConnectApiRequest, res:NextApiResponse<Respo
 
 export const logout = async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) =>{
  
-    if(req.body.appRequest){//since we don't hold the jwt in a cookie, we don't need the backend to do anything special
-      res.status(201).json({data:{message:'success'}})
-    }
     res.setHeader('Set-Cookie', cookie.serialize(`access_token`, '', cookieOptionsLogout))
     res.status(201).json({ data:{message:'success'} })
 }
 
 export const register = async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
-  console.log('register api endpoint');
-  
   const {password, firstName, lastName, email} = req.body
-  const userData:UserData =  {password, firstName, lastName, email}
+  const userData:UserData =  {password, firstName, lastName, email, role:['Administrativo Tecnico']}
   
   userData.fullName = `${firstName} ${lastName}`
   await dbConnect()
   /* create a new model in the database */
   try {
-    const user = await User.create(userData)        
-    const reducedUser:ReducedUser = userToReducedUser(user)
+    const user = await User.create(userData)            
+    const reducedUser:IUser = formatIds(user)
     res.status(201).json({data:{user:reducedUser},statusCode:201})
   } catch (error) {
     console.log(error);

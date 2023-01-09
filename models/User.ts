@@ -11,7 +11,7 @@ import Activity from './Activity'
 
 
 /* UserSchema will correspond to a collection in your MongoDB database. */
-const UserSchema = new mongoose.Schema<IUser, UserModel,IUserMethods>({
+const UserSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>({
   password:{
     type:String,
     required:true,
@@ -39,7 +39,6 @@ const UserSchema = new mongoose.Schema<IUser, UserModel,IUserMethods>({
   city:{
     type:mongoose.Schema.Types.ObjectId,
     ref:'City',
-    required:true
   }
 }, {timestamps:true})
 
@@ -62,8 +61,14 @@ UserSchema.statics.populateParameter = function(){
   ]
 }
 
-UserSchema.methods.comparePassword = function(plaintext:string) {
+UserSchema.methods.comparePassword = function(plaintext:string):boolean {
+  console.log('trying to compare passwords');
+  try {
     return bcryptjs.compareSync(plaintext, this.password)
+  } catch (error) {
+    console.log(error)
+    return false
+  }
 };
 
 

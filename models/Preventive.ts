@@ -31,18 +31,18 @@ const PreventiveSchema = new mongoose.Schema<IPreventive,PreventiveModel, IPreve
         required:false
     }],
     lastDoneAt:{ //last time it was done
-        type:mongoose.Schema.Types.Date,
+        type:Date,
         required:false,
     },
     batteryChangedAt:{
-        type:mongoose.Schema.Types.Date,
+        type:Date,
         required:false
     },
     observations:{
         type:String,
         required:false
     },
-})
+},{timestamps:true})
 
 PreventiveSchema.statics.populateParameter = function():IPopulateParameter[]{
     return[

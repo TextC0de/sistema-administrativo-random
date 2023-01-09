@@ -88,6 +88,7 @@ export interface ICityMethods{
 }
 
 export interface CityModel extends mongoose.Model<ICity, {}, ICityMethods>{
+  populateParameter():IPopulateParameter[]
 }
 
 export interface IBranch{
@@ -114,8 +115,8 @@ export interface IPreventive {
   branch:IBranch,
   frequency?:types.Month,
   months?:types.Month[],
-  lastDoneAt?:mongoose.Schema.Types.Date,
-  batteryChangedAt?:mongoose.Schema.Types.Date
+  lastDoneAt?:Date,
+  batteryChangedAt?:Date
   observations?:string
 }
 
@@ -133,16 +134,17 @@ export interface IService {
   _id:mongoose.Schema.Types.ObjectId | string,
   branch:IBranch,
   business:IBusiness,
-  assigned:IUser,
+  assigned?:IUser,
+  openedAt:Date,
   serviceType:types.ServiceType,
-  openedAt:mongoose.Schema.Types.Date,
   status:types.ServiceStatus,
   participants?:IUser[],
   auditor?:IUser,
   activity?:IActivity,
   operatorName?:string,
   image?:IImage,
-  closedAt?:mongoose.Schema.Types.Date,
+  workOrderNumber?:number,
+  closedAt?:Date,
 }
 
 export interface IServiceMethods{
@@ -189,10 +191,10 @@ export interface IActivity{
   _id:mongoose.Schema.Types.ObjectId | string,
   name:string,
   description:string,
-  startDate:mongoose.Schema.Types.Date,
+  startDate:Date,
   openedBy:IUser,
   participants?:IUser[],
-  finishDate?:mongoose.Schema.Types.Date,
+  finishDate?:Date,
 }
 
 export interface IActivityMethods{

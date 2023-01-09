@@ -11,7 +11,7 @@ const ClientSchema = new mongoose.Schema<IClient, ClientModel, IClientMethods>({
         required:true,
         unique:true
     }
-})
+},{timestamps:true})
 
 ClientSchema.methods.getBranches = async function(this:IClient) {
     await dbConnect()

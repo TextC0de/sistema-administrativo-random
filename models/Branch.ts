@@ -22,16 +22,13 @@ const BranchSchema = new mongoose.Schema<IBranch, BranchModel, IBranchMethods>({
         ref:'Client',
         required:true
     }
-})
+},{timestamps:true})
 
 BranchSchema.statics.populateParameter = function(){
     return [
         {
             path:'city', 
-            populate:{
-                path:'province',
-                model:'Province'
-            }
+            populate:City.populateParameter()
         },
         {
             path:'client'

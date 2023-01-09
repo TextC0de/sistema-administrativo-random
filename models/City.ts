@@ -6,14 +6,10 @@ import Province from "./Province";
 
 
 const CitySchema = new mongoose.Schema<ICity, CityModel, ICityMethods>({
-    _id:{
-        type:mongoose.Schema.Types.ObjectId,
-        required:true,
-        unique:true
-    },
     name:{
         type:String,
         required:true,
+        unique:true
     },
     province:{
         type:mongoose.Schema.Types.ObjectId,
@@ -21,12 +17,12 @@ const CitySchema = new mongoose.Schema<ICity, CityModel, ICityMethods>({
         required:true
     }
 
-})
+},{timestamps:true})
 
 CitySchema.methods.getProvince = async function(this:ICity){
         await dbConnect()
-        const rawProvince = await Province.findById(this.province)
-        return rawProvince
+        const docProvince = await Province.findById(this.province)
+        return docProvince
     } 
 
 
@@ -36,7 +32,7 @@ CitySchema.methods.getBranches = async function(this:ICity){
     } 
 
 CitySchema.statics.populateParameter = function(){
-    return {path:'province'}
+    return [{path:'province'}]
 }
 
 export default mongoose.models.City as CityModel || mongoose.model<ICity, CityModel>('City', CitySchema)
