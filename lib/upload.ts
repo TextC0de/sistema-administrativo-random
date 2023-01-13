@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-import { ApiResponse } from '../controllers/types';
+import { ApiResponse } from 'backend/controllers/types';
 
 export const uploadFileRequest = async (formData: FormData,/*  progressCallback?: (progressEvent: ProgressEvent) => void */): Promise<ApiResponse<string[]>> => {
     

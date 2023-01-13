@@ -1,5 +1,5 @@
 import {sign, UserIdJwtPayload, verify} from 'jsonwebtoken'
-import { IUser } from '../models/interfaces'
+import { IUser } from 'backend/models/interfaces'
 const secret = process.env.SECRET || ''
 
 export const getToken = (user:IUser) => {

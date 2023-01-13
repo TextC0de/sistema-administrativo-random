@@ -1,6 +1,6 @@
 
-import baseHandler from '../../../handlers/baseHandler'
-import { login } from '../../../controllers/AuthController'
+import baseHandler from 'backend/handlers/baseHandler'
+import { login } from 'backend/controllers/AuthController'
 
 baseHandler.post(login)
 

@@ -1,11 +1,13 @@
-import '../styles/globals.css'
-import '../css/style.css'
-import '../css/form.css'
+import 'frontend/styles/globals.css'
+import 'frontend/css/style.css'
+import 'frontend/css/form.css'
 import type { AppProps } from 'next/app'
 
 import Head from 'next/head'
-import Header from '../components/Header/Header'
-import UserProvider from '../context/userContext/UserProvider'
+import Header from 'frontend/components/Header'
+import UserProvider from 'frontend/context/userContext/UserProvider'
+import Main from 'frontend/components/Main'
+import Footer from 'frontend/components/Footer'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -14,9 +16,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           <title>Sistema Administrativo Random S.R.L</title>
       </Head>
       <UserProvider>
-        <Header />
-        <Component {...pageProps} />
-
+          <Header />
+          <Main>
+            <Component {...pageProps} />
+          </Main>
+          <Footer />
       </UserProvider>
     </>
   )

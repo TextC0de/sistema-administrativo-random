@@ -4,11 +4,7 @@ import Link from 'next/link'
 const Index = () => {
   return(
     <>
-      <Link href="/test">
-        <a>
-          Get to Testing!
-        </a>
-      </Link>
+      This is Home
     </>
   )
 }

@@ -1,5 +1,5 @@
-import baseHandler from "../../../handlers/baseHandler";
-import { logout } from '../../../controllers/AuthController';
+import baseHandler from 'backend/handlers/baseHandler';
+import { logout } from 'backend/controllers/AuthController';
 
 baseHandler.get(logout)
 

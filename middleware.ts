@@ -43,7 +43,7 @@ export async function middleware(req:NextRequest){
 
 }
 export const config = {
-    matcher: "/",
+    matcher: ['/', '/services', '/provinces'],
 };
 
 /* export const config = {

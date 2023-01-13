@@ -1,6 +1,6 @@
-import baseHandler from "../../../handlers/baseHandler";
-import { postImage } from "../../../controllers/ImageController";
-import { upload } from '../../../middleware/multer'
+import baseHandler from 'backend/handlers/baseHandler';
+import { postImage } from 'backend/controllers/ImageController';
+import { upload } from 'backend/middleware/multer'
 
 
 baseHandler.use(upload.array('image'));

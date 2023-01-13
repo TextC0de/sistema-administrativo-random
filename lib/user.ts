@@ -1,8 +1,7 @@
-import { JwtPayload, UserIdJwtPayload, verify } from 'jsonwebtoken'
+import { UserIdJwtPayload, verify } from 'jsonwebtoken'
 import { NextApiRequest } from 'next'
-import { ReducedUser } from '../context/userContext/interfaces'
-import { IUser } from '../models/interfaces'
-import User from '../models/User'
+import { IUser } from 'backend/models/interfaces'
+import User from 'backend/models/User'
 import dbConnect from './dbConnect'
 import {formatIds} from './utils'
 

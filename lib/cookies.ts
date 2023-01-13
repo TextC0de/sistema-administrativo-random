@@ -1,4 +1,4 @@
-import { CookieSerializeOptions } from "next/dist/server/web/types"
+import { CookieSerializeOptions } from 'next/dist/server/web/types'
 
 export const cookieOptionsLogin:CookieSerializeOptions = {
     httpOnly:true,
