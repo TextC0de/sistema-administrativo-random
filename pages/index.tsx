@@ -13,7 +13,6 @@ const Index = () => {
 export async function getServerSideProps({req,res}:GetServerSidePropsContext) {
   
 
-  //console.log(pets)
   return { props: {} }
 }
 

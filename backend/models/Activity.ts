@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import dbConnect from 'lib/dbConnect';
 import Expense from './Expense';
 import { IActivity, ActivityModel, IPopulateParameter, IActivityMethods} from './interfaces';
-import Service from './Service';
+import Task from './Task';
 import User from './User';
 
 
@@ -63,9 +63,9 @@ ActivitySchema.methods.getParticipants = async function(this:IActivity) {
     return participants
 }
 
-ActivitySchema.methods.getServices = async function(this:IActivity) {
+ActivitySchema.methods.getTasks = async function(this:IActivity) {
     await dbConnect()
-    return await Service.find({activity:this._id})
+    return await Task.find({activity:this._id})
 }
 
 ActivitySchema.methods.getExpenses = async function(this:IActivity){

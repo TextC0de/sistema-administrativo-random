@@ -19,6 +19,8 @@ const CitySchema = new mongoose.Schema<ICity, CityModel, ICityMethods>({
 
 },{timestamps:true})
 
+CitySchema.index({name:1, province:1}, {unique:true})
+
 CitySchema.methods.getProvince = async function(this:ICity){
         await dbConnect()
         const docProvince = await Province.findById(this.province)
@@ -32,7 +34,7 @@ CitySchema.methods.getBranches = async function(this:ICity){
     } 
 
 CitySchema.statics.populateParameter = function(){
-    return [{path:'province'}]
+    return [{path:'province', model:'Province'}]
 }
 
 export default mongoose.models.City as CityModel || mongoose.model<ICity, CityModel>('City', CitySchema)

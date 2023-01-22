@@ -13,7 +13,8 @@ import { IUser } from '../models/interfaces';
 import { formatIds } from 'lib/utils';
 
 
-export const login = async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
+const AuthController = {
+  login:async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
     /* let appRequest = false
     let parsedBody
     try {
@@ -46,28 +47,28 @@ export const login = async (req:NextConnectApiRequest, res:NextApiResponse<Respo
       res.setHeader('Set-Cookie', cookie.serialize(`access_token`, getToken(user), cookieOptionsLogin))
       res.status(201).json({statusCode:201, data:'succesful login'})
     }
-}
-
-export const logout = async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) =>{
+  },
+  logout: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) =>{
   
-  res.setHeader('Set-Cookie', cookie.serialize(`access_token`, '', cookieOptionsLogout))
-  res.status(201).json({ data:{message:'success'} })
-}
-
-export const register = async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
-  const {password, firstName, lastName, email} = req.body
-  const userData:UserData =  {password, firstName, lastName, email, role:['Administrativo Tecnico']}
-  
-  userData.fullName = `${firstName} ${lastName}`
-  await dbConnect()
-  /* create a new model in the database */
-  try {
-    const user = await User.create(userData)            
-    const reducedUser:IUser = formatIds(user)
-    res.status(201).json({data:{user:reducedUser},statusCode:201})
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({error:'failed to create user', statusCode:500})
+    res.setHeader('Set-Cookie', cookie.serialize(`access_token`, '', cookieOptionsLogout))
+    res.status(201).json({ data:{message:'success'} })
+  },
+  register: async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
+    const {password, firstName, lastName, email} = req.body
+    const userData:UserData =  {password, firstName, lastName, email, role:['Administrativo Tecnico']}
+    
+    userData.fullName = `${firstName} ${lastName}`
+    await dbConnect()
+    /* create a new model in the database */
+    try {
+      const user = await User.create(userData)            
+      const reducedUser:IUser = formatIds(user)
+      res.status(201).json({data:{user:reducedUser},statusCode:201})
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({error:'failed to create user', statusCode:500})
+    }
   }
 }
 
+export default AuthController

@@ -17,15 +17,15 @@ export interface IUser {
 export interface IUserMethods{
 
   comparePassword(plaintext:string):boolean
-  getServices():Promise<IService[]>
-  getServicesByStatus(status:types.ServiceStatus):Promise<IService[]>
+  getTasks():Promise<ITask[]>
+  getTasksByStatus(status:types.TaskStatus):Promise<ITask[]>
   getExpenses():Promise<IExpense[]>
   getExpensesByStatus(status:types.ExpenseStatus):Promise<IExpense[]>
   getActivities():Promise<IUserActivities>
 }
 //User model, here I have to declare the static methods
 export interface UserModel extends mongoose.Model<IUser, {},IUserMethods>{
-  populateParamer():IPopulateParameter[]
+  populateParameter():IPopulateParameter[]
 }
 
 export interface IImage{
@@ -58,7 +58,7 @@ export interface IBusiness{
 }
 
 export interface IBusinessMethods{
-  getServices():Promise<IService[]>
+  getTasks():Promise<ITask[]>
 }
 
 export interface BusinessModel extends mongoose.Model<IBusiness, {}, IBusinessMethods>{
@@ -95,13 +95,14 @@ export interface IBranch{
   _id:mongoose.Schema.Types.ObjectId | string,
   number:number,
   city:ICity,
-  client:IClient
+  client:IClient,
+  businesses:IBusiness[],
 }
 
 export interface IBranchMethods{
   getClient():Promise<IClient | null>
   getCity():Promise<ICity | null>
-  getServices():Promise<IService[]>
+  getTasks():Promise<ITask[]>
 }
 
 export interface BranchModel extends mongoose.Model<IBranch, {}, IBranchMethods>{
@@ -113,7 +114,8 @@ export interface IPreventive {
   assigned:IUser[],
   business:IBusiness,
   branch:IBranch,
-  frequency?:types.Month,
+  status:types.PreventiveStatus,
+  frequency?:types.Frequency,
   months?:types.Month[],
   lastDoneAt?:Date,
   batteryChangedAt?:Date
@@ -130,14 +132,15 @@ export interface PreventiveModel extends mongoose.Model<IPreventive, {}, IPreven
   populateParameter():IPopulateParameter[]
 }
 
-export interface IService {
+export interface ITask {
   _id:mongoose.Schema.Types.ObjectId | string,
   branch:IBranch,
   business:IBusiness,
   assigned?:IUser,
   openedAt:Date,
-  serviceType:types.ServiceType,
-  status:types.ServiceStatus,
+  taskType:types.TaskType,
+  status:types.TaskStatus,
+  description:string,
   participants?:IUser[],
   auditor?:IUser,
   activity?:IActivity,
@@ -147,7 +150,7 @@ export interface IService {
   closedAt?:Date,
 }
 
-export interface IServiceMethods{
+export interface ITaskMethods{
   getBranch():Promise<IBranch | null>
   getBusiness():Promise<IBusiness | null>
   getAssigned():Promise<IUser | null>
@@ -158,7 +161,7 @@ export interface IServiceMethods{
   getExpenses():Promise<IExpense[]>
 }
 
-export interface ServiceModel extends mongoose.Model<IService, {}, IServiceMethods>{
+export interface TaskModel extends mongoose.Model<ITask, {}, ITaskMethods>{
   populateParameter():IPopulateParameter[]
 }
 
@@ -170,7 +173,7 @@ export interface IExpense {
   status:types.ExpenseStatus,
   image:IImage,
   amount:Number,
-  service?:IService,
+  task?:ITask,
   auditor?:IUser,
   activity?:IActivity
 }
@@ -178,7 +181,7 @@ export interface IExpense {
 export interface IExpenseMethods{
   getDoneBy():Promise<IUser | null>
   getImage():Promise<IImage | null>
-  getService():Promise<IService | null>
+  getTask():Promise<ITask | null>
   getAuditor():Promise<IUser | null>
   getActivity():Promise<IActivity | null>
 }
@@ -200,7 +203,7 @@ export interface IActivity{
 export interface IActivityMethods{
   getOpenedBy():Promise<IUser | null>
   getParticipants():Promise<((mongoose.Document<unknown, any, IUser> & IUser & Required<{ _id: string | mongoose.Schema.Types.ObjectId; }> & IUserMethods) | null)[]>
-  getServices():Promise<IService[]>
+  getTasks():Promise<ITask[]>
   getExpenses():Promise<IExpense[]>
 }
 export interface ActivityModel extends mongoose.Model<IActivity, {}, IActivityMethods>{

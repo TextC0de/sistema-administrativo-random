@@ -1,11 +1,12 @@
 import mongoose from 'mongoose'
 import bcryptjs from 'bcryptjs'
-import { IActivity, IExpense, UserModel, IService, IUser, IUserActivities, IUserMethods } from './interfaces'
+import { IActivity, IExpense, UserModel, ITask, IUser, IUserActivities, IUserMethods } from './interfaces'
 import dbConnect from 'lib/dbConnect'
-import Service from './Service'
-import { ExpenseStatus, ServiceStatus } from './types'
+import Task from './Task'
+import { ExpenseStatus, TaskStatus } from './types'
 import Expense from './Expense'
 import Activity from './Activity'
+import City from './City'
 
 
 
@@ -56,13 +57,14 @@ UserSchema.pre('save', function(next){
 UserSchema.statics.populateParameter = function(){
   return [
     {
-      path:'city'
+      path:'city',
+      populate:City.populateParameter()
     }
   ]
 }
 
 UserSchema.methods.comparePassword = function(plaintext:string):boolean {
-  console.log('trying to compare passwords');
+  //console.log('trying to compare passwords');
   try {
     return bcryptjs.compareSync(plaintext, this.password)
   } catch (error) {
@@ -72,14 +74,14 @@ UserSchema.methods.comparePassword = function(plaintext:string):boolean {
 };
 
 
-UserSchema.methods.getServices = async function(this:IUser):Promise<IService[]> {
+UserSchema.methods.getTasks = async function(this:IUser):Promise<ITask[]> {
   await dbConnect()
-  return await Service.find({assigned:this._id})
+  return await Task.find({assigned:this._id})
 }
 
-UserSchema.methods.getServicesByStatus = async function (this:IUser, status:ServiceStatus):Promise<IService[]>{
+UserSchema.methods.getTasksByStatus = async function (this:IUser, status:TaskStatus):Promise<ITask[]>{
   await dbConnect()
-  return await Service.find({assigned:this._id, status})
+  return await Task.find({assigned:this._id, status})
 }
 
 UserSchema.methods.getExpenses = async function (this:IUser):Promise<IExpense[]>{

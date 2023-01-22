@@ -1,7 +1,7 @@
 
 import baseHandler from 'backend/handlers/baseHandler'
-import { login } from 'backend/controllers/AuthController'
+import AuthController from 'backend/controllers/AuthController'
 
-baseHandler.post(login)
+baseHandler.post(AuthController.login)
 
 export default baseHandler

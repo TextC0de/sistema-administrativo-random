@@ -1,12 +1,12 @@
-import { footer } from './styles';
+import { footer, footerClass } from './styles';
 
 
 export default function Footer(){
     return (
         <>
-            <div style={footer}>
-                Este es el footer
-            </div>
+            <footer className='w-full h-16 shadow-md shadow-grey justify-self-end bg-teal-400' style={{height:'10vh'}} >
+                
+            </footer>
         </>
     )
 }

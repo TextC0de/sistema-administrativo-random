@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next'
-import ProvinceForm, { IProvinceForm } from 'frontend/components/Forms/TechAdmin/ProvinceForm/ProvinceForm'
+import ProvinceForm, { IProvinceForm } from 'frontend/components/Forms/TechAdmin/ProvinceForm'
 import dbConnect from 'lib/dbConnect'
 import { formatIds } from 'lib/utils'
 import { IProvince } from 'backend/models/interfaces'
@@ -11,6 +11,7 @@ interface props{
 
 export default function ProvinceView({province}:props){
     const provinceForm:IProvinceForm = {
+        _id:province._id as string,
         name:province.name
     }
 

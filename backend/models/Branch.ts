@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import Client from './Client';
-import { IBranch, ICity, IClient, IService, BranchModel, IBranchMethods } from './interfaces';
+import { IBranch, ICity, IClient, ITask, BranchModel, IBranchMethods } from './interfaces';
 import City from './City';
 import dbConnect from 'lib/dbConnect';
-import Service from './Service';
+import Task from './Task';
 
 
 
@@ -21,8 +21,18 @@ const BranchSchema = new mongoose.Schema<IBranch, BranchModel, IBranchMethods>({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Client',
         required:true
-    }
+    },
+    businesses:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Business',
+            required:false,
+            unique:true
+        }
+    ]
 },{timestamps:true})
+
+BranchSchema.index({number:1,client:1 },{unique:true})
 
 BranchSchema.statics.populateParameter = function(){
     return [
@@ -32,6 +42,9 @@ BranchSchema.statics.populateParameter = function(){
         },
         {
             path:'client'
+        },
+        {
+            path:'businesses'
         }
     ]
 }
@@ -42,14 +55,14 @@ BranchSchema.methods.getClient = async function(this:IBranch):Promise<IClient | 
 } 
 
 
-BranchSchema.methods.getCity= async function(this:IBranch):Promise<ICity | null>{
+BranchSchema.methods.getCity = async function(this:IBranch):Promise<ICity | null>{
     await dbConnect()
     return await City.findById(this.city)
 } 
 
-BranchSchema.methods.getServices = async function(this:IBranch):Promise<IService[]>{
+BranchSchema.methods.getTasks = async function(this:IBranch):Promise<ITask[]>{
     await dbConnect()
-    return await Service.find({branch:this._id})
+    return await Task.find({branch:this._id})
 }
 
 export default mongoose.models.Branch as BranchModel || mongoose.model<IBranch, BranchModel>('Branch', BranchSchema)

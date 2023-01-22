@@ -9,6 +9,7 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 
 import {useUser} from 'frontend/hooks/useUser'
 import { useEffect } from 'react'
+import { Button } from 'flowbite-react'
 
 
 export default function Header(): JSX.Element{
@@ -29,15 +30,16 @@ export default function Header(): JSX.Element{
     }
 
     useEffect(()=>{
-        console.log('logging user');
+        //console.log('logging user');
+        //console.log(isLoggedIn());
         if(!isLoggedIn()) loginUser()
     },[])
 
 
 
     return(
-        <div style={topBar}>
-            <div style={{display:'flex'}}>
+        <header className='flex w-full justify-between items-center shadow-md shadow-teal-500 bg-teal-400' style={{height:'10vh'}} /* style={topBar} */>
+            <div className='flex'>
                 <Link href='/'>
                     <a>
                         <Image
@@ -48,22 +50,17 @@ export default function Header(): JSX.Element{
                         />  
                     </a>
                 </Link>
-                {isLoggedIn() && <h2>Hello {`${user.firstName}`}!</h2>}
+                {isLoggedIn() && <h2 className='self-center text-lg'>Hola {`${user.firstName}`}!</h2>}
             </div>
-            <div style={nav}>
-            {/* {!isLoggedIn() && <Link href='/login'>
-                <a style={GS.buttonStyle}>
-                    Sign in
-                </a>
-            </Link>}
-            {!isLoggedIn() && <Link href='/login/register'>
-                <a style={GS.buttonStyle}>Sign up</a>
-            </Link>} */}
-            {isLoggedIn() && <div onClick={logout} style={GS.buttonStyle}>
-                Sign out
-            </div>}
+            <div className='flex items-center' /* style={nav} */>
+                {
+                isLoggedIn() && 
+                    <Button onClick={logout} className='mr-2'>
+                        Sign out
+                    </Button>
+                }
             </div>
-        </div>
+        </header>
     )
 }
 

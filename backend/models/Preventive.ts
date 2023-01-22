@@ -22,12 +22,16 @@ const PreventiveSchema = new mongoose.Schema<IPreventive,PreventiveModel, IPreve
         ref:'Branch',
         required:true
     },
+    status:{
+        type:String,
+        required:true
+    },
     frequency:{ //How often the preventive maintenance has to be done
         type:Number,
         required:false,
     },
     months:[{ //on which months it has to be done
-        type:Number,
+        type:String,
         required:false
     }],
     lastDoneAt:{ //last time it was done
@@ -44,10 +48,13 @@ const PreventiveSchema = new mongoose.Schema<IPreventive,PreventiveModel, IPreve
     },
 },{timestamps:true})
 
+PreventiveSchema.index({business:1, branch:1}, {unique:true})
+
 PreventiveSchema.statics.populateParameter = function():IPopulateParameter[]{
     return[
         {
-            path:'assigned'
+            path:'assigned',
+            populate:User.populateParameter()
         },
         {
             path:'business'

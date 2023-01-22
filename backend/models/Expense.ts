@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 import dbConnect from 'lib/dbConnect';
 import Activity from './Activity';
 import Image from './Image';
-import { IExpense, ExpenseModel, IService, ServiceModel, IExpenseMethods } from './interfaces';
-import Service from './Service';
+import { IExpense, ExpenseModel, ITask, TaskModel, IExpenseMethods } from './interfaces';
+import Task from './Task';
 import User from './User';
 
 
@@ -35,9 +35,9 @@ const ExpenseSchema = new mongoose.Schema<IExpense, ExpenseModel, IExpenseMethod
         type:Number,
         required:true
     },
-    service:{
+    task:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Service',
+        ref:'Task',
         required:false
     },
     auditor:{
@@ -62,8 +62,8 @@ ExpenseSchema.statics.populateParameter = function(){
             path:'image',
         },
         {
-            path:'service',
-            populate:Service.populateParameter()
+            path:'task',
+            populate:Task.populateParameter()
         },
         {
             path:'auditor'
@@ -84,9 +84,9 @@ ExpenseSchema.methods.getImage = async function(this:IExpense){
     return await Image.findById(this.image)
 }
 
-ExpenseSchema.methods.getService = async function(this:IExpense){
+ExpenseSchema.methods.getTask = async function(this:IExpense){
     await dbConnect()
-    return await Service.findById(this.service)
+    return await Task.findById(this.task)
 }
 
 ExpenseSchema.methods.getAuditor = async function(this:IExpense){

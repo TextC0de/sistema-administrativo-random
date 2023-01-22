@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Service from './Service'
+import Task from './Task'
 import { IBusiness, BusinessModel, IBusinessMethods } from './interfaces';
 import dbConnect from 'lib/dbConnect';
 
@@ -11,9 +11,9 @@ const BusinessSchema = new mongoose.Schema<IBusiness,BusinessModel, IBusinessMet
     }
 },{timestamps:true})
 
-BusinessSchema.methods.getServices = async function(this:IBusiness){
+BusinessSchema.methods.getTasks = async function(this:IBusiness){
     await dbConnect()
-    return await Service.find({ business: this._id}) 
+    return await Task.find({ business: this._id}) 
 
 }
 

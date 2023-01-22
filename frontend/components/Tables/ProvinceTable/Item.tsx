@@ -1,10 +1,11 @@
-import { Table } from 'flowbite-react'
+import { Button, Table } from 'flowbite-react'
 import { IProvince } from 'backend/models/interfaces'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Link from 'next/link'
 import * as apiEndpoints from 'lib/apiEndpoints'
 import { useRouter } from 'next/router'
 import mongoose from 'mongoose'
+import { slugify } from 'lib/utils'
 
 interface props{
     province:IProvince,
@@ -14,12 +15,17 @@ interface props{
 export default function Item({province, deleteProvince}:props){
 
     const deleteData = async () => {
-        console.log('deleting');
-        
+        //console.log('deleting');
+        const contentType='application/json'
         
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.provinces + province._id, {
-                method: 'DELETE'
+            const res: Response = await fetch(apiEndpoints.techAdmin.provinces, {
+                method: 'DELETE',
+                headers:{
+                    Accept: contentType,
+                    'Content-Type': contentType,
+                    },
+                body:JSON.stringify({_id:province._id})
             })
 
             // Throw error with status code in case Fetch API req failed
@@ -41,16 +47,16 @@ export default function Item({province, deleteProvince}:props){
             <Table.Cell>{province.name}</Table.Cell>
             <Table.Cell>
                 <div className='flex justify-end space-x-4'>
-                    <Link href='/tech-admin/provinces/[id]' as={`/tech-admin/provinces/${province._id}`}>
-                        <button className='flex justify-evenly'>
+                    <Link href='/tech-admin/provinces/[name]' as={`/tech-admin/provinces/${slugify(province.name)}`}>
+                        <Button outline={true} className='flex justify-evenly'>
                             <BsFillPencilFill/>
                             <h4>Editar</h4>
-                        </button>
+                        </Button>
                     </Link>
-                    <button className='flex justify-evenly' onClick={deleteData}>
+                    <Button outline={true} className='flex justify-evenly' onClick={deleteData}>
                         <BsFillTrashFill/>
                         <h4>Borrar</h4>
-                    </button>
+                    </Button>
                 </div>
             </Table.Cell>
         </Table.Row>

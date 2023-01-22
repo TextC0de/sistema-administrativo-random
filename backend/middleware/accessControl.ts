@@ -12,13 +12,11 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 // if the verification fails I can just respond and not access sensible data in the database
 // if the verification is succesful we just attach the payload to the request and let it pass to the endpoint, this could be the Id of the user accesing/sending data
 // we could also verify the role of the user and set some data read/write permissions
-// e.g. only a Tech Admin or a Technician should be able to create a Service
+// e.g. only a Tech Admin or a Technician should be able to create a Task
 // e.g. only a Tech Admin should be able to create a city, province, client, branch or business
-// e.g. only an Auditor should be able to change the status of a Service or Expense from Sent to Approved
+// e.g. only an Auditor should be able to change the status of a Task or Expense from Sent to Approved
 
-const accessControl = async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>, next:any) => {
-    console.log('middleware begins');
-    
+const accessControl = async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>, next:any) => {   
     console.log(req.method, req.url);
     
     const {body, cookies} = req
@@ -31,7 +29,7 @@ const accessControl = async (req:NextConnectApiRequest, res:NextApiResponse<Resp
     if (!result) return res.status(401).json({error:'No user found', statusCode:403})
     //console.log(result);
     req.userId = result.userId
-    console.log('middleware end');
+
     next()
 }
 

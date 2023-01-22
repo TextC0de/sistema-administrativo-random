@@ -1,6 +1,4 @@
 import 'frontend/styles/globals.css'
-import 'frontend/css/style.css'
-import 'frontend/css/form.css'
 import type { AppProps } from 'next/app'
 
 import Head from 'next/head'
@@ -16,11 +14,13 @@ function MyApp({ Component, pageProps }: AppProps) {
           <title>Sistema Administrativo Random S.R.L</title>
       </Head>
       <UserProvider>
+        <div className='flex flex-col'>
           <Header />
           <Main>
             <Component {...pageProps} />
           </Main>
-          <Footer />
+          <Footer/>
+        </div>
       </UserProvider>
     </>
   )

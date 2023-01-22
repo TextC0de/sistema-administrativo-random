@@ -15,7 +15,8 @@ const ClientSchema = new mongoose.Schema<IClient, ClientModel, IClientMethods>({
 
 ClientSchema.methods.getBranches = async function(this:IClient) {
     await dbConnect()
-    return await Branch.find({client:this._id})
+    const docBranches = await Branch.find({client:this._id}).populate(Branch.populateParameter())    
+    return docBranches
 }
 
 

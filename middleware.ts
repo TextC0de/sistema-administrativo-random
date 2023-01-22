@@ -16,15 +16,16 @@ export async function middleware(req:NextRequest){
     //console.log(pathname)
     const jwt = req.cookies.get('access_token') //(1)
     //console.log(jwt);
-
+    console.log(req.method, pathname);
+    
     
     
     if(pathname.includes('/api') || pathname.includes('/login')){
         return NextResponse.next()  
     }
     if(!jwt){
-        console.log('nohay jwt')
-        console.log(req.url);
+        //console.log('nohay jwt')
+        //console.log(req.url);
         const url = new URL('/login', /* apiEndpoints.baseUrl */req.nextUrl.origin)
 
         
@@ -43,7 +44,7 @@ export async function middleware(req:NextRequest){
 
 }
 export const config = {
-    matcher: ['/', '/services', '/provinces'],
+    matcher: ['/', '/tech-admin/:path*', '/test'],
 };
 
 /* export const config = {

@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from 'next'
-import { IProvince, ICity, CityModel, IImage, ImageModel, IService } from 'backend/models/interfaces'
+import { IProvince, ICity, CityModel, IImage, ImageModel, ITask } from 'backend/models/interfaces'
 import mongoose from 'mongoose'
 import dbConnect from 'lib/dbConnect'
 import User from 'backend/models/User'
@@ -9,9 +9,9 @@ import City from 'backend/models/City'
 import Client from 'backend/models/Client'
 import Branch from 'backend/models/Branch'
 import Business from 'backend/models/Business'
-import Service from 'backend/models/Service'
+import Task from 'backend/models/Task'
 import { dmyDateString, formatIds } from '../lib/utils'
-import ServiceTechAdminTable from '../frontend/components/Tables/ServiceTable/ServiceTechAdminTable'
+import TechAdminTaskTable from '../frontend/components/Tables/TaskTable/TechAdminTaskTable'
 
 
 
@@ -34,14 +34,14 @@ function CityCard ({city}:{city:ICity}){
 
 
 
-export default function Test({services}:{services:IService[]}){
-    //console.log(services);
+export default function Test({tasks}:{tasks:ITask[]}){
+    //console.log(tasks);
     
     return(
         <>
             {/* <h1>Testing!</h1> */}
-            {/* <ServiceCard service={service}/> */}
-            <ServiceTechAdminTable services={services}/>
+            {/* <TaskCard task={task}/> */}
+            {/* tasks.length > 0 && <TechAdminTaskTable tasks={tasks}/> */}
         </>
     )
 }
@@ -54,13 +54,14 @@ export async function getServerSideProps({req,res}:GetServerSidePropsContext) {
     if(!docBranch){
         return { props: {} }
     } */
-    const docServices = await Service.find({}).populate(Service.populateParameter())
-    docServices[1] = docServices[0] 
-    docServices[2] = docServices[0] 
-    docServices[3] = docServices[0] 
-    const services = formatIds(docServices)
-    //console.log(services[0]);
+    const docTasks = await Task.find({}).populate(Task.populateParameter())
+    if(!docTasks) return {props:{}}
+    docTasks[1] = docTasks[0] 
+    docTasks[2] = docTasks[0] 
+    docTasks[3] = docTasks[0] 
+    const tasks = formatIds(docTasks)
+    //console.log(tasks[0]);
     
-    return { props: {services} }
+    return { props: {tasks} }
 
   }

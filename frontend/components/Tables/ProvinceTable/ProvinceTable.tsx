@@ -12,7 +12,7 @@ export default function ProvinceTable({provinces}:props){
 
     const deleteProvince = (id:string | mongoose.Schema.Types.ObjectId) =>{
         const newTable = (prev:IProvince[]) => prev.filter(province => province._id !== id)
-        console.log(newTable(provinces));
+        //console.log(newTable(provinces));
         
         setTableProvinces(newTable(provinces))
     }
@@ -20,7 +20,7 @@ export default function ProvinceTable({provinces}:props){
     
     return(
         <>
-            <Table>
+            <Table hoverable={true}>
                 <Table.Head color='teal'>
                     <Table.HeadCell>Nombre</Table.HeadCell>
                     <Table.HeadCell></Table.HeadCell>

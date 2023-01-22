@@ -1,5 +1,5 @@
 
-import RegisterForm from 'frontend/components/RegisterForm'
+import RegisterForm from 'frontend/components/Forms/RegisterForm'
 
 const Register = () =>{
     return(
