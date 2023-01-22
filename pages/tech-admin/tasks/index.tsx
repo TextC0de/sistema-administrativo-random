@@ -43,7 +43,6 @@ export async function getServerSideProps({req, res}:GetServerSidePropsContext){
     const pendingTasks = allTasks.filter(task => task.status === 'Pendiente')
     const sentTasks = allTasks.filter(task => task.status === 'Enviado')
     const docTasks = pendingTasks.concat(sentTasks)
-    if(docTasks.length === 0) return {props:{}}
     //console.log(tasks)
     return {props:{tasks:formatIds(docTasks)}}
 }
