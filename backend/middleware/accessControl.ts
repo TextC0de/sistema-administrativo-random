@@ -18,24 +18,41 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 
 const accessControl = async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>, next:any) => {   
     console.log(req.method, req.url);
+
     
-    const {body, cookies} = req
+    const {cookies} = req
 
     const jwt = /* appRequest? body.access_token : */cookies.access_token
     
     if(!jwt) return res.status(401).json({error:`You're not logged in`, statusCode:403})
-    //console.log(jwt)
     const result = <UserIdJwtPayload>(getPayload(jwt))//it's verified with the secret key
     if (!result) return res.status(401).json({error:'No user found', statusCode:403})
-    //console.log(result);
+    if (!isAuthorized(req.url as string, result.userRoles as Role[], req.method as string)) return res.status(401).json({error:`You're not authorized to access this resource`, statusCode:403})
     req.userId = result.userId
 
     next()
 }
 
-export default accessControl
 
-//takes a pathname and the user's list of roles, it checks for every 
+//takes a pathname and the user's list of roles, it checks that the user has the role the pathname is accessing 
+/*
+switch for the role part of the pathname, it checks that the role is included in the roles of the user
+*/
 const isAuthorized = (pathname:string, roles:Role[], method:string)=>{
+    const rolePath = pathname.slice(5, pathname.indexOf('/', 5))
     
+    switch (rolePath) {
+        case 'tech-admin':
+            return roles.includes('Administrativo Tecnico')
+        case 'acc-admin':
+            return roles.includes('Administrativo Contable')
+        case 'auditor':
+            return roles.includes('Auditor')
+        case 'tech':
+            return roles.includes('Tecnico')
+        default:
+            return false
+    }
 }
+
+export default accessControl
