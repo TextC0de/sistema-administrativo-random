@@ -20,10 +20,10 @@ export default function ProvinceTable({provinces}:props){
     
     return(
         <>
-            <Table hoverable={true}>
-                <Table.Head color='teal'>
+            <Table hoverable={true} className='bg-white'>
+                <Table.Head className='bg-white border-b'>
                     <Table.HeadCell>Nombre</Table.HeadCell>
-                    <Table.HeadCell></Table.HeadCell>
+                    <Table.HeadCell className='w-40 text-center'>Acciones</Table.HeadCell>
                 </Table.Head>
                 <Table.Body>
                     {tableProvinces.map((province, index)=><Item key={index} province={province} deleteProvince={deleteProvince}/>)}

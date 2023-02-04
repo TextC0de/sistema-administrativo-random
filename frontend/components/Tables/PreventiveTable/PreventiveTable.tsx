@@ -6,8 +6,8 @@ import {Table} from 'flowbite-react'
 export default function PreventiveTable({preventives}:{preventives:IPreventive[]}){
     return(
         <>
-            <Table hoverable={true}>
-                <Table.Head className='bg-teal-400 text-teal-50'>
+            <Table hoverable={true}  className='bg-white'>
+                <Table.Head className='bg-white border-b'>
                         <Table.HeadCell>Empresa</Table.HeadCell>
                         <Table.HeadCell>Sucursal</Table.HeadCell>
                         <Table.HeadCell>Tecnico Asignado</Table.HeadCell>

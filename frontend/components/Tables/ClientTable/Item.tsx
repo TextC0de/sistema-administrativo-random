@@ -48,20 +48,18 @@ export default function Item({client, deleteClient}:props){
     }
 
     return(
-        <Table.Row>
+        <Table.Row className='border-b'>
             <Table.Cell onClick={handleClick}>{client.name}</Table.Cell>
             <Table.Cell>
-                <div className='flex justify-end space-x-4'>
+                <div className='flex justify-center gap-2 items-center'>
                     <Link href='/tech-admin/clients/[name]/edit' as={`/tech-admin/clients/${slugify(client.name)}/edit`}>
-                        <Button outline={true} className='flex justify-evenly '>
-                            <BsFillPencilFill/>
-                            <h4>Editar</h4>
-                        </Button>
+                        <button className='p-0.5 hover:bg-gray-200 rounder-lg' >
+                            <BsFillPencilFill color="gray" size="15"/>
+                        </button>
                     </Link>
-                    <Button outline={true} className='flex justify-evenly' onClick={deleteData}>
-                        <BsFillTrashFill/>
-                        <h4>Borrar</h4>
-                    </Button>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
+                        <BsFillTrashFill color="gray" size="15"/>
+                    </button>       
                 </div>
             </Table.Cell>
         </Table.Row>

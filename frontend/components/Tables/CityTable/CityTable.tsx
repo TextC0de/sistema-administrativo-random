@@ -20,11 +20,11 @@ export default function CityTable({cities}:props){
     
     return(
         <div className='mb-6'>
-            <Table hoverable={true}>
-                <Table.Head >
+            <Table hoverable={true} className='bg-white'>
+                <Table.Head className='bg-white border-b'>
                     <Table.HeadCell>Nombre</Table.HeadCell>
                     <Table.HeadCell>Province</Table.HeadCell>
-                    <Table.HeadCell></Table.HeadCell>
+                    <Table.HeadCell className='w-40 text-center'>Acciones</Table.HeadCell>
                 </Table.Head>
                 <Table.Body>
                     {tableCities.map((city, index)=><Item key={index} city={city} deleteCity={deleteCity}/>)}

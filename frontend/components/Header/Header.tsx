@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import logo from 'public/logo.jpg'
+import logo from 'public/logo_placeholder.png'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import * as apiEndpoints from 'lib/apiEndpoints'
@@ -36,7 +36,7 @@ export default function Header(): JSX.Element{
 
 
     return(
-        <header className='header sticky top-0 bg-white shadow-md flex items-center justify-between h-24 px-8 py-02' >
+        <header className='header sticky top-0 bg-white shadow-md flex items-center justify-between h-16 px-6 py-02' >
             <div className='flex-shrink-0 flex items-center justify-center'>
                 <Link href='/' >
                         <Image     
@@ -48,10 +48,10 @@ export default function Header(): JSX.Element{
                 </Link>
                 </div>
                 {isLoggedIn() && <h2 className='flex items-center text-lg'>Hola {`${user.firstName}`}!</h2>}
-                <div className='w-3/12 flex justify-end'>
+                <div className='flex justify-end'>
                     {
                     isLoggedIn() && 
-                        <Button onClick={logout} className='mr-2'>
+                        <Button onClick={logout}>
                             Sign out
                         </Button>
                     }

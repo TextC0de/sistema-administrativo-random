@@ -12,7 +12,7 @@ export default function Item({preventive}:{preventive:IPreventive}){
     }
     
     return (
-        <Table.Row >
+        <Table.Row className='border-b'>
             <Table.Cell>{preventive.business.name}</Table.Cell>
             <Table.Cell>{`${preventive.branch.number}, ${preventive.branch.client.name}, ${preventive.branch.city.name}`}</Table.Cell>
             <Table.Cell>{preventive.assigned.length > 1?`${preventive.assigned.map(tech => `${tech.fullName}, `)}`: `${preventive.assigned[0].fullName}`}</Table.Cell>
@@ -23,15 +23,15 @@ export default function Item({preventive}:{preventive:IPreventive}){
             <Table.Cell><Badge color='warning'>{preventive.status}</Badge></Table.Cell>
             <Table.Cell>{preventive.batteryChangedAt?dmyDateString(new Date(preventive.batteryChangedAt)):''}</Table.Cell>
             <Table.Cell>
-                <div className='flex justify-evenly items-center' /* style={{justifyContent:'space-between'}} */>
-                        <Link href='/tech-admin/preventives/[id]' as={`/tech-admin/preventives/${preventive._id}`}>
-                            <Button>
-                                <BsFillPencilFill/>
-                            </Button>
-                        </Link>
-                        <Button>
-                            <BsFillTrashFill/>
-                        </Button>
+                <div className='flex justify-evenly items-center'>
+                    <Link href='/tech-admin/preventives/[id]' as={`/tech-admin/preventives/${preventive._id}`}>
+                        <button className='p-0.5 hover:bg-gray-200 rounder-lg ' >
+                            <BsFillPencilFill color="gray" size="15"/>
+                        </button>
+                    </Link>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg'>
+                        <BsFillTrashFill color="gray" size="15"/>
+                    </button>       
                 </div>
             </Table.Cell>
         </Table.Row>

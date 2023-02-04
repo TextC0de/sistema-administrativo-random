@@ -43,20 +43,18 @@ export default function Item({business, deleteBusiness}:props){
     }
 
     return(
-        <Table.Row>
+        <Table.Row className='border-b'>
             <Table.Cell >{business.name}</Table.Cell>
-            <Table.Cell>
-                <div className='flex justify-end space-x-4'>
+            <Table.Cell className='w-40'>
+                <div className='flex justify-center gap-2 items-center'>
                     <Link href='/tech-admin/businesses/[name]' as={`/tech-admin/businesses/${slugify(business.name)}`}>
-                        <Button outline={true} className='flex justify-evenly '>
-                            <BsFillPencilFill/>
-                            <h4>Editar</h4>
-                        </Button>
+                        <button className='p-0.5 hover:bg-gray-200 rounder-lg' >
+                            <BsFillPencilFill color="gray" size="15"/>
+                        </button>
                     </Link>
-                    <Button outline={true} className='flex justify-evenly' onClick={deleteData}>
-                        <BsFillTrashFill/>
-                        <h4>Borrar</h4>
-                    </Button>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
+                        <BsFillTrashFill color="gray" size="15"/>
+                    </button>       
                 </div>
             </Table.Cell>
         </Table.Row>

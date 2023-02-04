@@ -19,12 +19,12 @@ export default function BranchTable({branches}:props){
 
     
     return(
-        <div className='mb-6'> 
-            <Table hoverable={true}>
-                <Table.Head >
+        <div className='rounded-none'> 
+            <Table hoverable={true} className='bg-white'>
+                <Table.Head className='bg-white border-b'>
                     <Table.HeadCell>Numero</Table.HeadCell>
                     <Table.HeadCell>Localidad</Table.HeadCell>
-                    <Table.HeadCell></Table.HeadCell>
+                    <Table.HeadCell className='w-40 text-center'>Acciones</Table.HeadCell>
                 </Table.Head>
                 <Table.Body>
                     {tableBranches.map((branch, index)=><Item key={index} branch={branch} deleteBranch={deleteBranch}/>)}
