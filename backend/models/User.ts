@@ -76,7 +76,7 @@ UserSchema.methods.comparePassword = function(plaintext:string):boolean {
 
 UserSchema.methods.getTasks = async function(this:IUser):Promise<ITask[]> {
   await dbConnect()
-  return await Task.find({assigned:this._id})
+  return await Task.find({assigned:this._id}).populate(Task.populateParameter())
 }
 
 UserSchema.methods.getTasksByStatus = async function (this:IUser, status:TaskStatus):Promise<ITask[]>{

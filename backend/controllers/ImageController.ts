@@ -16,7 +16,7 @@ const ImageController = {
       res.status(500).json({error:(err as unknown) as string  });
     });
     blobStream.end(file.buffer)
-    res.status(200).json({ data: [image._id]});
+    res.status(200).json({ data: {imageId:image._id}});
   }
 }
 

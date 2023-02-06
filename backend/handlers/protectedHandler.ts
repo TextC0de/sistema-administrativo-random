@@ -1,7 +1,8 @@
 import accessControl from '../middleware/accessControl'
+import { onError, onNoMatch } from 'backend/controllers/NextConnectController';
+import nc from 'next-connect'
 
-import baseHandler from './baseHandler';
+const protectedHandler = nc({onError,onNoMatch});
+protectedHandler.use(accessControl)
 
-const protectedHandler = () => baseHandler.use(accessControl);
-
-export default protectedHandler()
+export default protectedHandler

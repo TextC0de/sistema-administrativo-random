@@ -1,17 +1,49 @@
 import { NextApiResponse } from 'next';
 import dbConnect from 'lib/dbConnect';
-import { formatIds } from 'lib/utils';
+import { formatIds, trimTask } from 'lib/utils';
 import Task from '../models/Task';
 import { NextConnectApiRequest } from './interfaces';
 import { ResponseData } from './types';
+import User from 'backend/models/User'
+import { ITask } from 'backend/models/interfaces';
 
 
 const TaskController = {
     putTask: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body} = req    
         await dbConnect()
-        const {_id, branch, business, assigned, taskType, openedAt, status,description, participants,auditor, activity, operatorName, image, workOrderNumber, closedAt} = body
-        const taskForm = {branch, business, assigned, taskType, openedAt, status,description, participants,auditor, activity, operatorName, image, workOrderNumber, closedAt}
+        const {
+            _id,
+            branch,
+            business,
+            assigned,
+            taskType,
+            openedAt,
+            status,
+            description,
+            participants,
+            auditor, 
+            activity, 
+            operatorName, 
+            image, 
+            workOrderNumber, 
+            closedAt
+        }:ITask = body
+        const taskForm = {
+            branch, 
+            business, 
+            assigned, 
+            taskType, 
+            openedAt, 
+            status,
+            description, 
+            participants,
+            auditor, 
+            activity, 
+            operatorName, 
+            image, 
+            workOrderNumber, 
+            closedAt}
         try {
             const newTask = await Task.findByIdAndUpdate(_id, taskForm, {
                 new: true,
@@ -49,6 +81,24 @@ const TaskController = {
         if(!deletedTask) return res.json({statusCode:500, error:'could not delete Task'})
         //const Task = formatIds(newTask)
         res.json({statusCode:200, data:{message:'deleted Task succesfully'}})
+    },
+    getTechTasks: async (req:NextConnectApiRequest, res: NextApiResponse<ResponseData>) =>{
+        const {userId} = req
+        await dbConnect()
+        const docUser = await User.findById(userId)
+        if(!docUser) return res.json({statusCode:500, error:'User not found'})
+        const docTasks = await docUser.getTasks()
+        const tasks = formatIds(docTasks)
+        const trimmedTasks = tasks.map((task:ITask )=> trimTask(task))
+        //console.log(trimmedTasks)
+        res.json({statusCode:200, data:{tasks:trimmedTasks}})
+    },
+    postTechTask: async(req:NextConnectApiRequest, res: NextApiResponse<ResponseData>) =>{
+        const {body} = req
+        await dbConnect()
+        console.log(body);
+        
+
     }
 }
 

@@ -28,15 +28,17 @@ const AuthController = {
 
     if(req.body.appRequest){
       const {email, password} = req.body
+      console.log('mobileauth');
       
-      let user = await User.findOne({email}).select('+password')/* find user by email */
-      //console.log(user)
-      if(!user) return res.status(403).json({statusCode:403, error:'Wrong password/email'})
-      if(!user.comparePassword(password))return res.status(403).json({statusCode:403, error:'Wrong password/email'})  
-      console.log('returned info');
-      const access_token = getToken(user)
-      const reducedUser = formatIds(user)
-      const data = {access_token, reducedUser}
+      let docUser = await User.findOne({email}).select('+password')/* find user by email */
+      //console.log(docUser)
+      if(!docUser) return res.status(403).json({statusCode:403, error:'Wrong password/email'})
+      if(!docUser.comparePassword(password))return res.status(403).json({statusCode:403, error:'Wrong password/email'})  
+      //console.log('returned info');
+      const access_token = getToken(docUser)
+      const {_id, firstName, lastName, fullName, roles} = docUser
+      const user = formatIds({_id, email, firstName, lastName, fullName, roles})
+      const data = {user, access_token}
       res.status(201).json({data, statusCode:201})
     }else{
       const {email, password} = req.body
