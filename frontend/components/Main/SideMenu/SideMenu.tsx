@@ -1,105 +1,59 @@
 import Link from 'next/link'
-
 import { useUser } from 'frontend/hooks/useUser'
-import { Sidebar } from 'flowbite-react'
+
+import { RiDashboardFill, 
+        RiTestTubeLine, 
+        RiTaskLine , 
+        RiBuilding3Line, 
+        RiMapPinLine, 
+        RiMapPin2Fill, 
+        RiGroupLine, 
+        RiFileWarningLine, 
+        RiCustomerService2Line} from "react-icons/ri";
+
+import Item from './Item';
 
 export default function SideMenu(){
     const {user} = useUser()
+    
     return (
-        <>
-            <div className='w-full shadow-md shadow-teal-500 rounded-none bg-teal-400'>
-                <Sidebar className='h-full' /* style={{height:'100vh', width:'100%', boxShadow:'0 10px 5px #999', borderRadius:'0'}} */>
-                    <Sidebar.Items >
-                        <Sidebar.ItemGroup >
-                            <Sidebar.Item >
-                                <Link href='/'>
-                                    <a>
-                                        <h4 style={{padding: '1px'}}>
-                                            Homepage
-                                        </h4>
-                                    </a>
-                                </Link>
-                            </Sidebar.Item>
-                            <Sidebar.Item>
-                                <Link href='/test'>
-                                    <a>
-                                        <h4 style={{padding: '1px'}}>
-                                            Testing
-                                        </h4>
-                                    </a>
-                                </Link>
-                            </Sidebar.Item>
-                        </Sidebar.ItemGroup> 
-                        {user?.roles?.includes('Administrativo Tecnico') &&
-                            <Sidebar.ItemGroup>
-                                <Sidebar.Item>
-                                    <Link href='/tech-admin/tasks'>
-                                        <a>
-                                            <h4 style={{padding: '1px'}}>
-                                                Tareas
-                                            </h4>
-                                        </a>
-                                    </Link>
-                                </Sidebar.Item>
-                                <Sidebar.Item>
-                                    <Link href='/tech-admin/preventives'>
-                                        <a>
-                                            <h4 style={{padding: '1px'}}>
-                                                Preventivos
-                                            </h4>
-                                        </a>
-                                    </Link>
-                                </Sidebar.Item>
-                                <Sidebar.Item>
-                                    <Link href='/tech-admin/clients'>
-                                        <a>
-                                            <h4 style={{padding: '1px'}}>
-                                                Clientes
-                                            </h4>
-                                        </a>
-                                    </Link>
-                                </Sidebar.Item>
-                                <Sidebar.Item>
-                                    <Link href='/tech-admin/businesses'>
-                                        <a>
-                                            <h4 style={{padding: '1px'}}>
-                                                Empresas
-                                            </h4>
-                                        </a>
-                                    </Link>
-                                </Sidebar.Item>
-                                <Sidebar.Item>
-                                    <Link href='/tech-admin/provinces'>
-                                        <a>
-                                            <h4 style={{padding: '1px'}}>
-                                                Provincias
-                                            </h4>
-                                        </a>
-                                    </Link>
-                                </Sidebar.Item>
-                                <Sidebar.Item>
-                                    <Link href='/tech-admin/cities'>
-                                        <a>
-                                            <h4 style={{padding: '1px'}}>
-                                                Localidades
-                                            </h4>
-                                        </a>
-                                    </Link>
-                                </Sidebar.Item>
-                                <Sidebar.Item>
-                                    <Link href='/tech-admin/users'>
-                                        <a>
-                                            <h4 style={{padding: '1px'}}>
-                                                Usuarios
-                                            </h4>
-                                        </a>
-                                    </Link>
-                                </Sidebar.Item>
-                            </Sidebar.ItemGroup>
-                        }
-                    </Sidebar.Items>
-                </Sidebar>
+        <div className="flex flex-col items-center w-52 h-full overflow-hidden text-gray-400 bg-gray-900">
+            <div className="w-full px-1">
+                <Item title={"Dashboard"} path={'/'}>
+                    <RiDashboardFill />
+                </Item>
+                <Item title={"Testing"} path={'/test'}>
+                    <RiTestTubeLine />
+                </Item>
+
+                {user?.roles?.includes('Administrativo Tecnico') &&
+                    <div className="flex flex-col items-center w-full mt-1 border-t border-gray-700">
+                        <Item title={"Tareas"} path={'/tech-admin/tasks'}>
+                            <RiTaskLine />
+                        </Item>
+                        <Item title={"Preventivos"} path={'/tech-admin/preventives'}>
+                            <RiFileWarningLine />
+                        </Item>
+                        <Item title={"Clientes"} path={'/tech-admin/clients'}>
+                            <RiCustomerService2Line />
+                        </Item>
+                        <Item title={"Empresas"} path={'/tech-admin/businesses'}>
+                            <RiBuilding3Line />
+                        </Item>
+                        <Item title={"Provincias"} path={'/tech-admin/provinces'}>
+                            <RiMapPinLine />
+                        </Item>
+                        <Item title={"Localidades"} path={'/tech-admin/cities'}>
+                            <RiMapPin2Fill />
+                        </Item>
+                        <Item title={"Usuarios"} path={'/tech-admin/users'}>
+                            <RiGroupLine />
+                        </Item>
+                        
+                    </div>
+                }
             </div>
-        </>
+
+        </div>
     )
 }

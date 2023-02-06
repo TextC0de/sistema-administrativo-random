@@ -17,10 +17,10 @@ export default function BusinessTable({businesses}:props){
 
     return(
         <div className='mb-6'>
-            <Table hoverable={true}>
-                <Table.Head className='bg-teal-400'>
+            <Table hoverable={true} className='bg-white'>
+                <Table.Head className='bg-white border-b'>
                     <Table.HeadCell>Nombre</Table.HeadCell>
-                    <Table.HeadCell></Table.HeadCell>
+                    <Table.HeadCell className='w-40 text-center'>Acciones</Table.HeadCell>
                 </Table.Head>
                 <Table.Body>
                     {tableBusinesses.map((business, index)=><Item key={index} business={business} deleteBusiness={deleteBusiness}/>)}

@@ -4,8 +4,10 @@ import { ChangeEvent, FormEvent, MouseEventHandler, useState } from 'react';
 import { IBranch, IBusiness, ICity, IClient, IPreventive, IUser } from 'backend/models/interfaces';
 import * as apiEndpoints from 'lib/apiEndpoints'
 import * as types from 'backend/models/types'
+
 import TechnicianTable from 'frontend/components/Tables/UserTable/TechnicianTable';
 import MonthTable from 'frontend/components/Tables/MonthTable';
+import { BsFillXCircleFill } from 'react-icons/bs';
 export interface IPreventiveForm{
         _id:string
         branch:IBranch,
@@ -318,6 +320,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         className='text-lg'
                         />
                     </div>
+
                     <div className='grid grid-cols-6 gap-4'>
                         <Select
                             id='technicians'
@@ -329,20 +332,22 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                             {technicians.map((technician, index) =><option key={index} value={technician.fullName}>{technician.fullName}</option>)}
                         </Select>
                     </div>
-                    <ul className='rounded bg-teal-400 p-4'>
+
+                    <ul>
                         {form.assigned.map((technician, index) =>{
                             return(
-                                <li key={index}>
-                                    <div className='flex justify-between items-center'>
+                                <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block bg-white' key={index}>
+                                    <div className='flex justify-between items-center gap-2 font-semibold'>
                                         {technician.fullName}
-                                        <Button onClick={()=>deleteTechnician(technician._id as string)}>
-                                            X
-                                        </Button>
+                                        <button className='rounded-full bg-white ' onClick={()=>deleteTechnician(technician._id as string)}>
+                                            <BsFillXCircleFill color='gray' size={20} />
+                                        </button>
                                     </div>
                                 </li>
                             )
                         })}
                     </ul>
+
                     {/* <TechnicianTable technicians={form.assigned} deleteTechnician={deleteTechnician}/> */}
                 </div>
                 <div id='select-month'>
@@ -364,15 +369,15 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                             {types.months.map((month, index) =><option key={index} value={month}>{month}</option>)}
                         </Select>
                     </div>
-                    <ul className='rounded bg-teal-400 p-4'>
+                    <ul>
                         {form.months.map((month, index) =>{
                             return(
-                                <li key={index}>
-                                    <div className='flex justify-between items-center'>
+                                <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block bg-white' key={index}>
+                                    <div className='flex justify-between items-center gap-2 font-semibold'>
                                         {month}
-                                        <Button onClick={()=>deleteMonth(month)}>
-                                            X
-                                        </Button>
+                                        <button className='rounded-full bg-white ' onClick={()=>deleteMonth(month)}>
+                                        <BsFillXCircleFill color='gray' size={20} />
+                                        </button>
                                     </div>
                                 </li>
                             )

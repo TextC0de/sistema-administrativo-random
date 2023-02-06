@@ -19,15 +19,15 @@ export default function UserTable({users}:props){
 
     
     return(
-        <div className='mb-6'>
-            <Table hoverable={true}>
-                <Table.Head >
+        <div className='rounded-none shadow-none'>
+            <Table hoverable={true} className='bg-white rounded-none shadow-none'>
+                <Table.Head className='bg-white border-b'>
                     <Table.HeadCell>Nombre</Table.HeadCell>
                     <Table.HeadCell>Ciudad</Table.HeadCell>
                     <Table.HeadCell>Roles</Table.HeadCell>
-                    <Table.HeadCell></Table.HeadCell>
+                    <Table.HeadCell className='w-40 text-center'>Acciones</Table.HeadCell>
                 </Table.Head>
-                <Table.Body>
+                <Table.Body className='rounded-none shadow-none'>
                     {tableUsers.map((user, index)=><Item key={index} user={user} deleteUser={deleteUser}/>)}
                 </Table.Body>
             </Table>

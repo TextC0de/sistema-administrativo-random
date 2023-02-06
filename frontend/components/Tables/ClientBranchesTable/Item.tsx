@@ -42,7 +42,7 @@ export default function Item({branch, deleteBranch}:props){
     }
 
     return(
-        <Table.Row >
+        <Table.Row>
             <Table.Cell>{branch.number}</Table.Cell>
             <Table.Cell>{`${branch.city.name}, ${branch.city.province.name}`}</Table.Cell>
             <Table.Cell>

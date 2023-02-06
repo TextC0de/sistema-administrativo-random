@@ -1,10 +1,8 @@
 import Link from 'next/link'
 
-import {topBar, nav} from './styles'
 import logo from 'public/logo_placeholder.png'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import * as GS from 'globalStyles'
 import * as apiEndpoints from 'lib/apiEndpoints'
 
 import {useUser} from 'frontend/hooks/useUser'
@@ -38,28 +36,26 @@ export default function Header(): JSX.Element{
 
 
     return(
-        <header className='flex w-full justify-between items-center shadow-md shadow-teal-500 bg-teal-400' style={{height:'10vh'}} /* style={topBar} */>
-            <div className='flex'>
-                <Link href='/'>
-                    <a>
-                        <Image
-                            height={'80px'}
-                            width={'80px'}
+        <header className='header sticky top-0 bg-white shadow-md flex items-center justify-between h-16 px-6 py-02' >
+            <div className='flex-shrink-0 flex items-center justify-center'>
+                <Link href='/' >
+                        <Image     
+                            height={'60px'}
+                            width={'155px'}                       
                             src={logo}
                             alt='pet care logo'
                         />  
-                    </a>
                 </Link>
-                {isLoggedIn() && <h2 className='self-center text-lg'>Hola {`${user.firstName}`}!</h2>}
-            </div>
-            <div className='flex items-center' /* style={nav} */>
-                {
-                isLoggedIn() && 
-                    <Button onClick={logout} className='mr-2'>
-                        Sign out
-                    </Button>
-                }
-            </div>
+                </div>
+                {isLoggedIn() && <h2 className='flex items-center text-lg'>Hola {`${user.firstName}`}!</h2>}
+                <div className='flex justify-end'>
+                    {
+                    isLoggedIn() && 
+                        <Button onClick={logout}>
+                            Sign out
+                        </Button>
+                    }
+                </div>
         </header>
     )
 }

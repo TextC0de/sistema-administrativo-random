@@ -6,6 +6,7 @@ import { IUser } from "backend/models/interfaces";
 import UserTable from "frontend/components/Tables/UserTable";
 import Link from "next/link";
 import { BsPlus } from "react-icons/bs";
+import TitleButton from "frontend/components/TitleButton";
 
 interface props{
     users:IUser[]
@@ -15,16 +16,7 @@ export default function Users({users}:props){
 
     return(
         <>
-            <div className='flex justify-between' >
-                <h2 className='text-lg'>Usuarios</h2>
-                <Link href='/tech-admin/users/new'>
-                    <button className='flex justify-between items-center'>
-                        <BsPlus size='30'/>
-                        <h4>Agregar un usuario</h4>
-                    </button>
-                </Link>
-            </div>
-            <hr className='mb-2'/>
+            <TitleButton title='Usuarios' path='/tech-admin/users/new' nameButton='Agregar usuario'/>
             <UserTable users={users}/>
         </>
     )

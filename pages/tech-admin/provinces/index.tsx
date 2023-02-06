@@ -7,6 +7,7 @@ import dbConnect from 'lib/dbConnect'
 import { formatIds } from 'lib/utils'
 import { IProvince } from 'backend/models/interfaces'
 import Province from 'backend/models/Province'
+import TitleButton from 'frontend/components/TitleButton'
 
 interface props{
     provinces:IProvince[]
@@ -16,16 +17,7 @@ export default function Provinces({provinces}:props){
 
     return(
         <>
-            <div className='flex justify-between' >
-                <h2 className='text-lg'>Provincias</h2>
-                <Link href='/tech-admin/provinces/new'>
-                    <button className='flex justify-between items-center'>
-                        <BsPlus size='30'/>
-                        <h4>Agregar una provincia</h4>
-                    </button>
-                </Link>
-            </div>
-            <hr className='mb-2'/>
+            <TitleButton title='Provincias' path='/tech-admin/provinces/new' nameButton='Agregar provincia'/>
             <ProvinceTable provinces={provinces}/>
         </>
     )

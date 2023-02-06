@@ -42,22 +42,20 @@ export default function Item({user, deleteUser}:props){
     }
 
     return(
-        <Table.Row>
+        <Table.Row className='border-b '>
             <Table.Cell>{user.fullName}</Table.Cell>
             <Table.Cell>{user.city?`${user.city?.name}, ${user.city?.province.name}`:''}</Table.Cell>
             <Table.Cell>{(user.roles?.length as number) > 1 ? user.roles?.map(role=> `${role}, `) : user.roles?.[0]}</Table.Cell>
             <Table.Cell>
-                <div className='flex justify-end space-x-4'>
+            <div className='flex justify-center gap-2 items-center'>
                     <Link href='/tech-admin/users/[id]' as={`/tech-admin/users/${user._id}`}>
-                        <Button outline={true} className='flex justify-evenly'>
-                            <BsFillPencilFill/>
-                            <h4>Editar</h4>
-                        </Button>
+                        <button className='p-0.5 hover:bg-gray-200 rounder-lg' >
+                            <BsFillPencilFill color="gray" size="15"/>
+                        </button>
                     </Link>
-                    <Button outline={true} className='flex justify-evenly' onClick={deleteData}>
-                        <BsFillTrashFill/>
-                        <h4>Borrar</h4>
-                    </Button>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
+                        <BsFillTrashFill color="gray" size="15"/>
+                    </button>       
                 </div>
             </Table.Cell>
         </Table.Row>

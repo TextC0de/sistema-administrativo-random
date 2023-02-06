@@ -19,7 +19,6 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Main>
             <Component {...pageProps} />
           </Main>
-          <Footer/>
         </div>
       </UserProvider>
     </>
