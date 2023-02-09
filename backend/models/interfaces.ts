@@ -4,7 +4,7 @@ import * as types from './types'
 
 //User fields
 export interface IUser {
-  _id: mongoose.Schema.Types.ObjectId | string;
+  _id: mongoose.Types.ObjectId | string;
   email: string;
   firstName: string;
   lastName: string;
@@ -29,7 +29,7 @@ export interface UserModel extends mongoose.Model<IUser, {},IUserMethods>{
 }
 
 export interface IImage{
-  _id:mongoose.Schema.Types.ObjectId | string,
+  _id:mongoose.Types.ObjectId | string,
   name:string,
   url:string
 }
@@ -41,7 +41,7 @@ export interface ImageModel extends mongoose.Model<IImage,IImageMethods>{
 }
 
 export interface IClient {
-  _id:mongoose.Schema.Types.ObjectId | string,
+  _id:mongoose.Types.ObjectId | string,
   name:string
 }
 
@@ -53,7 +53,7 @@ export interface ClientModel extends mongoose.Model<IClient, {}, IClientMethods>
 }
 
 export interface IBusiness{
-  _id:mongoose.Schema.Types.ObjectId | string,
+  _id:mongoose.Types.ObjectId | string,
   name:string
 }
 
@@ -65,7 +65,7 @@ export interface BusinessModel extends mongoose.Model<IBusiness, {}, IBusinessMe
 }
 
 export interface IProvince{
-  _id:mongoose.Schema.Types.ObjectId | string,
+  _id:mongoose.Types.ObjectId | string,
   name:string
 }
 
@@ -77,7 +77,7 @@ export interface IProvinceMethods{
 }
 
 export interface ICity{
-  _id:mongoose.Schema.Types.ObjectId | string,
+  _id:mongoose.Types.ObjectId | string,
   name:string,
   province:IProvince
 }
@@ -92,7 +92,7 @@ export interface CityModel extends mongoose.Model<ICity, {}, ICityMethods>{
 }
 
 export interface IBranch{
-  _id:mongoose.Schema.Types.ObjectId | string,
+  _id:mongoose.Types.ObjectId | string,
   number:number,
   city:ICity,
   client:IClient,
@@ -110,7 +110,7 @@ export interface BranchModel extends mongoose.Model<IBranch, {}, IBranchMethods>
 }
 
 export interface IPreventive {
-  _id:mongoose.Schema.Types.ObjectId | string,
+  _id:mongoose.Types.ObjectId | string,
   assigned:IUser[],
   business:IBusiness,
   branch:IBranch,
@@ -123,7 +123,7 @@ export interface IPreventive {
 }
 
 export interface IPreventiveMethods{
-  getAssigned():Promise<((mongoose.Document<unknown, any, IUser> & IUser & Required<{ _id: string | mongoose.Schema.Types.ObjectId; }> & IUserMethods) | null)[]>
+  getAssigned():Promise<((mongoose.Document<unknown, any, IUser> & IUser & Required<{ _id: string | mongoose.Types.ObjectId; }> & IUserMethods) | null)[]>
   getBusiness():Promise<IBusiness | null>
   getBranch():Promise<IBranch | null>
 }
@@ -133,7 +133,7 @@ export interface PreventiveModel extends mongoose.Model<IPreventive, {}, IPreven
 }
 
 export interface ITask {
-  _id:mongoose.Schema.Types.ObjectId | string,
+  _id:mongoose.Types.ObjectId | string,
   branch:IBranch,
   business:IBusiness,
   assigned?:IUser,
@@ -154,7 +154,7 @@ export interface ITaskMethods{
   getBranch():Promise<IBranch | null>
   getBusiness():Promise<IBusiness | null>
   getAssigned():Promise<IUser | null>
-  getParticipants():Promise<((mongoose.Document<unknown, any, IUser> & IUser & Required<{ _id: string | mongoose.Schema.Types.ObjectId; }> & IUserMethods) | null)[]>
+  getParticipants():Promise<((mongoose.Document<unknown, any, IUser> & IUser & Required<{ _id: string | mongoose.Types.ObjectId; }> & IUserMethods) | null)[]>
   getActivity():Promise<IActivity | null>
   getAuditor():Promise<IUser | null>
   getImage():Promise<IImage | null>
@@ -166,7 +166,7 @@ export interface TaskModel extends mongoose.Model<ITask, {}, ITaskMethods>{
 }
 
 export interface IExpense {
-  _id:mongoose.Schema.Types.ObjectId | string,
+  _id:mongoose.Types.ObjectId | string,
   doneBy:IUser,
   expenseType:types.ExpenseType,
   paySource:types.PaySource,
@@ -191,7 +191,7 @@ export interface ExpenseModel extends mongoose.Model<IExpense, {}, IExpenseMetho
 }
 
 export interface IActivity{
-  _id:mongoose.Schema.Types.ObjectId | string,
+  _id:mongoose.Types.ObjectId | string,
   name:string,
   description:string,
   startDate:Date,
@@ -202,7 +202,7 @@ export interface IActivity{
 
 export interface IActivityMethods{
   getOpenedBy():Promise<IUser | null>
-  getParticipants():Promise<((mongoose.Document<unknown, any, IUser> & IUser & Required<{ _id: string | mongoose.Schema.Types.ObjectId; }> & IUserMethods) | null)[]>
+  getParticipants():Promise<((mongoose.Document<unknown, any, IUser> & IUser & Required<{ _id: string | mongoose.Types.ObjectId; }> & IUserMethods) | null)[]>
   getTasks():Promise<ITask[]>
   getExpenses():Promise<IExpense[]>
 }
