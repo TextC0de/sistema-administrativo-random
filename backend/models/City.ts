@@ -1,40 +1,24 @@
-import mongoose from 'mongoose';
-import dbConnect from 'lib/dbConnect';
-import Branch from './Branch';
-import { ICity, CityModel, ICityMethods } from './interfaces';
-import Province from './Province';
+import { modelOptions, getModelForClass, index, prop, Ref } from "@typegoose/typegoose"
+import { Province } from "./Province"
+import BranchModel from './Branch'
+import dbConnect from "lib/dbConnect"
 
+@index({name:1, province:1}, {unique:true})
+@modelOptions({schemaOptions:{timestamps:true}})
+export class City{
+    @prop({type:String, required:true})
+    name:string
+    @prop({ref:'Province', required:true})
+    province:Ref<Province>
 
-const CitySchema = new mongoose.Schema<ICity, CityModel, ICityMethods>({
-    name:{
-        type:String,
-        required:true,
-        unique:true
-    },
-    province:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Province',
-        required:true
+    static getPopulateParameters(){
+        return[{path:'province', model:'Province'}]
     }
 
-},{timestamps:true})
-
-CitySchema.index({name:1, province:1}, {unique:true})
-
-CitySchema.methods.getProvince = async function(this:ICity){
+    async getBranches(this:City){
         await dbConnect()
-        const docProvince = await Province.findById(this.province)
-        return docProvince
+        return BranchModel.find({city:this})
     } 
-
-
-CitySchema.methods.getBranches = async function(this:ICity){
-        await dbConnect()
-        return await Branch.find({city:this._id})
-    } 
-
-CitySchema.statics.populateParameter = function(){
-    return [{path:'province', model:'Province'}]
 }
 
-export default mongoose.models.City as CityModel || mongoose.model<ICity, CityModel>('City', CitySchema)
+export default getModelForClass(City)

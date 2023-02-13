@@ -1,7 +1,7 @@
 import { NextApiResponse } from 'next';
 import dbConnect from 'lib/dbConnect';
 import { formatIds } from 'lib/utils';
-import Business from '../models/Business';
+import Business from 'backend/models/Business';
 import { NextConnectApiRequest } from './interfaces';
 import { ResponseData } from './types';
 

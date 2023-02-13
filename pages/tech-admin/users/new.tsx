@@ -31,6 +31,6 @@ export default function NewUser({cities}:props){
 
 export async function getServerSideProps(ctx:GetServerSidePropsContext){
     await dbConnect()
-    const docCities = await City.find({}).populate(City.populateParameter())
+    const docCities = await City.find({}).populate(City.getPopulateParameters())
     return {props:{cities:formatIds(docCities)}}
 }

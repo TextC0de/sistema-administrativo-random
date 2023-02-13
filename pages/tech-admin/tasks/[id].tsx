@@ -41,10 +41,10 @@ export default function TaskView({task, branches, clients, businesses, technicia
 export async function getServerSideProps(ctx:GetServerSidePropsContext){
     const {params} = ctx
     await dbConnect()
-    const docTask = await Task.findById(params?.id).populate(Task.populateParameter())
+    const docTask = await Task.findById(params?.id).populate(Task.getPopulateParameters())
     if(!docTask) return{props:{}}
     const task = formatIds(docTask)
-    const docBranches = await Branch.find({}).populate(Branch.populateParameter())
+    const docBranches = await Branch.find({}).populate(Branch.getPopulateParameters())
     const docClients = await Client.find({})
     const docBusinesses = await Business.find({})
     const docTechnicians = await User.find({roles:'Tecnico'})

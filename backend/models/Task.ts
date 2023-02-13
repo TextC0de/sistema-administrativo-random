@@ -1,155 +1,95 @@
-import mongoose from 'mongoose';
-import Activity from './Activity';
-import Branch from './Branch';
-import Business from './Business';
-import { IExpense, IPopulateParameter, ITask, ITaskMethods, TaskModel } from './interfaces';
-import User from './User';
-import Image from './Image';
-import dbConnect from 'lib/dbConnect';
-import Expense from './Expense';
+import { prop, Ref, getModelForClass, modelOptions, ReturnModelType  } from "@typegoose/typegoose";
+import dbConnect from "lib/dbConnect";
+import { IPopulateParameter } from "./interfaces";
+import UserModel, {User} from './User'
+import ExpenseModel, {Expense} from "./Expense";
+import {Branch} from './Branch'
+import { TaskType, TaskStatus } from "./types";
+import { Business } from "./Business";
+import {Activity} from "./Activity";
+import {Image} from "./Image";
 
 
+@modelOptions({schemaOptions:{timestamps:true}})
+export class Task {
+    
+    @prop({ref:'Branch', required:true})
+    branch:Ref<Branch>
+    
+    @prop({ref:'Business', required:true})
+    business:Ref<Business>
+    
+    @prop({ref:'User', required:true})
+    assigned:Ref<User>
 
-const TaskSchema = new mongoose.Schema<ITask,TaskModel, ITaskMethods>({
-    branch:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Branch',
-        required:true
-    },
-    business:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Business',
-        required:true
-    },
-    assigned:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
-        required:true
-    },
-    taskType:{
-        type:String,
-        required:true,
-    },
-    openedAt:{
-        type:Date,
-        required:true,
-    },
-    status:{
-        type:String,
-        required:true
-    },
-    description:{
-        type:String,
-        required:true
-    },
-    participants:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
-        required:false
-    }],
-    auditor:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
-        required:false
-    },
-    activity:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Activity',
-        required:false
-    },
-    operatorName:{
-        type:String,
-        required:false,
-    },
-    image:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Image',
-        required:false
-    },
-    workOrderNumber:{
-        type:Number,
-        required:false,
-    },
-    closedAt:{
-        type:Date,
-        required:false,
+    @prop({type:Date, required:true})
+    openedAt:Date
+    
+    @prop({type:String, required:true})
+    taskType:TaskType
+    
+    @prop({type:String, required:true})
+    status:TaskStatus
+    
+    @prop({type:String, required:true})
+    description:string
+    
+    @prop({ref: 'User' , required:true})
+    participants?:Ref<User>[]
+    
+    @prop({ref: 'User', required:true})
+    auditor?:Ref<User>[]
+
+    @prop({ref: 'Activity', required:true})
+    activity?:Ref<Activity>
+    
+    @prop({type: String, required:true})
+    operatorName?:string
+    
+    @prop({ref: 'Image', required:true})
+    image?:Ref<Image>
+    
+    @prop({type:Number , required:true})
+    workOrderNumber?:number
+    
+    @prop({type:Date , required:true})
+    closedAt?:Date
+ 
+    static getPopulateParameters(){
+        return [
+            {
+                path:'branch',
+                populate:Branch.getPopulateParameters()
+            },
+            {
+                path:'business',
+            },
+            {
+                path:'assigned'
+            },
+            {
+                path:'participants'
+            },
+            {
+                path:'auditor'
+            },
+            {
+                path:'activity'
+            },
+            {
+                path:'image'
+            }
+        ]
     }
 
-},{timestamps:true})
-
-TaskSchema.statics.populateParameter = function(){
-    return [
-        {
-            path:'branch',
-            populate:Branch.populateParameter()
-        },
-        {
-            path:'business',
-        },
-        {
-            path:'assigned'
-        },
-        {
-            path:'participants'
-        },
-        {
-            path:'auditor'
-        },
-        {
-            path:'activity'
-        },
-        {
-            path:'image'
-        }
-    ]
-}
-
-TaskSchema.methods.getBranch = async function(this:ITask) {
-    await dbConnect()
-    return await Branch.findById(this.branch)
-}
-
-TaskSchema.methods.getBusiness = async function(this:ITask) {
-    await dbConnect()
-    return await Business.findById(this.business)
-}
-
-TaskSchema.methods.getAssigned = async function(this:ITask) {
-    await dbConnect()
-    return await User.findById(this.assigned)
-}
-
-TaskSchema.methods.getParticipants = async function(this:ITask) {
-    if(!this.participants){
-        return []
+    async getExpenses(this:Task):Promise<Expense[]>{
+        await dbConnect()
+        const expenses = await ExpenseModel.find({task:this}).populate(Expense.getPopulateParameters())
+        return expenses
     }
-    await dbConnect()
-    const participantsIds = this.participants
-    const participants = await Promise.all(participantsIds.map(async(id) => {
-        return await User.findById(id)
-    }))
-    return participants
-}
-
-TaskSchema.methods.getActivity = async function(this:ITask) {
-    await dbConnect()
-    return await Activity.findById(this.activity)
-}
-
-TaskSchema.methods.getAuditor = async function(this:ITask) {
-    await dbConnect()
-    return await User.findById(this.auditor)
-}
-
-TaskSchema.methods.getImage = async function(this:ITask) {
-    await dbConnect()
-    return await Image.findById(this.image)
-}
-
-TaskSchema.methods.getExpenses = async function(this:ITask):Promise<IExpense[]> {
-    await dbConnect()
-    return await Expense.find({task:this._id})
-}
 
 
-export default mongoose.models.Task as TaskModel || mongoose.model<ITask,TaskModel>('Task', TaskSchema)
+  }
+
+  const TaskModel = getModelForClass(Task)
+  export default TaskModel

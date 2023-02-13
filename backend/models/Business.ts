@@ -1,21 +1,17 @@
-import mongoose from 'mongoose';
-import Task from './Task'
-import { IBusiness, BusinessModel, IBusinessMethods } from './interfaces';
-import dbConnect from 'lib/dbConnect';
+import { prop, modelOptions, getModelForClass } from "@typegoose/typegoose";
+import dbConnect from "lib/dbConnect";
+import BranchModel, {Branch} from './Branch'
 
+@modelOptions({schemaOptions:{timestamps:true}})
+export class Business{
+    @prop({type:String, required:true, unique:true})
+    name:string
 
-const BusinessSchema = new mongoose.Schema<IBusiness,BusinessModel, IBusinessMethods>({
-    name:{
-        type:String,
-        required:true,
+    async getBranches(this:Business){
+        await dbConnect()
+        const docBranches = await BranchModel.find({businesses:this}).populate(Branch.getPopulateParameters())
+        return docBranches
     }
-},{timestamps:true})
-
-BusinessSchema.methods.getTasks = async function(this:IBusiness){
-    await dbConnect()
-    return await Task.find({ business: this._id}) 
-
 }
 
-
-export default mongoose.models.Business as BusinessModel || mongoose.model<IBusiness,BusinessModel>('Business', BusinessSchema)
+export default getModelForClass(Business)

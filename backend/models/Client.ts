@@ -1,23 +1,17 @@
-import mongoose from 'mongoose';
-import dbConnect from 'lib/dbConnect';
-import Branch from './Branch';
-import { IClient, ClientModel, IClientMethods } from './interfaces';
+import { prop, modelOptions, getModelForClass } from "@typegoose/typegoose";
+import dbConnect from "lib/dbConnect";
+import BranchModel, {Branch} from './Branch'
 
+@modelOptions({schemaOptions:{timestamps:true}})
+export class Client {
+    @prop({type:String, required:true, unique:true})
+    name:string
 
-
-const ClientSchema = new mongoose.Schema<IClient, ClientModel, IClientMethods>({
-    name:{
-        type:String,
-        required:true,
-        unique:true
+    async getBranches(this:Client) {
+        await dbConnect()
+        const docBranches = await BranchModel.find({client:this}).populate(Branch.getPopulateParameters())    
+        return docBranches
     }
-},{timestamps:true})
-
-ClientSchema.methods.getBranches = async function(this:IClient) {
-    await dbConnect()
-    const docBranches = await Branch.find({client:this._id}).populate(Branch.populateParameter())    
-    return docBranches
 }
 
-
-export default mongoose.models.Client as ClientModel || mongoose.model<IClient, ClientModel>('Client', ClientSchema)
+export default getModelForClass(Client)

@@ -54,7 +54,7 @@ export async function getServerSideProps({req,res}:GetServerSidePropsContext) {
     if(!docBranch){
         return { props: {} }
     } */
-    const docTasks = await Task.find({}).populate(Task.populateParameter())
+    const docTasks = await Task.find({}).populate(Task.getPopulateParameters())
     if(!docTasks) return {props:{}}
     docTasks[1] = docTasks[0] 
     docTasks[2] = docTasks[0] 

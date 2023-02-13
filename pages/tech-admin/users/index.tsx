@@ -24,6 +24,6 @@ export default function Users({users}:props){
 
 export async function getServerSideProps(ctx:GetServerSidePropsContext) {
     await dbConnect()
-    const docUsers = await User.find({}).populate(User.populateParameter())
+    const docUsers = await User.find({}).populate(User.getPopulateParameters())
     return {props:{users:formatIds(docUsers)}}
 }

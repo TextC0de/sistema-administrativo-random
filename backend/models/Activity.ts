@@ -1,77 +1,49 @@
-import mongoose from 'mongoose';
-import dbConnect from 'lib/dbConnect';
-import Expense from './Expense';
-import { IActivity, ActivityModel, IPopulateParameter, IActivityMethods} from './interfaces';
-import Task from './Task';
-import User from './User';
+import { prop, Ref, getModelForClass, ReturnModelType, modelOptions  } from "@typegoose/typegoose";
+import dbConnect from "lib/dbConnect";
+import { IPopulateParameter } from "./interfaces";
+import UserModel, {User} from './User'
+import TaskModel,{Task} from './Task'
+import ExpenseModel, { Expense } from './Expense'
 
 
-const ActivitySchema = new mongoose.Schema<IActivity, ActivityModel, IActivityMethods>({
-    name:{
-        type:String,
-        required:true
-    },
-    description:{
-        type:String,
-        required:true
-    },
-    startDate:{
-        type:Date,
-        required:true
-    },
-    openedBy:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
-        required:true,
-    },
-    participants:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
-        required:false,
-    }],
-    finishDate:{
-        type:Date,
-        required:false
+@modelOptions({schemaOptions:{timestamps:true}})
+export class Activity{
+    @prop({type:String, required:true})
+    name:string
+    
+    @prop({type:String, required:true})
+    description:string
+
+    @prop({type:Date, required:true})
+    startDate:Date
+    
+    @prop({ref:'User', required:true})
+    openedBy:Ref<User>
+
+    @prop({ref:'User', required:true})
+    participants:Ref<User>[]
+
+    @prop({type:Date, required:false})
+    finishDate:Date
+
+    static getPopulateParameters():IPopulateParameter[]{
+        return [
+            {
+                path:'openedBy'
+            },
+            {
+                path:'participants'
+            }
+        ]
     }
-},{timestamps:true})
 
-ActivitySchema.statics.populateParameter = function():IPopulateParameter[]{
-    return [
-        {
-            path:'openedBy'
-        },
-        {
-            path:'participants'
-        }
-    ]
-}
-
-ActivitySchema.methods.getOpenedBy = async function(this:IActivity) {
-    await dbConnect()
-    return await User.findById(this.openedBy)
-}
-
-ActivitySchema.methods.getParticipants = async function(this:IActivity) {
-    if(!this.participants){
-        return []
+    async getTasks(this:Activity):Promise<Task[]>{
+        return TaskModel.find({activity:this}).populate(Task.getPopulateParameters())
     }
-    await dbConnect()
-    const participantsIds = this.participants
-    const participants = await Promise.all(participantsIds.map(async(id) => {
-        return await User.findById(id)
-    }))
-    return participants
+
+    async getExpenses(this:Activity):Promise<Expense[]>{
+        return ExpenseModel.find({activity:this}).populate(Expense.getPopulateParameters())
+    }
 }
 
-ActivitySchema.methods.getTasks = async function(this:IActivity) {
-    await dbConnect()
-    return await Task.find({activity:this._id})
-}
-
-ActivitySchema.methods.getExpenses = async function(this:IActivity){
-    await dbConnect()
-    return await Expense.find({activity:this._id})
-}
-
-
-export default mongoose.models.Activity as ActivityModel || mongoose.model<IActivity, ActivityModel>('Activity', ActivitySchema)
+export default getModelForClass(Activity)

@@ -1,49 +1,16 @@
-import mongoose from 'mongoose'
+import { prop, Ref, getModelForClass, pre, modelOptions } from "@typegoose/typegoose";
 import bcryptjs from 'bcryptjs'
-import { IActivity, IExpense, UserModel, ITask, IUser, IUserActivities, IUserMethods } from './interfaces'
-import dbConnect from 'lib/dbConnect'
-import Task from './Task'
-import { ExpenseStatus, TaskStatus } from './types'
-import Expense from './Expense'
-import Activity from './Activity'
-import City from './City'
+import dbConnect from "lib/dbConnect";
+import TaskModel, {Task} from "./Task";
+import { ExpenseStatus, Role, TaskStatus } from "./types";
+import ExpenseModel, {Expense} from './Expense'
+import { IUserActivities } from "./interfaces";
+import ActivityModel, {Activity} from "./Activity";
+import mongoose from "mongoose";
+import {City} from "./City";
+import {Types} from 'mongoose'
 
-
-
-
-/* UserSchema will correspond to a collection in your MongoDB database. */
-const UserSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>({
-  password:{
-    type:String,
-    required:true,
-    select:false
-  },
-  email:{
-    type:String,
-    required:true,
-    unique:true
-  },
-  firstName:{
-    type:String,
-    required:true
-  },
-  lastName:{
-    type:String,
-    required:true
-  },
-  fullName:{
-    type:String
-  },
-  roles:[{
-    type:String,
-  }],
-  city:{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:'City',
-  }
-}, {timestamps:true})
-
-UserSchema.pre('save', function(next){
+@pre<User>('save', function(next){
     
     if(this.isModified('firstName') || this.isModified('lastName')){
       this.fullName = `${this.firstName} ${this.lastName}`
@@ -53,52 +20,80 @@ UserSchema.pre('save', function(next){
     }
     next()
 })
+@modelOptions({schemaOptions:{timestamps:true}})
+export class User{
+    @prop({type:Types.ObjectId, default:new mongoose.Types.ObjectId()})
+    _id:Types.ObjectId
 
-UserSchema.statics.populateParameter = function(){
-  return [
-    {
-      path:'city',
-      populate:City.populateParameter()
+    @prop({type:String, required:true})
+    firstName:string
+
+    @prop({type:String, required:true})
+    lastName:string
+
+    @prop({type:String, required:true})
+    fullName:string
+
+    @prop({type:String, required:true, select:false})
+    password:string
+
+    @prop({type:String, required:true, unique:true})
+    email:string
+
+    @prop({ref:'City', required:false})
+    city:Ref<City>
+
+    @prop({type:String, required:true})
+    roles:Role[]
+
+    static getPopulateParameters(){
+        return [
+            {
+              path:'city',
+              populate:City.getPopulateParameters()
+            }
+          ]
     }
-  ]
+
+    comparePassword(this:User,plaintext:string):boolean {
+        //console.log('trying to compare passwords');
+        try {
+          return bcryptjs.compareSync(plaintext, this.password)
+        } catch (error) {
+          console.log(error)
+          return false
+        }
+    };
+
+    async getTasks(this:User):Promise<Task[]> {
+        await dbConnect()
+        return await TaskModel.find({assigned:this}).populate(Task.getPopulateParameters())
+    }
+    
+    async getTasksByStatus (this:User, status:TaskStatus):Promise<Task[]>{
+        await dbConnect()
+        return await TaskModel.find({assigned:this, status})
+    }
+    
+    async getExpenses (this:User):Promise<Expense[]>{
+        await dbConnect()
+        return await ExpenseModel.find({doneBy:this}).populate(Expense.getPopulateParameters())
+    }
+    
+    async getExpensesByStatus (this:User, status:ExpenseStatus):Promise<Expense[]>{
+        await dbConnect()
+        return await ExpenseModel.find({doneBy:this, status}).populate(Expense.getPopulateParameters())
+    }
+    
+    async getActivities (this:User):Promise<IUserActivities> {
+        await dbConnect()
+        const activities:Activity[] = await ActivityModel.find().populate(Activity.getPopulateParameters())
+        const userActivities = activities.filter(activity => activity.openedBy === this)
+        const participantActivities = activities.filter(activity => activity.participants?.includes(this._id))
+        return {userActivities, participantActivities}
+    }
 }
 
-UserSchema.methods.comparePassword = function(plaintext:string):boolean {
-  //console.log('trying to compare passwords');
-  try {
-    return bcryptjs.compareSync(plaintext, this.password)
-  } catch (error) {
-    console.log(error)
-    return false
-  }
-};
+const UserModel = getModelForClass(User)
 
-
-UserSchema.methods.getTasks = async function(this:IUser):Promise<ITask[]> {
-  await dbConnect()
-  return await Task.find({assigned:this._id}).populate(Task.populateParameter())
-}
-
-UserSchema.methods.getTasksByStatus = async function (this:IUser, status:TaskStatus):Promise<ITask[]>{
-  await dbConnect()
-  return await Task.find({assigned:this._id, status})
-}
-
-UserSchema.methods.getExpenses = async function (this:IUser):Promise<IExpense[]>{
-  await dbConnect()
-  return await Expense.find({doneBy:this._id})
-}
-
-UserSchema.methods.getExpensesByStatus = async function (this:IUser, status:ExpenseStatus):Promise<IExpense[]>{
-  await dbConnect()
-  return await Expense.find({doneBy:this._id, status})
-}
-
-UserSchema.methods.getActivities = async function (this:IUser):Promise<IUserActivities> {
-  await dbConnect()
-  const activities:IActivity[] = await Activity.find()
-  const userActivities = activities.filter(activity => activity.openedBy === this)
-  const participantActivities = activities.filter(activity => activity.participants?.includes(this))
-  return {userActivities, participantActivities}
-}
-export default mongoose.models.User as UserModel ||  mongoose.model<IUser, UserModel>('User', UserSchema)
+export default UserModel
