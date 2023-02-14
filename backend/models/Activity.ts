@@ -38,10 +38,12 @@ export class Activity{
     }
 
     async getTasks(this:Activity):Promise<Task[]>{
+        await dbConnect()
         return TaskModel.find({activity:this}).populate(Task.getPopulateParameters())
     }
 
     async getExpenses(this:Activity):Promise<Expense[]>{
+        await dbConnect()
         return ExpenseModel.find({activity:this}).populate(Expense.getPopulateParameters())
     }
 }
