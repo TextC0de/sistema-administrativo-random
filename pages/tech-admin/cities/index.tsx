@@ -27,7 +27,7 @@ export default function Cities({cities}:props){
 export async function getServerSideProps(ctx:GetServerSidePropsContext){
     await dbConnect()
 
-    const docCities = await City.find({}).populate(City.populateParameter())
+    const docCities = await City.find({}).populate(City.getPopulateParameters())
     
     const cities = formatIds(docCities)
 

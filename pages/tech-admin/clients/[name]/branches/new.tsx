@@ -2,7 +2,7 @@ import { IBusiness, ICity, IClient, IProvince } from 'backend/models/interfaces'
 import dbConnect from 'lib/dbConnect'
 import { GetServerSidePropsContext } from 'next'
 import {deSlugify, formatIds} from 'lib/utils'
-import City from 'backend/models/City'
+import CityModel, {City} from 'backend/models/City'
 import Client from 'backend/models/Client'
 import ClientBranchForm, { IClientBranchForm } from 'frontend/components/Forms/TechAdmin/ClientBranchForm'
 import Business from 'backend/models/Business'
@@ -34,7 +34,7 @@ export async function getServerSideProps(ctx:GetServerSidePropsContext){
     const{params} = ctx
     if(!params) return{props:{}}
     await dbConnect()
-    const cities = await City.find({}).populate(City.populateParameter())
+    const cities = await CityModel.find({}).populate(City.getPopulateParameters())
     const client = await Client.findOne({name:deSlugify(params.name as string)})
     const businesses = await Business.find({})
 

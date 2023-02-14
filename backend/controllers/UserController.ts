@@ -1,5 +1,5 @@
 import { NextApiResponse } from 'next'
-import User from '../models/User'
+import UserModel from '../models/User'
 import { NextConnectApiRequest } from './interfaces'
 import { ResponseData } from './types'
 import Mailer from 'lib/nodemailer'
@@ -10,15 +10,22 @@ import { nanoid } from 'nanoid'
 
 const UserController = {
     getLoggedInUser: async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
+        //console.log('loggedInUser')        
         await dbConnect()
-        const docUser = await User.findById(req.userId)
-        if(!docUser) return res.json({error:'no user found', statusCode:402})
-        res.status(200).json({data: {user:formatIds(docUser), message:'User found'}, statusCode:200})
+        try {
+            const docUser = await UserModel.findById(req.userId)
+            //console.log(docUser)
+            if(!docUser) return res.json({error:'no user found', statusCode:402})
+            res.status(200).json({data: {user:formatIds(docUser), message:'User found'}, statusCode:200})
+        } catch (error) {
+            console.log(error);
+            
+        }
     },
     getUser: async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
         const {query: { id }} = req
         await dbConnect()
-        const docUser = await User.findById(id)
+        const docUser = await UserModel.findById(id)
         if (!docUser) {
             return res.status(400).json({error:'User not found', statusCode:400})
         }
@@ -28,7 +35,7 @@ const UserController = {
     putUser: async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
         const {body:{_id, firstName, lastName, city, roles, email}} = req
         await dbConnect()
-        const docUser = await User.findByIdAndUpdate(_id, {firstName, lastName, city, roles, email}, {
+        const docUser = await UserModel.findByIdAndUpdate(_id, {firstName, lastName, city, roles, email}, {
             new: true,
             runValidators: true,
           })
@@ -41,7 +48,7 @@ const UserController = {
         const fullName = `${firstName} ${lastName}`
         const newUser = {firstName, lastName, fullName, city, roles, email, password}
         await dbConnect()
-        const docUser = await User.create(newUser)
+        const docUser = await UserModel.create({firstName, lastName, city, roles, email, password})
         if (!docUser) return res.status(400).json({ error:'failed to create user', statusCode:400 })
         await Mailer.sendNewUserPassword(newUser)
         res.status(200).json({data:{user:formatIds(docUser)}, statusCode:200})
@@ -49,7 +56,7 @@ const UserController = {
     deleteUser: async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) => {
         const {body:{_id}} = req
         await dbConnect()
-        const docUser = await User.findByIdAndDelete(_id)
+        const docUser = await UserModel.findByIdAndDelete(_id)
         if(!docUser) return res.status(400).json({ error:'failed to delete user', statusCode:400 })
         res.status(200).json({data:{user:formatIds(docUser)}, statusCode:200})
     },

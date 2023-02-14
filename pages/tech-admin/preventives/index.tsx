@@ -29,7 +29,7 @@ export default function Preventives({preventives}:IPreventiveProps){
 
 export async function getServerSideProps({req, res}:GetServerSidePropsContext){
     await dbConnect()
-    const docPreventives = await Preventive.find({}).populate(Preventive.populateParameter())
+    const docPreventives = await Preventive.find({}).populate(Preventive.getPopulateParameters())
     if(!docPreventives) return {props:{}}
 
     return {props:{preventives:formatIds(docPreventives)}}

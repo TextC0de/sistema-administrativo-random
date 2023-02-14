@@ -1,68 +1,49 @@
-import mongoose from 'mongoose';
-import Client from './Client';
-import { IBranch, ICity, IClient, ITask, BranchModel, IBranchMethods } from './interfaces';
-import City from './City';
-import dbConnect from 'lib/dbConnect';
-import Task from './Task';
+import { modelOptions, getModelForClass, index, prop, Ref } from "@typegoose/typegoose"
+import dbConnect from "lib/dbConnect"
+import { Business } from "./Business"
+import { City } from "./City"
+import { Client } from "./Client"
+import TaskModel, { Task } from "./Task"
+import mongoose from "mongoose"
+
+@index({number:1,client:1 },{unique:true})
+@modelOptions({schemaOptions:{timestamps:true}})
+export class Branch{
+    @prop({type:Number, required:true})
+    number:number
+    
+    @prop({ref:'City', required:true})
+    city:Ref<City>
+
+    @prop({ref:'Client', required:true})
+    client:Ref<Client>
+    
+    @prop({type:mongoose.SchemaTypes.Array, ref:'Business', required:true})
+    businesses:Ref<Business>[]
 
 
+    static getPopulateParameters(){
 
-const BranchSchema = new mongoose.Schema<IBranch, BranchModel, IBranchMethods>({
-    number:{
-        type:Number,
-        required:true,
-    },
-    city:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'City',
-        required:true
-    },
-    client:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Client',
-        required:true
-    },
-    businesses:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'Business',
-            required:false,
-            unique:true
-        }
-    ]
-},{timestamps:true})
+        return [
+            {
+                path:'city', 
+                populate:City.getPopulateParameters()
+            },
+            {
+                path:'client'
+            },
+            {
+                path:'businesses'
+            }
+        ]
+    }
+    
+    async getTasks(this:Branch):Promise<Task[]>{
+        await dbConnect()
+        return TaskModel.find({branch:this}).populate(Task.getPopulateParameters())
+    }
 
-BranchSchema.index({number:1,client:1 },{unique:true})
 
-BranchSchema.statics.populateParameter = function(){
-    return [
-        {
-            path:'city', 
-            populate:City.populateParameter()
-        },
-        {
-            path:'client'
-        },
-        {
-            path:'businesses'
-        }
-    ]
 }
 
-BranchSchema.methods.getClient = async function(this:IBranch):Promise<IClient | null>{
-    await dbConnect()        
-    return await Client.findById(this.client)
-} 
-
-
-BranchSchema.methods.getCity = async function(this:IBranch):Promise<ICity | null>{
-    await dbConnect()
-    return await City.findById(this.city)
-} 
-
-BranchSchema.methods.getTasks = async function(this:IBranch):Promise<ITask[]>{
-    await dbConnect()
-    return await Task.find({branch:this._id})
-}
-
-export default mongoose.models.Branch as BranchModel || mongoose.model<IBranch, BranchModel>('Branch', BranchSchema)
+export default getModelForClass(Branch)

@@ -47,14 +47,14 @@ export async function getServerSideProps(ctx:GetServerSidePropsContext){
     const {params} = ctx
     if(!params) return {props:{}} 
     await dbConnect()
-    const docPreventive = await Preventive.findById(params.id).populate(Preventive.populateParameter())
+    const docPreventive = await Preventive.findById(params.id).populate(Preventive.getPopulateParameters())
     if(!docPreventive) return {props:{}} 
     console.log(docPreventive);
     
-    const docBranches = await Branch.find({}).populate(Branch.populateParameter())
+    const docBranches = await Branch.find({}).populate(Branch.getPopulateParameters())
     const docClients = await Client.find({})
     const docBusinesses = await Business.find({})
-    const docTechnicians = await User.find({roles:'Tecnico'}).populate(User.populateParameter())
+    const docTechnicians = await User.find({roles:'Tecnico'}).populate(User.getPopulateParameters())
     const branches = formatIds(docBranches)
     const clients = formatIds(docClients)
     const businesses = formatIds(docBusinesses)

@@ -28,7 +28,7 @@ const AuthController = {
 
     if(req.body.appRequest){
       const {email, password} = req.body
-      console.log('mobileauth');
+      //console.log('mobileauth');
       
       let docUser = await User.findOne({email}).select('+password')/* find user by email */
       //console.log(docUser)

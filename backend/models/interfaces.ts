@@ -1,6 +1,7 @@
 //Interfaces for every model
 import mongoose from 'mongoose';
 import * as types from './types'
+import {Activity} from './Activity';
 
 //User fields
 export interface IUser {
@@ -211,8 +212,8 @@ export interface ActivityModel extends mongoose.Model<IActivity, {}, IActivityMe
 }
 
 export interface IUserActivities{
-  userActivities?:IActivity[];
-  participantActivities?:IActivity[]
+  userActivities?:Activity[];
+  participantActivities?:Activity[]
 }
 
 export interface IPopulateParameter {

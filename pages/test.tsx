@@ -2,14 +2,15 @@ import { GetServerSidePropsContext } from 'next'
 import { IProvince, ICity, CityModel, IImage, ImageModel, ITask } from 'backend/models/interfaces'
 import mongoose from 'mongoose'
 import dbConnect from 'lib/dbConnect'
-import User from 'backend/models/User'
-
+import UserModel, {User} from 'backend/models/User'
+import Preventive from 'backend/models/Preventive'
 import Province from 'backend/models/Province'
 import City from 'backend/models/City'
 import Client from 'backend/models/Client'
 import Branch from 'backend/models/Branch'
 import Business from 'backend/models/Business'
 import Task from 'backend/models/Task'
+
 import { dmyDateString, formatIds } from '../lib/utils'
 import TechAdminTaskTable from '../frontend/components/Tables/TaskTable/TechAdminTaskTable'
 
@@ -49,19 +50,18 @@ export default function Test({tasks}:{tasks:ITask[]}){
 
 
 export async function getServerSideProps({req,res}:GetServerSidePropsContext) {
-    await dbConnect()/* 
-    const docBranch = await Branch.findOne({number:297})
-    if(!docBranch){
-        return { props: {} }
-    } */
-    const docTasks = await Task.find({}).populate(Task.populateParameter())
-    if(!docTasks) return {props:{}}
-    docTasks[1] = docTasks[0] 
-    docTasks[2] = docTasks[0] 
-    docTasks[3] = docTasks[0] 
-    const tasks = formatIds(docTasks)
-    //console.log(tasks[0]);
+    await dbConnect() 
+
+    //const docUser = await UserModel.findOne()
+    const b = Business.find()
+    const p = Province.find()
+    const c = Client.find()
+    const docUsers = await UserModel.findOne().populate(User.getPopulateParameters())
+    //console.log(docUsers)
+
+   // if(!docUser) return
+
     
-    return { props: {tasks} }
+    return { props: {} }
 
   }

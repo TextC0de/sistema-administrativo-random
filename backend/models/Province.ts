@@ -1,22 +1,24 @@
-import mongoose from 'mongoose';
-import dbConnect from 'lib/dbConnect';
-import City from './City';
-import { ICity, IProvince, IProvinceMethods, ProvinceModel } from './interfaces';
+import { prop, modelOptions, getModelForClass } from "@typegoose/typegoose";
+import dbConnect from "lib/dbConnect";
+import CityModel, {City} from './City'
+import BranchModel, { Branch } from "./Branch";
 
 
+@modelOptions({schemaOptions:{timestamps:true}})
+export class Province{
+    @prop({type:String, required:true, unique:true})
+    name:string
 
-const ProvinceSchema = new mongoose.Schema<IProvince, ProvinceModel, IProvinceMethods>({
-    name:{
-        type:String,
-        required:true,
-        unique:true
+    async getCities(this:Province):Promise<City[]>{
+        await dbConnect()
+        return await CityModel.find({province:this})
     }
-},{timestamps:true})
 
-ProvinceSchema.methods.getCities = async function(this:IProvince):Promise<ICity[]>{
-    await dbConnect()
-    return await City.find({province:this._id})
+    async getBranches(this:Province):Promise<Branch[]>{
+        await dbConnect()
+        return BranchModel.find({city:{province:this}})
+    }
 }
 
-
-export default mongoose.models.Province as ProvinceModel || mongoose.model<IProvince, ProvinceModel>('Province', ProvinceSchema)
+export default getModelForClass(Province)
+  

@@ -1,17 +1,14 @@
-import mongoose from 'mongoose'
-import { IImage, IImageMethods, ImageModel } from './interfaces'
+import { getModelForClass, prop, modelOptions } from "@typegoose/typegoose"
 
 
-export const ImageSchema = new mongoose.Schema<IImage, ImageModel, IImageMethods>({
-    name:{
-        required:true,
-        type:String
-    },
-    url:{
-        required:true,
-        type:String,
-        unique:true
-    }
-},{timestamps:true})
+@modelOptions({schemaOptions:{timestamps:true}})
+export class Image{
+    
+    @prop({type:String, required:true})
+    name:string
+    
+    @prop({type:String, required:true})
+    url:string
+}
 
-export default mongoose.models.Image as ImageModel || mongoose.model<IImage, ImageModel>('Image', ImageSchema)
+export default getModelForClass(Image)
