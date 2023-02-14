@@ -64,11 +64,11 @@ const UserController = {
         //console.log('generateNewPassword endpoint')
         const {body:{_id}} = req
         await dbConnect()
-        const docUser = await User.findById(_id)
+        const docUser = await UserModel.findById(_id)
         const {firstName, lastName, fullName, city, roles, email} = formatIds(docUser)
         const password = nanoid(10)
         const newUser = {firstName, lastName, fullName, city, roles, email, password}
-        const newDocUser = await User.findByIdAndUpdate(_id, newUser, {
+        const newDocUser = await UserModel.findByIdAndUpdate(_id, newUser, {
             new: true,
             runValidators: true,
           })
