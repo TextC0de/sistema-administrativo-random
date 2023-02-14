@@ -1,6 +1,7 @@
 import { Button, Table } from 'flowbite-react'
 import { IUser } from 'backend/models/interfaces'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
+import {CgPassword} from 'react-icons/cg'
 import Link from 'next/link'
 import * as apiEndpoints from 'lib/apiEndpoints'
 import { useRouter } from 'next/router'
@@ -8,7 +9,7 @@ import mongoose from 'mongoose'
 import { slugify } from 'lib/utils'
 interface props{
     user:IUser,
-    deleteUser: (id:string | mongoose.Schema.Types.ObjectId) => void
+    deleteUser: (id:string | mongoose.Types.ObjectId) => void
 }
 
 export default function Item({user, deleteUser}:props){
@@ -41,6 +42,31 @@ export default function Item({user, deleteUser}:props){
         }
     }
 
+    async function reGeneratePassword(){
+        const contentType = 'application/json'
+        
+        try {
+            const res: Response = await fetch(apiEndpoints.techAdmin.users + 'new-password', {
+                method: 'PUT', 
+                headers: {
+                    Accept: contentType,
+                    'Content-Type': contentType,
+                    },
+                body:JSON.stringify({_id:user._id})
+            })
+
+            // Throw error with status code in case Fetch API req failed
+            if (!res.ok) {
+                console.log(res);
+                throw new Error('failed to generate a new password for the user')
+            }
+        } 
+        catch (error) {
+            console.log(error)
+
+        }
+    }
+
     return(
         <Table.Row className='border-b '>
             <Table.Cell>{user.fullName}</Table.Cell>
@@ -55,7 +81,10 @@ export default function Item({user, deleteUser}:props){
                     </Link>
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
                         <BsFillTrashFill color="gray" size="15"/>
-                    </button>       
+                    </button>   
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={reGeneratePassword}>
+                        <CgPassword color='gray' size='15'/>
+                    </button>
                 </div>
             </Table.Cell>
         </Table.Row>

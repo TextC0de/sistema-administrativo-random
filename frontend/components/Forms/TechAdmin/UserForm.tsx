@@ -105,16 +105,12 @@ export default function UserForm({userForm, newUser=true, cities}:props){
         if(form.roles.includes(id as Role)){
             
             const newForm = form
-            newForm.roles = form.roles.filter(role => role!=id)
-            console.log(newForm.roles);
-            
+            newForm.roles = form.roles.filter(role => role!=id)            
             setForm(newForm)
         }
         else{
             const newForm = form
             newForm.roles.push(id as Role)
-            console.log(newForm.roles);
-
             setForm(newForm)   
         }
         
