@@ -4,7 +4,7 @@ import { IPopulateParameter } from "./interfaces";
 import UserModel, {User} from './User'
 import TaskModel,{Task} from './Task'
 import ExpenseModel, { Expense } from './Expense'
-
+import mongoose from "mongoose";
 
 @modelOptions({schemaOptions:{timestamps:true}})
 export class Activity{
@@ -20,7 +20,7 @@ export class Activity{
     @prop({ref:'User', required:true})
     openedBy:Ref<User>
 
-    @prop({ref:'User', required:true})
+    @prop({type:mongoose.SchemaTypes.Array, ref:'User', required:true})
     participants:Ref<User>[]
 
     @prop({type:Date, required:false})

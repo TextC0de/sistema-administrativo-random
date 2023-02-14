@@ -11,7 +11,7 @@ const UserController = {
         await dbConnect()
         try {
             const docUser = await UserModel.findById(req.userId)
-            console.log(docUser)
+            //console.log(docUser)
             if(!docUser) return res.json({error:'no user found', statusCode:402})
             res.status(200).json({data: {user:formatIds(docUser), message:'User found'}, statusCode:200})
         } catch (error) {

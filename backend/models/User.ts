@@ -1,4 +1,4 @@
-import { prop, Ref, getModelForClass, pre, modelOptions } from "@typegoose/typegoose";
+import { prop, Ref, getModelForClass, pre, modelOptions, ReturnModelType } from "@typegoose/typegoose";
 import bcryptjs from 'bcryptjs'
 import dbConnect from "lib/dbConnect";
 import TaskModel, {Task} from "./Task";
@@ -6,11 +6,13 @@ import { ExpenseStatus, Role, TaskStatus } from "./types";
 import ExpenseModel, {Expense} from './Expense'
 import { IUserActivities } from "./interfaces";
 import ActivityModel, {Activity} from "./Activity";
-import mongoose from "mongoose";
+import mongoose, { SchemaTypes } from "mongoose";
 import {City} from "./City";
 import {Types} from 'mongoose'
 
-@pre<User>('save', function(next){
+
+
+@pre<User>('save', function(next:any){
     
     if(this.isModified('firstName') || this.isModified('lastName')){
       this.fullName = `${this.firstName} ${this.lastName}`
@@ -43,8 +45,8 @@ export class User{
     @prop({ref:'City', required:false})
     city:Ref<City>
 
-    @prop({type:String, required:true})
-    roles:Role[]
+    @prop({type:mongoose.SchemaTypes.Array, required:true})
+    roles:string[]
 
     static getPopulateParameters(){
         return [
@@ -94,6 +96,10 @@ export class User{
     }
 }
 
+
+
 const UserModel = getModelForClass(User)
+
+//UserModel.schema.path('roles', mongoose.SchemaTypes.Array)
 
 export default UserModel

@@ -4,12 +4,13 @@ import { PreventiveStatus, Frequency, Month } from "./types"
 import {User} from "./User"
 import { Business } from "./Business"
 import { IPopulateParameter } from "./interfaces"
+import mongoose from "mongoose"
 
 @index({business:1, branch:1}, {unique:true})
 @modelOptions({schemaOptions:{timestamps:true}})
 export class Preventive {
     
-    @prop({ref:'User', required:true})
+    @prop({type:mongoose.SchemaTypes.Array, ref:'User', required:true})
     assigned:Ref<User>[]
     
     @prop({ref:'Business', required:true})
@@ -24,8 +25,8 @@ export class Preventive {
     @prop({type:Number, required:false})
     frequency?:Frequency
    
-    @prop({type:String, required:false})
-    months?:Month[]
+    @prop({type:mongoose.SchemaTypes.Array, required:false})
+    months?:string[]
     
     @prop({type:Date, required:false})
     lastDoneAt?:Date

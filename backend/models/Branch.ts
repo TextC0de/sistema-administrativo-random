@@ -4,6 +4,7 @@ import { Business } from "./Business"
 import { City } from "./City"
 import { Client } from "./Client"
 import TaskModel, { Task } from "./Task"
+import mongoose from "mongoose"
 
 @index({number:1,client:1 },{unique:true})
 @modelOptions({schemaOptions:{timestamps:true}})
@@ -17,7 +18,7 @@ export class Branch{
     @prop({ref:'Client', required:true})
     client:Ref<Client>
     
-    @prop({ref:'Business', required:true})
+    @prop({type:mongoose.SchemaTypes.Array, ref:'Business', required:true})
     businesses:Ref<Business>[]
 
 
