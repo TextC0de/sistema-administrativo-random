@@ -54,7 +54,7 @@ const UserController = {
         res.status(200).json({data:{user:formatIds(docUser)}, statusCode:200})
     },
     generateNewPassword: async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) => {
-        console.log('generateNewPassword endpoint')
+        //console.log('generateNewPassword endpoint')
         const {body:{_id}} = req
         await dbConnect()
         const docUser = await User.findById(_id)
@@ -66,7 +66,7 @@ const UserController = {
             runValidators: true,
           })
         if(!newDocUser) return res.status(400).json({ error:'failed to delete user', statusCode:400 })
-        await Mailer.sendNewPassword(newUser)
+        await Mailer.sendResetPassword(newUser)
         res.status(200).json({data:{user:formatIds(newDocUser)}, statusCode:200})
     }
 }

@@ -3,7 +3,7 @@ import { Role } from 'backend/models/types';
 import nodemailer from 'nodemailer'
 import {renderToString} from 'react-dom/server'
 import NewUserPassword from 'frontend/components/Emails/NewUserPassword';
-import NewPassword from 'frontend/components/Emails/NewPassword';
+import ResetPassword from 'frontend/components/Emails/ResetPassword';
 class Transporter /* extends nodemailer.Transporter */{
     private static instance: Transporter
     
@@ -49,13 +49,13 @@ const Mailer = {
         });
         return info
     },
-    sendNewPassword: async(user:NewUser)=>{
+    sendResetPassword: async(user:NewUser)=>{
         const info = await (Transporter.getInstance() as nodemailer.Transporter).sendMail({
             from: `"Administracion Tecnica Random" <${process.env.EMAIL_ACCOUNT}>`, // sender address
             to:user.email, // list of receivers
             subject: "Creacion de nueva contraseña para tu usuario en el Sistema de Administracion Tecnica", // Subject line
             //text: "Hello world?", // plain text body
-            html:renderToString(NewPassword({user}))
+            html:renderToString(ResetPassword({user}))
             
             
             

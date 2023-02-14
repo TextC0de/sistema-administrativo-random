@@ -2,7 +2,7 @@ import { NewUser } from "lib/nodemailer";
 
 
 
-export default function NewPassword({user}:{user:NewUser}){
+export default function ResetPassword({user}:{user:NewUser}){
     return(
         <>
             <div>
