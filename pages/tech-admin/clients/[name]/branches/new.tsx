@@ -37,7 +37,7 @@ export async function getServerSideProps(ctx:GetServerSidePropsContext){
     const cities = await CityModel.find({}).populate(City.getPopulateParameters())
     const client = await Client.findOne({name:deSlugify(params.name as string)})
     const businesses = await Business.find({})
-
+    //console.log(client)
 
     
     return {props:formatIds({cities, client, businesses})}

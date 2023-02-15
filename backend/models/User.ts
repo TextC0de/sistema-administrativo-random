@@ -6,9 +6,8 @@ import { ExpenseStatus, Role, TaskStatus } from "./types";
 import ExpenseModel, {Expense} from './Expense'
 import { IUserActivities } from "./interfaces";
 import ActivityModel, {Activity} from "./Activity";
-import mongoose, { SchemaTypes } from "mongoose";
+import mongoose from "mongoose";
 import {City} from "./City";
-import {Types} from 'mongoose'
 
 
 
@@ -24,8 +23,8 @@ import {Types} from 'mongoose'
 })
 @modelOptions({schemaOptions:{timestamps:true}})
 export class User{
-    @prop({type:Types.ObjectId, default:new mongoose.Types.ObjectId()})
-    _id:Types.ObjectId
+    
+    _id:mongoose.Types.ObjectId | string
 
     @prop({type:String, required:true})
     firstName:string
@@ -46,7 +45,7 @@ export class User{
     city:Ref<City>
 
     @prop({type:mongoose.SchemaTypes.Array, required:true})
-    roles:string[]
+    roles:Role[]
 
     static getPopulateParameters(){
         return [

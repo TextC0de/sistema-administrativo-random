@@ -6,9 +6,11 @@ import { Client } from "./Client"
 import TaskModel, { Task } from "./Task"
 import mongoose from "mongoose"
 
-@index({number:1,client:1 },{unique:true})
 @modelOptions({schemaOptions:{timestamps:true}})
+@index({number:1,client:1},{unique:true})
 export class Branch{
+    _id:mongoose.Types.ObjectId | string
+
     @prop({type:Number, required:true})
     number:number
     

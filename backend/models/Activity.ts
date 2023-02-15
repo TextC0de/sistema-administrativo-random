@@ -8,6 +8,9 @@ import mongoose from "mongoose";
 
 @modelOptions({schemaOptions:{timestamps:true}})
 export class Activity{
+    
+    _id:mongoose.Types.ObjectId | string
+    
     @prop({type:String, required:true})
     name:string
     

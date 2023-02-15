@@ -12,7 +12,8 @@ import mongoose from "mongoose";
 
 @modelOptions({schemaOptions:{timestamps:true}})
 export class Task {
-    
+    _id:mongoose.Types.ObjectId | string
+
     @prop({ref:'Branch', required:true})
     branch:Ref<Branch>
     

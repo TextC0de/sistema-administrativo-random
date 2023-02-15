@@ -37,5 +37,7 @@ export async function getServerSideProps(ctx:GetServerSidePropsContext){
     const docCities = await CityModel.find({}).populate(City.getPopulateParameters())
     const docBranch = await BranchModel.findOne({number:params.number}).populate(Branch.getPopulateParameters())
     const docBusinesses = await Business.find({})
+    //console.log(docBranch)
+
     return {props:{cities:formatIds(docCities), branch:formatIds(docBranch), businesses:formatIds(docBusinesses) }}
 }

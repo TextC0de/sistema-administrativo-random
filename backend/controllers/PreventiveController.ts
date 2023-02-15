@@ -5,14 +5,16 @@ import Preventive from '../models/Preventive';
 import { NextConnectApiRequest } from './interfaces';
 import { ResponseData } from './types';
 import { IPreventive } from 'backend/models/interfaces';
+import { User } from 'backend/models/User';
 
 
 const PreventiveController = {
     putPreventive: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body} = req    
         await dbConnect()
-        const {_id, branch, business, assigned, status, frequency, months, lastDoneAt, batteryChangedAt, observations}:IPreventive = body
-        const preventiveForm = {_id, branch, business, assigned, status, frequency, months, lastDoneAt, batteryChangedAt, observations}
+        const {_id, branch, business, assigned, status, frequency, months, lastDoneAt, batteryChangedAt, observations} = body
+        const assignedIds = assigned.map((user:User)=> user._id)
+        const preventiveForm = {_id, branch, business, assigned:assignedIds, status, frequency, months, lastDoneAt, batteryChangedAt, observations}
         try {
             const newPreventive = await Preventive.findByIdAndUpdate(_id, preventiveForm, {
                 new: true,
@@ -30,8 +32,9 @@ const PreventiveController = {
     postPreventive: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body} = req    
         await dbConnect()
-        const {branch, business, assigned, status, frequency, months, lastDoneAt, batteryChangedAt, observations}:IPreventive = body
-        const preventiveForm = {branch, business, assigned, status, frequency, months, lastDoneAt, batteryChangedAt, observations}
+        const {branch, business, assigned, status, frequency, months, lastDoneAt, batteryChangedAt, observations} = body
+        const assignedIds = assigned.map((user:User) => user._id)
+        const preventiveForm = {branch, business, assigned:assignedIds, status, frequency, months, lastDoneAt, batteryChangedAt, observations}
         try {
             const newPreventive = await Preventive.create(preventiveForm)
             if(!newPreventive) return res.json({statusCode:500, error:'could not create Preventive'})

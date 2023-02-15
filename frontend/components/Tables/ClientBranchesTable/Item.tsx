@@ -12,7 +12,7 @@ interface props{
 }
 
 export default function Item({branch, deleteBranch}:props){
-
+    console.log(branch)
     const deleteData = async () => {
         const contentType='application/json'
 
@@ -32,7 +32,7 @@ export default function Item({branch, deleteBranch}:props){
                 console.log(res);
                 throw new Error('failed to delete branch')
             }
-            deleteBranch(branch._id)
+            deleteBranch(branch._id as string)
 
         } 
         catch (error) {

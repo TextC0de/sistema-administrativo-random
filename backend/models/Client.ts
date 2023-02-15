@@ -1,9 +1,12 @@
 import { prop, modelOptions, getModelForClass } from "@typegoose/typegoose";
 import dbConnect from "lib/dbConnect";
+import mongoose from "mongoose";
 import BranchModel, {Branch} from './Branch'
 
 @modelOptions({schemaOptions:{timestamps:true}})
 export class Client {
+    _id:mongoose.Types.ObjectId | string
+
     @prop({type:String, required:true, unique:true})
     name:string
 

@@ -9,7 +9,8 @@ import mongoose from "mongoose"
 @index({business:1, branch:1}, {unique:true})
 @modelOptions({schemaOptions:{timestamps:true}})
 export class Preventive {
-    
+    _id:mongoose.Types.ObjectId | string
+
     @prop({type:mongoose.SchemaTypes.Array, ref:'User', required:true})
     assigned:Ref<User>[]
     

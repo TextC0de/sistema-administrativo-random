@@ -12,7 +12,7 @@ interface props{
 }
 
 export default function ClientView({client, branches}:props){
-
+    console.log(branches)
     return(
         <>
             <h1 className='text-lg'>Cliente: {client.name}</h1>
@@ -39,7 +39,7 @@ export async function getServerSideProps(ctx:GetServerSidePropsContext){
     const docBranches = await docClient.getBranches()
     const client = formatIds(docClient)
     const branches = formatIds(docBranches)
-
+    //console.log(branches)
     
     return {props:{client, branches}}
 }

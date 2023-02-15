@@ -6,9 +6,12 @@ import UserModel, {User} from './User'
 import TaskModel, {Task} from "./Task"
 import ActivityModel,{ Activity } from "./Activity";
 import {Image} from './Image'
+import mongoose from "mongoose";
 
 @modelOptions({schemaOptions:{timestamps:true}})
 export class Expense{
+    _id:mongoose.Types.ObjectId | string
+    
     @prop({ref: 'User', required:true})
     doneBy:Ref<User>
     
