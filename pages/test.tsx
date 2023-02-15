@@ -47,20 +47,27 @@ export default function Test({tasks}:{tasks:ITask[]}){
     )
 }
 
+async function setSchemas(){
 
+    const b = await Business.find()
+    const p = await Province.find()
+    const c = await Client.find()
+    const docUsers = await UserModel.findOne().populate(User.getPopulateParameters())
+ 
+}
 
 export async function getServerSideProps({req,res}:GetServerSidePropsContext) {
-    await dbConnect() 
-
-    //const docUser = await UserModel.findOne()
-/*     const b = Business.find()
-    const p = Province.find()
-    const c = Client.find()
-    const docUsers = await UserModel.findOne().populate(User.getPopulateParameters())
- */ 
-    const preventive = await Preventive.findOne().populate(Preventive.getPopulateParameters())
-    const branch = await Branch.findOne().populate(Branch.getPopulateParameters())
+    //await dbConnect() 
     
+    //const docUser = await UserModel.findOne()
+    await setSchemas()
+    const city = await City.getUndeleted()
+    //console.log(city)
+    if(!city) return {props:{}}
+
+
+    
+
     //console.log(preventive?.schema.indexes())
     
     //console.log(docUsers)

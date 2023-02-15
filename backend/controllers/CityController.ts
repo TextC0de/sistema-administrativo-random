@@ -40,8 +40,9 @@ const CityController = {
         //console.log(_id);
         
         await dbConnect()
-        const deletedCity = await City.findByIdAndDelete(_id)
+        const deletedCity = await City.findById(_id)
         if(!deletedCity) return res.json({statusCode:500, error:'could not delete city'})
+        await deletedCity.softDelete()
         //const City = formatIds(newCity)
         res.json({data:{message:'deleted city succesfully'}})
     }
