@@ -26,7 +26,7 @@ export default function Clients({clients}:props){
 export async function getServerSideProps(ctx:GetServerSidePropsContext){
     await dbConnect()
 
-    const docClients = await Client.find({})
+    const docClients = await Client.findUndeleted({})
     const clients = formatIds(docClients)
     return{props:{clients}}
 

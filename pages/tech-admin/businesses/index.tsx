@@ -25,7 +25,7 @@ export default function Businesses({businesses}:props){
 
 export async function getServerSideProps(ctx:GetServerSidePropsContext){
     await dbConnect()
-    const docBusinesses = await Business.find({})
+    const docBusinesses = await Business.findUndeleted({})
     return {props:{businesses:formatIds(docBusinesses)}} 
 }
 

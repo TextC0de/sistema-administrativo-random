@@ -34,9 +34,9 @@ export async function getServerSideProps(ctx:GetServerSidePropsContext){
     const{params} = ctx
     if(!params) return{props:{}}
     await dbConnect()
-    const cities = await CityModel.find({}).populate(City.getPopulateParameters())
+    const cities = await CityModel.findUndeleted({})
     const client = await Client.findOne({name:deSlugify(params.name as string)})
-    const businesses = await Business.find({})
+    const businesses = await Business.findUndeleted({})
     //console.log(client)
 
     

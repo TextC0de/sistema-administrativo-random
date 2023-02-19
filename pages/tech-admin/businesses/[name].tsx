@@ -27,7 +27,7 @@ export async function getServerSideProps(ctx:GetServerSidePropsContext){
     if(!params) return {props:{}}
     
     await dbConnect()
-    const docBusiness = await Business.findOne({name:deSlugify(params.name as string)})
+    const docBusiness = await Business.findOneUndeleted({name:deSlugify(params.name as string)})
     const props = {business:formatIds(docBusiness)}
     
     return {props}

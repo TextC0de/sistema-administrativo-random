@@ -1,4 +1,4 @@
-import { prop, Ref, getModelForClass, pre, modelOptions, ReturnModelType } from "@typegoose/typegoose";
+import { prop, Ref, getModelForClass, pre, modelOptions, ReturnModelType, DocumentType } from "@typegoose/typegoose";
 import bcryptjs from 'bcryptjs'
 import dbConnect from "lib/dbConnect";
 import TaskModel, {Task} from "./Task";
@@ -47,6 +47,9 @@ export class User{
     @prop({type:mongoose.SchemaTypes.Array, required:true})
     roles:Role[]
 
+    @prop({type:Boolean, default:false})
+    deleted:boolean
+
     static getPopulateParameters(){
         return [
             {
@@ -54,6 +57,24 @@ export class User{
               populate:City.getPopulateParameters()
             }
           ]
+    }
+
+    static async findUndeleted(this:ReturnModelType<typeof User>, filter:Object = {}){
+        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+
+    static async findOneUndeleted(this:ReturnModelType<typeof User>, filter:Object = {}){
+        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+    
+    async softDelete(this:DocumentType<User>){
+        this.deleted = true
+        await this.save()
+    }
+
+    async restore(this:DocumentType<User>){
+        this.deleted = false
+        await this.save()
     }
 
     comparePassword(this:User,plaintext:string):boolean {
@@ -67,28 +88,23 @@ export class User{
     };
 
     async getTasks(this:User):Promise<Task[]> {
-        await dbConnect()
-        return await TaskModel.find({assigned:this}).populate(Task.getPopulateParameters())
+        return await TaskModel.findUndeleted({assigned:this})
     }
     
     async getTasksByStatus (this:User, status:TaskStatus):Promise<Task[]>{
-        await dbConnect()
-        return await TaskModel.find({assigned:this, status})
+        return await TaskModel.findUndeleted({assigned:this, status})
     }
     
     async getExpenses (this:User):Promise<Expense[]>{
-        await dbConnect()
-        return await ExpenseModel.find({doneBy:this}).populate(Expense.getPopulateParameters())
+        return await ExpenseModel.findUndeleted({doneBy:this})
     }
     
     async getExpensesByStatus (this:User, status:ExpenseStatus):Promise<Expense[]>{
-        await dbConnect()
-        return await ExpenseModel.find({doneBy:this, status}).populate(Expense.getPopulateParameters())
+        return await ExpenseModel.findUndeleted({doneBy:this, status})
     }
     
     async getActivities (this:User):Promise<IUserActivities> {
-        await dbConnect()
-        const activities:Activity[] = await ActivityModel.find().populate(Activity.getPopulateParameters())
+        const activities:Activity[] = await ActivityModel.findUndeleted()
         const userActivities = activities.filter(activity => activity.openedBy === this)
         const participantActivities = activities.filter(activity => activity.participants?.includes(this._id))
         return {userActivities, participantActivities}

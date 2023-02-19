@@ -27,7 +27,7 @@ export default function TechAdminTasks({tasks}:ITaskProps){
 
 export async function getServerSideProps({req, res}:GetServerSidePropsContext){
     await dbConnect()
-    const allTasks = await Task.find({}).populate(Task.getPopulateParameters())
+    const allTasks = await Task.findUndeleted({})
     if(!allTasks) return {props:{}}
     const pendingTasks = allTasks.filter(task => task.status === 'Pendiente')
     const sentTasks = allTasks.filter(task => task.status === 'Enviado')

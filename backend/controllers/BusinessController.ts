@@ -24,6 +24,12 @@ const BusinessController = {
         const {body:{name}} = req
         await dbConnect()
         const businessForm = {name}
+        const deletedBusiness = await Business.findOne({name})
+        if(deletedBusiness){
+            deletedBusiness.restore()
+            res.json({data:{deletedBusiness, message:'created Business succesfully'}})
+
+        }
         const newBusiness = await Business.create(businessForm)
         if(!newBusiness) return res.json({statusCode:500, error:'could not create Business'})
     
@@ -34,9 +40,10 @@ const BusinessController = {
         const {body:_id} = req
     
         await dbConnect()
-        const deletedBusiness = await Business.findByIdAndDelete(_id)
+        const deletedBusiness = await Business.findById(_id)
         if(!deletedBusiness) return res.json({statusCode:500, error:'could not delete Business'})
         //const Business = formatIds(newBusiness)
+        await deletedBusiness.softDelete()
         res.json({data:{message:'deleted Business succesfully'}})
     }
 }

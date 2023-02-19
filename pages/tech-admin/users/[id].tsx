@@ -36,6 +36,6 @@ export async function getServerSideProps(ctx:GetServerSidePropsContext){
     if(!params?.id) return {props:{}}
     await dbConnect()
     const docUser = await User.findById(params.id).populate(User.getPopulateParameters())
-    const docCities = await City.find({}).populate(City.getPopulateParameters())
+    const docCities = await City.findUndeleted({})
     return {props:{cities:formatIds(docCities), user:formatIds(docUser)}}
 }

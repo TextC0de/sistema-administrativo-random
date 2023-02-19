@@ -29,8 +29,8 @@ export async function getServerSideProps(ctx:GetServerSidePropsContext){
     const {params} = ctx
     await dbConnect()
     if(!params) return {props:{}}
-    const docCity = await City.findOne({name:deSlugify(params.name as string)}).populate(City.getPopulateParameters())
-    const docProvinces = await Province.find({})
+    const docCity = await City.findOneUndeleted({name:deSlugify(params.name as string)})
+    const docProvinces = await Province.findUndeleted({})
     const city = formatIds(docCity)
     //console.log(docCity)
     const provinces = formatIds(docProvinces)

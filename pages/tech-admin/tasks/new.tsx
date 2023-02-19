@@ -37,10 +37,10 @@ export default function NewTask(props:props){
 
 export async function getServerSideProps(ctx:GetServerSidePropsContext){
     await dbConnect()
-    const docBranches = await Branch.find({}).populate(Branch.getPopulateParameters())
-    const docClients = await Client.find({})
-    const docBusinesses = await Business.find({})
-    const docTechnicians = await User.find({roles:'Tecnico'})
+    const docBranches = await Branch.findUndeleted({})
+    const docClients = await Client.findUndeleted({})
+    const docBusinesses = await Business.findUndeleted({})
+    const docTechnicians = await User.findUndeleted({roles:'Tecnico'})
     const branches = formatIds(docBranches)
     const clients = formatIds(docClients)
     const businesses = formatIds(docBusinesses)

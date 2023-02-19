@@ -24,6 +24,11 @@ const ProvinceController = {
         const {body:{name}} = req
         await dbConnect()
         const provinceForm = {name}
+        const deletedProvince = await Province.findOne({name})
+        if(deletedProvince){
+            await deletedProvince.restore()
+            return res.json({data:{deletedProvince, message:'created province succesfully'}})
+        }
         const newProvince = await Province.create(provinceForm)
         if(!newProvince) return res.json({statusCode:500, error:'could not create province'})
     
@@ -34,9 +39,9 @@ const ProvinceController = {
         const {body:{_id}} = req
     
         await dbConnect()
-        const deletedProvince = await Province.findByIdAndDelete(_id)
+        const deletedProvince = await Province.findById(_id)
         if(!deletedProvince) return res.json({statusCode:500, error:'could not delete province'})
-        //const province = formatIds(newProvince)
+        await deletedProvince.softDelete()
         res.json({data:{message:'deleted province succesfully'}})
     }
 }

@@ -219,5 +219,6 @@ export interface IUserActivities{
 export interface IPopulateParameter {
   path:string,
   populate?:IPopulateParameter[],
+  match?:{}
   model?:string
 }

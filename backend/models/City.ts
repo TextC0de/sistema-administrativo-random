@@ -22,24 +22,12 @@ export class City{
         return[{path:'province', model:'Province', match:{'province.deleted':{$ne:true}}}]
     }
 
-    static async getUndeleted(this:ReturnModelType<typeof City>, filter:Object){
-        const newFilter = {...filter, deleted:false}
-        console.log(newFilter)
-        const cities = await this.find(newFilter)
-        console.log(cities);
-        return cities
-        
+    static async findUndeleted(this:ReturnModelType<typeof City>, filter:Object = {}){
+        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
     }
 
-    static async getOneUndeleted(this:ReturnModelType<typeof City>, filter:Object){
-        return this.findOne({...filter, deleted:false})
-    }
-
-    static async getByIdUndeleted(this:ReturnModelType<typeof City>, id:mongoose.Types.ObjectId|string){
-        const doc = await this.findById(id)
-        if(!doc) return {}
-        if(doc.deleted) return {}
-        return doc
+    static async findOneUndeleted(this:ReturnModelType<typeof City>, filter:Object = {}){
+        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
     }
     
     async softDelete(this:DocumentType<City>){
@@ -53,8 +41,7 @@ export class City{
     }
 
     async getBranches(this:City){
-        await dbConnect()
-        return BranchModel.find({city:this})
+        return await BranchModel.findUndeleted({city:this})
     }
 }
 

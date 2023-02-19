@@ -1,4 +1,4 @@
-import { Ref, prop, index, getModelForClass, modelOptions } from "@typegoose/typegoose"
+import { Ref, prop, index, getModelForClass, modelOptions, ReturnModelType, DocumentType } from "@typegoose/typegoose"
 import { Branch } from "./Branch"
 import { PreventiveStatus, Frequency, Month } from "./types"
 import {User} from "./User"
@@ -38,6 +38,9 @@ export class Preventive {
     @prop({type:String, required:false})
     observations?:string
 
+    @prop({type:Boolean, default:false})
+    deleted:boolean
+
     static getPopulateParameters():IPopulateParameter[]{
         return[
             {
@@ -53,6 +56,25 @@ export class Preventive {
             }
         ]
     }
+
+    static async findUndeleted(this:ReturnModelType<typeof Preventive>, filter:Object = {}){
+        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+
+    static async findOneUndeleted(this:ReturnModelType<typeof Preventive>, filter:Object = {}){
+        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+    
+    async softDelete(this:DocumentType<Preventive>){
+        this.deleted = true
+        await this.save()
+    }
+
+    async restore(this:DocumentType<Preventive>){
+        this.deleted = false
+        await this.save()
+    }
+
 }
 
 export default getModelForClass(Preventive)

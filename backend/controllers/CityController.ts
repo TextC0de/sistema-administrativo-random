@@ -1,7 +1,7 @@
 import { NextConnectApiRequest } from './interfaces';
 import { NextApiResponse } from 'next';
 import { ResponseData } from './types';
-import City from 'backend/models/City';
+import CityModel from 'backend/models/City';
 import dbConnect from 'lib/dbConnect';
 import { formatIds } from 'lib/utils';
 
@@ -11,7 +11,7 @@ const CityController = {
     
         await dbConnect()
         const cityForm = {name, province:province._id}
-        const newCity = await City.findByIdAndUpdate(_id, cityForm, {
+        const newCity = await CityModel.findByIdAndUpdate(_id, cityForm, {
             new: true,
             runValidators: true,
           }
@@ -25,8 +25,13 @@ const CityController = {
         await dbConnect()
         const cityForm = {name, province:province._id}
         try {
-            const newCity = await City.create(cityForm)
-            if(!newCity) return res.json({statusCode:500, error:'could not create city'})
+            const deletedCity = await CityModel.findOne({name})
+            if(deletedCity){
+                deletedCity.province = province._id
+                deletedCity.restore()
+                return res.json({data:{deletedCity, message:'created city succesfully'}})
+            } 
+            const newCity = await CityModel.create(cityForm)
             const city = formatIds(newCity)
             return res.json({data:{city, message:'created city succesfully'}})
         } catch (error) {
@@ -40,9 +45,10 @@ const CityController = {
         //console.log(_id);
         
         await dbConnect()
-        const deletedCity = await City.findById(_id)
+        const deletedCity = await CityModel.findById(_id)
         if(!deletedCity) return res.json({statusCode:500, error:'could not delete city'})
         await deletedCity.softDelete()
+
         //const City = formatIds(newCity)
         res.json({data:{message:'deleted city succesfully'}})
     }

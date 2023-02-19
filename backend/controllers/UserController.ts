@@ -48,6 +48,17 @@ const UserController = {
         const fullName = `${firstName} ${lastName}`
         const newUser = {firstName, lastName, fullName, city, roles, email, password}
         await dbConnect()
+        const deletedUser = await UserModel.findOne({email})
+        if(deletedUser){
+            deletedUser.firstName = firstName
+            deletedUser.lastName = lastName
+            deletedUser.fullName = fullName
+            deletedUser.city = city._id
+            deletedUser.roles = roles
+            deletedUser.password = password
+            await deletedUser.restore()
+            return res.status(200).json({data:{user:formatIds(deletedUser)}, statusCode:200})
+        }
         const docUser = await UserModel.create({firstName, lastName, city, roles, email, password})
         if (!docUser) return res.status(400).json({ error:'failed to create user', statusCode:400 })
         await Mailer.sendNewUserPassword(newUser)
@@ -56,8 +67,9 @@ const UserController = {
     deleteUser: async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) => {
         const {body:{_id}} = req
         await dbConnect()
-        const docUser = await UserModel.findByIdAndDelete(_id)
+        const docUser = await UserModel.findById(_id)
         if(!docUser) return res.status(400).json({ error:'failed to delete user', statusCode:400 })
+        await docUser.softDelete()
         res.status(200).json({data:{user:formatIds(docUser)}, statusCode:200})
     },
     generateNewPassword: async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) => {

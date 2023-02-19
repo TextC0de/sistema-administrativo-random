@@ -1,4 +1,4 @@
-import { prop, modelOptions, getModelForClass } from "@typegoose/typegoose";
+import { prop, modelOptions, getModelForClass, ReturnModelType, DocumentType } from "@typegoose/typegoose";
 import dbConnect from "lib/dbConnect";
 import CityModel, {City} from './City'
 import BranchModel, { Branch } from "./Branch";
@@ -12,14 +12,33 @@ export class Province{
     @prop({type:String, required:true, unique:true})
     name:string
 
+    @prop({type:Boolean, default:false})
+    deleted:boolean
+
+    static async findUndeleted(this:ReturnModelType<typeof Province>, filter:Object = {}){
+        return await this.find({...filter, deleted:false})
+    }
+
+    static async findOneUndeleted(this:ReturnModelType<typeof Province>, filter:Object = {}){
+        return this.findOne({...filter, deleted:false})
+    }
+    
+    async softDelete(this:DocumentType<Province>){
+        this.deleted = true
+        await this.save()
+    }
+
+    async restore(this:DocumentType<Province>){
+        this.deleted = false
+        await this.save()
+    }
+
     async getCities(this:Province):Promise<City[]>{
-        await dbConnect()
-        return await CityModel.find({province:this})
+        return await CityModel.findUndeleted({province:this})
     }
 
     async getBranches(this:Province):Promise<Branch[]>{
-        await dbConnect()
-        return BranchModel.find({city:{province:this}})
+        return await BranchModel.findUndeleted({city:{province:this}})
     }
 }
 

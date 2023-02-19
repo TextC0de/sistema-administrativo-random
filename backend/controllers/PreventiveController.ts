@@ -36,10 +36,23 @@ const PreventiveController = {
         const assignedIds = assigned.map((user:User) => user._id)
         const preventiveForm = {branch, business, assigned:assignedIds, status, frequency, months, lastDoneAt, batteryChangedAt, observations}
         try {
+            const deletedPreventive = await Preventive.findOne({branch, business})
+            if(deletedPreventive){
+                deletedPreventive.assigned = assignedIds
+                deletedPreventive.status = status
+                deletedPreventive.frequency = frequency
+                deletedPreventive.months = months
+                deletedPreventive.lastDoneAt = lastDoneAt
+                deletedPreventive.batteryChangedAt = batteryChangedAt
+                deletedPreventive.observations = observations
+                await deletedPreventive.restore()
+                return res.json({statusCode:200, data:{preventive:formatIds(deletedPreventive), message:'created Preventive succesfully'}})
+
+            }
             const newPreventive = await Preventive.create(preventiveForm)
             if(!newPreventive) return res.json({statusCode:500, error:'could not create Preventive'})
             
-            return res.json({statusCode:200, data:{Preventive:formatIds(newPreventive), message:'created Preventive succesfully'}})
+            return res.json({statusCode:200, data:{preventive:formatIds(newPreventive), message:'created Preventive succesfully'}})
         } catch (error) {
             console.log(error);
             return res.json({statusCode:500, error:'could not create Preventive'})
@@ -48,9 +61,9 @@ const PreventiveController = {
     deletePreventive: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body} = req
         await dbConnect()
-        const deletedPreventive = await Preventive.findByIdAndDelete(body._id)
+        const deletedPreventive = await Preventive.findById(body._id)
         if(!deletedPreventive) return res.json({statusCode:500, error:'could not delete Preventive'})
-        //const Preventive = formatIds(newPreventive)
+        await deletedPreventive.softDelete()
         res.json({statusCode:200, data:{message:'deleted Preventive succesfully'}})
     }
 }

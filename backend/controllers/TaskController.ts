@@ -77,9 +77,9 @@ const TaskController = {
     deleteTask: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body} = req
         await dbConnect()
-        const deletedTask = await Task.findByIdAndDelete(body._id)
+        const deletedTask = await Task.findById(body._id)
         if(!deletedTask) return res.json({statusCode:500, error:'could not delete Task'})
-        //const Task = formatIds(newTask)
+        await deletedTask.softDelete()
         res.json({statusCode:200, data:{message:'deleted Task succesfully'}})
     },
     getTechTasks: async (req:NextConnectApiRequest, res: NextApiResponse<ResponseData>) =>{

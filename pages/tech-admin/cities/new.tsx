@@ -26,7 +26,7 @@ export default function NewCity({provinces}:props){
 
 export async function getServerSideProps(ctx:GetServerSidePropsContext){
     await dbConnect()
-    const docProvinces = await Province.find({})
+    const docProvinces = await Province.findUndeleted({})
     const provinces = formatIds(docProvinces)
     return {props:{provinces}}
 }
