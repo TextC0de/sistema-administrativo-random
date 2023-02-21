@@ -62,8 +62,8 @@ export async function getServerSideProps({req,res}:GetServerSidePropsContext) {
     //await dbConnect() 
     
     //const docUser = await UserModel.findOne()
-    //await setSchemas()
-    const users = await UserModel.find({})
+    await setSchemas()
+    /* const users = await UserModel.find({})
     users.forEach((user:DocumentType<User>)=>user.save())
     const branches = await BranchModel.find({})
     branches.forEach((branch:DocumentType<Branch>)=> branch.save())
@@ -78,7 +78,7 @@ export async function getServerSideProps({req,res}:GetServerSidePropsContext) {
     const preventives = await PreventiveModel.find({})
     preventives.forEach((preventive:DocumentType<Preventive>)=>preventive.save())
     
-
+ */
     //console.log(preventive?.schema.indexes())
     
     //console.log(docUsers)

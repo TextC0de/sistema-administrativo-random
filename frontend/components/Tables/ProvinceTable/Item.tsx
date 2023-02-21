@@ -6,6 +6,7 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 import { useRouter } from 'next/router'
 import mongoose from 'mongoose'
 import { slugify } from 'lib/utils'
+import fetcher from 'lib/fetcher'
 
 interface props{
     province:IProvince,
@@ -16,24 +17,10 @@ export default function Item({province, deleteProvince}:props){
 
     const deleteData = async () => {
         //console.log('deleting');
-        const contentType='application/json'
         
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.provinces, {
-                method: 'DELETE',
-                headers:{
-                    Accept: contentType,
-                    'Content-Type': contentType,
-                    },
-                body:JSON.stringify({_id:province._id})
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to delete province')
-            }
-            deleteProvince(province._id)
+            await fetcher({_id:province._id}, apiEndpoints.techAdmin.provinces, 'DELETE')
+            deleteProvince(province._id as string)
 
         } 
         catch (error) {
