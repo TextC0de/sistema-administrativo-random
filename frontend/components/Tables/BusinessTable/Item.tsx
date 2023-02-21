@@ -6,6 +6,7 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 import mongoose from 'mongoose'
 import { useRouter } from 'next/router'
 import { slugify } from 'lib/utils'
+import fetcher from 'lib/fetcher'
 
 interface props{
     business:IBusiness,
@@ -14,26 +15,10 @@ interface props{
 
 export default function Item({business, deleteBusiness}:props){
 
-    const deleteData = async () => {
-        //console.log('deleting');
-        const contentType = 'application/json'
-        
+    const deleteData = async () => {        
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.businesses, {
-                method: 'DELETE',
-                headers: {
-                    Accept: contentType,
-                    'Content-Type': contentType,
-                    },
-                body:JSON.stringify({_id:business._id})
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to delete Business')
-            }
-            deleteBusiness(business._id)
+            await fetcher.delete({_id:business._id}, apiEndpoints.techAdmin.businesses)
+            deleteBusiness(business._id as string)
 
         } 
         catch (error) {

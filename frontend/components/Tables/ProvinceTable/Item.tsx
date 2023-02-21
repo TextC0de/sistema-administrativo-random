@@ -16,16 +16,12 @@ interface props{
 export default function Item({province, deleteProvince}:props){
 
     const deleteData = async () => {
-        //console.log('deleting');
-        
         try {
-            await fetcher({_id:province._id}, apiEndpoints.techAdmin.provinces, 'DELETE')
+            await fetcher.delete({_id:province._id}, apiEndpoints.techAdmin.provinces)
             deleteProvince(province._id as string)
-
         } 
         catch (error) {
             console.log(error)
-
         }
     }
 

@@ -1,12 +1,10 @@
-import { Button, Table } from 'flowbite-react'
+import { Table } from 'flowbite-react'
 import { IUser } from 'backend/models/interfaces'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import {CgPassword} from 'react-icons/cg'
 import Link from 'next/link'
 import * as apiEndpoints from 'lib/apiEndpoints'
-import { useRouter } from 'next/router'
 import mongoose from 'mongoose'
-import { slugify } from 'lib/utils'
 import fetcher from 'lib/fetcher'
 interface props{
     user:IUser,
@@ -19,9 +17,8 @@ export default function Item({user, deleteUser}:props){
         //console.log('deleting');
         
         try {
-            await fetcher({_id:user._id}, apiEndpoints.techAdmin.users, 'DELETE')
+            await fetcher.delete({_id:user._id}, apiEndpoints.techAdmin.users)
             deleteUser(user._id)
-
         } 
         catch (error) {
             console.log(error)
@@ -30,7 +27,7 @@ export default function Item({user, deleteUser}:props){
 
     async function reGeneratePassword(){        
         try {
-            await fetcher({_id:user._id}, apiEndpoints.techAdmin.users + 'new-password', 'PUT')
+            await fetcher.put({_id:user._id}, apiEndpoints.techAdmin.users + 'new-password')
         } 
         catch (error) {
             console.log(error)

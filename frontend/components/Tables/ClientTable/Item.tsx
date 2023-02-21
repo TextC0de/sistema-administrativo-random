@@ -6,6 +6,7 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 import mongoose from 'mongoose'
 import { useRouter } from 'next/router'
 import { slugify } from 'lib/utils'
+import fetcher from 'lib/fetcher'
 
 interface props{
     client:IClient,
@@ -20,30 +21,12 @@ export default function Item({client, deleteClient}:props){
     }
 
     const deleteData = async () => {
-        //console.log('deleting');
-        const contentType = 'application/json'
-        
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.clients, {
-                method: 'DELETE',
-                headers: {
-                    Accept: contentType,
-                    'Content-Type': contentType,
-                    },
-                body:JSON.stringify({_id:client._id})
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to delete Client')
-            }
-            deleteClient(client._id)
-
+            await fetcher.delete({_id:client._id}, apiEndpoints.techAdmin.clients)
+            deleteClient(client._id as string)
         } 
         catch (error) {
             console.log(error)
-
         }
     }
 

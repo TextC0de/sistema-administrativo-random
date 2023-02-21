@@ -5,6 +5,7 @@ import Link from 'next/link'
 import * as apiEndpoints from 'lib/apiEndpoints'
 import { useRouter } from 'next/router'
 import mongoose from 'mongoose'
+import fetcher from 'lib/fetcher'
 
 interface props{
     branch:IBranch,
@@ -14,30 +15,13 @@ interface props{
 export default function Item({branch, deleteBranch}:props){
     console.log(branch)
     const deleteData = async () => {
-        const contentType='application/json'
-
-        
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.branches, {
-                method: 'DELETE',
-                headers: {
-                    Accept: contentType,
-                    'Content-Type': contentType,
-                    },
-                body:JSON.stringify({_id:branch._id})
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to delete branch')
-            }
+            await fetcher.delete({_id:branch._id}, apiEndpoints.techAdmin.branches)
             deleteBranch(branch._id as string)
 
         } 
         catch (error) {
             console.log(error)
-
         }
     }
 

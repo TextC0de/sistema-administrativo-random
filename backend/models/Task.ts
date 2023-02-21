@@ -29,7 +29,7 @@ export class Task {
     @prop({type:String, required:true})
     taskType:TaskType
     
-    @prop({type:String, required:true})
+    @prop({type:String, default:'Pendiente'})
     status:TaskStatus
     
     @prop({type:String, required:true})

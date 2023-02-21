@@ -1,7 +1,9 @@
 import { Button, Label, TextInput } from 'flowbite-react';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, useState } from 'react';
-import * as apiEndpoints from 'lib/apiEndpoints'
+import fetcher from 'lib/fetcher';
+import * as api from 'lib/apiEndpoints'
+
 export interface IBusinessForm{
     _id:string,
     name:string
@@ -18,7 +20,6 @@ interface props{
 
 export default function BusinessForm({businessForm, newBusiness=true }:props){
     const router = useRouter()
-    const contentType = 'application/json'
     const [form,setForm] = useState<IBusinessForm>({
         _id:businessForm._id,
         name:businessForm.name
@@ -26,53 +27,24 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
     const[errs, setErrs] = useState<IBusinessFormErrors>()
 
     const postData = async (form:IBusinessForm) => {
-        
-        
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.businesses, {
-                method: 'POST',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to create business')
-            }
+            await fetcher.post(form, api.techAdmin.businesses)
             router.push('/tech-admin/businesses')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo crear la empresa')
         }
     }
 
     const putData = async (form:IBusinessForm) => {
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.businesses, {
-                method: 'PUT',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to update business')
-                
-            }
+            await fetcher.put(form, api.techAdmin.businesses)
             router.push('/tech-admin/businesses')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo actualizar la empresa')
         }
     }
 
@@ -105,9 +77,7 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
         } else {
             setErrs(errs)
         }
-    }
-    console.log(newBusiness);
-    
+    }    
     return(
         <>
             <form className='flex flex-col gap-4 w-50' onSubmit={handleSubmit}>

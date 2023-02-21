@@ -25,7 +25,7 @@ export default function Item({task, deleteTask}:props){
     };
     const handleDelete = async () =>{
         try {
-            await fetcher({_id:task._id}, api.techAdmin.tasks, 'DELETE')
+            await fetcher.delete({_id:task._id}, api.techAdmin.tasks)
             deleteTask(task._id as string)
         } catch (error) {
             console.log(error)

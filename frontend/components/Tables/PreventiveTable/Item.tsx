@@ -4,8 +4,20 @@ import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Link from 'next/link'
 import { Button, Table, Badge } from 'flowbite-react'
 import { Month } from 'backend/models/types'
+import * as api from 'lib/apiEndpoints'
+import fetcher from 'lib/fetcher'
 
-export default function Item({preventive}:{preventive:IPreventive}){
+export default function Item({preventive, deletePreventive}:{preventive:IPreventive, deletePreventive:(id:string)=>void}){
+
+    const deleteData = async () => {
+        try {
+            await fetcher.delete({_id:preventive._id}, api.techAdmin.preventives)
+            deletePreventive(preventive._id as string)
+        } 
+        catch (error) {
+            console.log(error)
+        }
+    }
 
     function imposedMonths(months:Month[]){
         return months.length>1?months.map(month => `${month}, `):months[0]
@@ -29,7 +41,7 @@ export default function Item({preventive}:{preventive:IPreventive}){
                             <BsFillPencilFill color="gray" size="15"/>
                         </button>
                     </Link>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg'>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>       
                 </div>

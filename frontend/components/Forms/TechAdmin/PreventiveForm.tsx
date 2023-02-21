@@ -2,11 +2,10 @@ import { Button, Dropdown, Label, Select, Textarea } from 'flowbite-react';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, MouseEventHandler, useState } from 'react';
 import { IBranch, IBusiness, ICity, IClient, IPreventive, IUser } from 'backend/models/interfaces';
-import * as apiEndpoints from 'lib/apiEndpoints'
+import fetcher from 'lib/fetcher';
+import * as api from 'lib/apiEndpoints'
 import * as types from 'backend/models/types'
 
-import TechnicianTable from 'frontend/components/Tables/UserTable/TechnicianTable';
-import MonthTable from 'frontend/components/Tables/MonthTable';
 import { BsFillXCircleFill } from 'react-icons/bs';
 export interface IPreventiveForm{
         _id:string
@@ -38,8 +37,6 @@ export interface props{
 
 const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branches, clients, technicians}:props) =>{
     const router = useRouter()
-    
-    const contentType = 'application/json'
     const [errors, setErrors] = useState({})
     const [message, setMessage] = useState('')
     const [client, setClient] = useState(preventiveForm.branch.client?preventiveForm.branch.client.name:'')
@@ -64,59 +61,28 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
     const postData = async (form:IPreventiveForm) => {
         
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.preventives, {
-                method: 'POST',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify({...form, status:'Pendiente'}),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to create preventive')
-                
-            }
+            await fetcher.post(form, api.techAdmin.preventives)
             router.push('/tech-admin/preventives')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo crear el preventivo')
         }
     }
 
     const putData = async (form:IPreventiveForm) => {      
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.preventives, {
-                method: 'PUT',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to update preventive')
-                
-            }
+            await fetcher.put(form, api.techAdmin.preventives)
             router.push('/tech-admin/preventives')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo actualizar el preventivo')
         }
     }
 
     const selectClient = (event:ChangeEvent<HTMLSelectElement>) =>{
         const {value} = event.target
-        //setClient(value)
-        //console.log(branches[0]);
-        
         setFilteredBranches(branches.filter(branch => branch.client.name === value))
     }
 
@@ -139,13 +105,13 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
         [name]: business,
         }) 
     }
-
+/* 
     const selectTechnician = (event:ChangeEvent<HTMLSelectElement>) =>{
         
     }
 
 
-
+ */
     const changeObservations = (event:ChangeEvent<HTMLTextAreaElement>) => {
         const {name, value} = event.target
 
@@ -336,7 +302,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                     <ul>
                         {form.assigned.map((technician, index) =>{
                             return(
-                                <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block bg-white' key={index}>
+                                <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block' key={index}>
                                     <div className='flex justify-between items-center gap-2 font-semibold'>
                                         {technician.fullName}
                                         <button className='rounded-full bg-white ' onClick={()=>deleteTechnician(technician._id as string)}>
@@ -372,7 +338,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                     <ul>
                         {form.months.map((month, index) =>{
                             return(
-                                <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block bg-white' key={index}>
+                                <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block' key={index}>
                                     <div className='flex justify-between items-center gap-2 font-semibold'>
                                         {month}
                                         <button className='rounded-full bg-white ' onClick={()=>deleteMonth(month)}>

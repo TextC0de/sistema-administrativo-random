@@ -8,6 +8,7 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 import {useUser} from 'frontend/hooks/useUser'
 import { useEffect } from 'react'
 import { Button } from 'flowbite-react'
+import fetcher from 'lib/fetcher'
 
 
 export default function Header(): JSX.Element{
@@ -17,14 +18,13 @@ export default function Header(): JSX.Element{
     const logout = async() => {
         
         try {
-            const res = await fetch(apiEndpoints.logoutUrl)
-            console.log(res);
-            
+            await fetcher.get(apiEndpoints.logoutUrl)
         } catch (error) {
             console.log(error)
+            alert('Falló al intentar desloguear al usuario')
         }
         logoutUser()
-        router.push('/')
+        router.push('/login')
     }
 
     useEffect(()=>{
