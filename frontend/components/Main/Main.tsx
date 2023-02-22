@@ -6,9 +6,9 @@ export default function Main({children}:{children:JSX.Element | JSX.Element[]}){
     return (
         <main style={{minHeight:'100vh'}}>
             {isLoggedIn() && 
-                <div style={{display:'grid', gridTemplateColumns:'1fr 9fr', minHeight:'inherit'}} className="bg-gray-100">
+                <div style={{display:'grid', minHeight:'inherit'}} className="bg-gray-100 select-none">
                     <SideMenu />
-                        <div className='w-4/5 mx-auto pt-12'>
+                        <div className='w-full mx-auto pl-52'>
                             {children}
                         </div>
                 </div>

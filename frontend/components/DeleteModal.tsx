@@ -14,16 +14,15 @@ export default function DeleteModal({openModal,handleToggleModal, handleDelete}:
         handleDelete()
         handleToggleModal()
     }
+    console.log(openModal)
 return(
     <>
-        {openModal && (
         <Modal
         show={openModal}
         size="md"
         popup={true}
         onClose={handleToggleModal}
         >
-        <Modal.Header />
         <Modal.Body>
             <div className="flex flex-col items-center gap-4">
                 <BsExclamationCircle size={40} color={'gray'} />
@@ -47,6 +46,5 @@ return(
             </div>
         </Modal.Body>
         </Modal>
-        )}
     </>)
 }

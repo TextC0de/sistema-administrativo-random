@@ -23,7 +23,7 @@ export default function CityTable({cities}:props){
             <Table hoverable={true} className='bg-white'>
                 <Table.Head className='bg-white border-b'>
                     <Table.HeadCell>Nombre</Table.HeadCell>
-                    <Table.HeadCell>Province</Table.HeadCell>
+                    <Table.HeadCell>Provincia</Table.HeadCell>
                     <Table.HeadCell className='w-40 text-center'>Acciones</Table.HeadCell>
                 </Table.Head>
                 <Table.Body>

@@ -4,6 +4,7 @@ import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Link from 'next/link'
 import { Badge, Button, Table } from 'flowbite-react'
 import { useState } from 'react'
+import Modal from 'frontend/components/Modal'
 import DeleteModal from 'frontend/components/DeleteModal'
 
 interface props{
@@ -19,6 +20,7 @@ export default function Item({task, deleteTask}:props){
         setOpenModal(!openModal);
     };
     const handleDelete = () =>{
+        //TODO: agregar fetch de delete a la base de datos aca
         deleteTask(task._id as string)
     }
     return (
@@ -41,6 +43,7 @@ export default function Item({task, deleteTask}:props){
                     <button onClick={handleToggleModal} className='p-0.5 hover:bg-gray-200 rounder-lg'>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>
+                    <Modal openModal={openModal} handleToggleModal={handleToggleModal} handleDelete={handleDelete}/>
                     <DeleteModal openModal={openModal} handleToggleModal={handleToggleModal} handleDelete={handleDelete}/>
                 </div>
             </Table.Cell>

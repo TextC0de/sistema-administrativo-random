@@ -17,7 +17,7 @@ export default function SideMenu(){
     const {user} = useUser()
     
     return (
-        <div className="flex flex-col items-center w-52 h-full overflow-hidden text-gray-400 bg-gray-900">
+        <div className="flex flex-col fixed items-center w-52 h-full overflow-hidden text-gray-400 bg-gray-900">
             <div className="w-full px-1">
                 <Item title={"Dashboard"} path={'/'}>
                     <RiDashboardFill />
@@ -49,7 +49,6 @@ export default function SideMenu(){
                         <Item title={"Usuarios"} path={'/tech-admin/users'}>
                             <RiGroupLine />
                         </Item>
-                        
                     </div>
                 }
             </div>

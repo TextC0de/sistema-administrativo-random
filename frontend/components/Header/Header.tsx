@@ -37,7 +37,7 @@ export default function Header(): JSX.Element{
 
     return(
         <header className='header sticky top-0 bg-white shadow-md flex items-center justify-between h-16 px-6 py-02' >
-            <div className='flex-shrink-0 flex items-center justify-center'>
+            <div className='flex-shrink-0 flex items-center justify-center select-none'>
                 <Link href='/' >
                         <Image     
                             height={'60px'}
@@ -47,8 +47,8 @@ export default function Header(): JSX.Element{
                         />  
                 </Link>
                 </div>
-                {isLoggedIn() && <h2 className='flex items-center text-lg'>Hola {`${user.firstName}`}!</h2>}
-                <div className='flex justify-end'>
+                {isLoggedIn() && <h2 className='flex items-center text-black text-lg'>Hola {`${user.firstName}`}!</h2>}
+                <div className='flex justify-end select-none'>
                     {
                     isLoggedIn() && 
                         <Button onClick={logout}>

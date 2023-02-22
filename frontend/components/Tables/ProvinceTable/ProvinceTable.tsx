@@ -12,8 +12,6 @@ export default function ProvinceTable({provinces}:props){
 
     const deleteProvince = (id:string | mongoose.Schema.Types.ObjectId) =>{
         const newTable = (prev:IProvince[]) => prev.filter(province => province._id !== id)
-        //console.log(newTable(provinces));
-        
         setTableProvinces(newTable(provinces))
     }
 

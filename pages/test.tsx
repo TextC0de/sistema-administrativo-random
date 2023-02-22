@@ -53,13 +53,13 @@ export async function getServerSideProps({req,res}:GetServerSidePropsContext) {
     await dbConnect() 
 
     //const docUser = await UserModel.findOne()
-/*     const b = Business.find()
+    const b = Business.find()
     const p = Province.find()
     const c = Client.find()
     const docUsers = await UserModel.findOne().populate(User.getPopulateParameters())
- */ 
-    const preventive = await Preventive.findOne().populate(Preventive.getPopulateParameters())
-    const branch = await Branch.findOne().populate(Branch.getPopulateParameters())
+
+    // const preventive = await Preventive.findOne().populate(Preventive.getPopulateParameters())
+    // const branch = await Branch.findOne().populate(Branch.getPopulateParameters())
     
     //console.log(preventive?.schema.indexes())
     
