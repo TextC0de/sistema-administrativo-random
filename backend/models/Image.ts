@@ -1,4 +1,4 @@
-import { getModelForClass, prop, modelOptions } from "@typegoose/typegoose"
+import { getModelForClass, prop, modelOptions, ReturnModelType, DocumentType } from "@typegoose/typegoose"
 import mongoose from "mongoose"
 
 
@@ -11,6 +11,28 @@ export class Image{
     
     @prop({type:String, required:true})
     url:string
+
+    @prop({type:Boolean, default:false})
+    deleted:boolean
+
+    static async findUndeleted(this:ReturnModelType<typeof Image>, filter:Object = {}){
+        return await this.find({...filter, deleted:false})
+    }
+
+    static async findOneUndeleted(this:ReturnModelType<typeof Image>, filter:Object = {}){
+        return this.findOne({...filter, deleted:false})
+    }
+    
+    async softDelete(this:DocumentType<Image>){
+        this.deleted = true
+        await this.save()
+    }
+
+    async restore(this:DocumentType<Image>){
+        this.deleted = false
+        await this.save()
+    }
+
 }
 
 export default getModelForClass(Image)

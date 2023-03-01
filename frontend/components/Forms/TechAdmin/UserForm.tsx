@@ -2,9 +2,9 @@ import { IUser, ICity } from "backend/models/interfaces";
 import { Role, roles } from "backend/models/types";
 import { Label, TextInput, Select, Button, Checkbox } from "flowbite-react";
 import { useRouter } from "next/router";
-import provinces from "pages/tech-admin/provinces";
 import { useState, ChangeEvent } from "react";
-import * as apiEndpoints from 'lib/apiEndpoints'
+import fetcher from 'lib/fetcher';
+import * as api from 'lib/apiEndpoints'
 
 export interface IUserForm{
     _id:string,
@@ -45,50 +45,23 @@ export default function UserForm({userForm, newUser=true, cities}:props){
 
     const postData = async (form:IUserForm) => {
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.users, {
-                method: 'POST',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to create user')
-            }
+            await fetcher.post(form, api.techAdmin.users)
             router.push('/tech-admin/users')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo crear el usuario')
         }
     }
 
     const putData = async (form:IUserForm) => {
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.users, {
-                method: 'PUT',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to update user')
-                
-            }
+            await fetcher.put(form, api.techAdmin.users)
             router.push('/tech-admin/users')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo actualizar el usuario')
         }
     }
 

@@ -1,4 +1,4 @@
-import { modelOptions, getModelForClass, index, prop, Ref } from "@typegoose/typegoose"
+import { modelOptions, getModelForClass, index, prop, Ref, DocumentType, ReturnModelType } from "@typegoose/typegoose"
 import { Province } from "./Province"
 import BranchModel from './Branch'
 import dbConnect from "lib/dbConnect"
@@ -9,6 +9,9 @@ import mongoose from "mongoose"
 export class City{
     _id:mongoose.Types.ObjectId | string
     
+    @prop({type:Boolean, default:false})
+    deleted:boolean
+
     @prop({type:String, required:true})
     name:string
     
@@ -16,13 +19,31 @@ export class City{
     province:Ref<Province>
 
     static getPopulateParameters(){
+        getModelForClass(Province)
         return[{path:'province', model:'Province'}]
     }
 
+    static async findUndeleted(this:ReturnModelType<typeof City>, filter:Object = {}){
+        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+
+    static async findOneUndeleted(this:ReturnModelType<typeof City>, filter:Object = {}){
+        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+    
+    async softDelete(this:DocumentType<City>){
+        this.deleted = true
+        await this.save()
+    }
+
+    async restore(this:DocumentType<City>){
+        this.deleted = false
+        await this.save()
+    }
+
     async getBranches(this:City){
-        await dbConnect()
-        return BranchModel.find({city:this})
-    } 
+        return await BranchModel.findUndeleted({city:this})
+    }
 }
 
 export default getModelForClass(City)

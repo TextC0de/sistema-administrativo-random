@@ -7,6 +7,8 @@ import UserTable from "frontend/components/Tables/UserTable";
 import Link from "next/link";
 import { BsPlus } from "react-icons/bs";
 import TitleButton from "frontend/components/TitleButton";
+import {Province} from "backend/models/Province";
+import { getModelForClass } from "@typegoose/typegoose";
 
 interface props{
     users:IUser[]
@@ -24,6 +26,6 @@ export default function Users({users}:props){
 
 export async function getServerSideProps(ctx:GetServerSidePropsContext) {
     await dbConnect()
-    const docUsers = await User.find({}).populate(User.getPopulateParameters())
+    const docUsers = await User.findUndeleted({})
     return {props:{users:formatIds(docUsers)}}
 }

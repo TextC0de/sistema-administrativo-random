@@ -25,6 +25,11 @@ const ClientController={
         const {body:{name}} = req
         await dbConnect()
         const clientForm = {name}
+        const deletedClient = await Client.findOne({name})
+        if(deletedClient){
+            await deletedClient.restore()
+            return res.json({data:{deletedClient, message:'created Client succesfully'}})    
+        }
         const newClient = await Client.create(clientForm)
         if(!newClient) return res.json({statusCode:500, error:'could not create Client'})
     
@@ -35,9 +40,9 @@ const ClientController={
         const {body:_id} = req
     
         await dbConnect()
-        const deletedClient = await Client.findByIdAndDelete(_id)
+        const deletedClient = await Client.findById(_id)
         if(!deletedClient) return res.json({statusCode:500, error:'could not delete Client'})
-        //const Client = formatIds(newClient)
+        await deletedClient.restore()
         res.json({data:{message:'deleted Client succesfully'}})
     }
 }

@@ -1,4 +1,4 @@
-import { modelOptions, getModelForClass, index, prop, Ref } from "@typegoose/typegoose"
+import { modelOptions, getModelForClass, index, prop, Ref, ReturnModelType, DocumentType } from "@typegoose/typegoose"
 import dbConnect from "lib/dbConnect"
 import { Business } from "./Business"
 import { City } from "./City"
@@ -23,9 +23,14 @@ export class Branch{
     @prop({type:mongoose.SchemaTypes.Array, ref:'Business', required:true})
     businesses:Ref<Business>[]
 
+    @prop({type:Boolean, default:false})
+    deleted:boolean
+
 
     static getPopulateParameters(){
-
+        getModelForClass(City)
+        getModelForClass(Client)
+        getModelForClass(Business)
         return [
             {
                 path:'city', 
@@ -39,10 +44,27 @@ export class Branch{
             }
         ]
     }
+
+    static async findUndeleted(this:ReturnModelType<typeof Branch>, filter:Object = {}){
+        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+
+    static async findOneUndeleted(this:ReturnModelType<typeof Branch>, filter:Object = {}){
+        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+    
+    async softDelete(this:DocumentType<Branch>){
+        this.deleted = true
+        await this.save()
+    }
+
+    async restore(this:DocumentType<Branch>){
+        this.deleted = false
+        await this.save()
+    }
     
     async getTasks(this:Branch):Promise<Task[]>{
-        await dbConnect()
-        return TaskModel.find({branch:this}).populate(Task.getPopulateParameters())
+        return TaskModel.findUndeleted({branch:this})
     }
 
 

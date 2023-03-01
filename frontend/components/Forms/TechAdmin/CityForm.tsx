@@ -1,8 +1,9 @@
 import { Button, Label, Select, TextInput } from 'flowbite-react';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, useState } from 'react';
-import * as apiEndpoints from 'lib/apiEndpoints'
 import { IProvince } from 'backend/models/interfaces';
+import fetcher from 'lib/fetcher';
+import * as api from 'lib/apiEndpoints'
 export interface ICityForm{
     _id:string
     name:string
@@ -22,7 +23,7 @@ interface props{
 
 export default function cityForm({cityForm, newCity=true, provinces}:props){
     const router = useRouter()
-    const contentType = 'application/json'
+
     const [form, setForm] = useState<ICityForm>({
         _id:cityForm._id,
         name:cityForm.name,
@@ -32,51 +33,23 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
 
     const postData = async (form:ICityForm) => {
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.cities, {
-                method: 'POST',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to create city')
-            }
+            await fetcher.post(form, api.techAdmin.cities)
             router.push('/tech-admin/cities')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo crear la ciudad')
         }
     }
 
     const putData = async (form:ICityForm) => {
-        const { id } = router.query
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.cities, {
-                method: 'PUT',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to update city')
-                
-            }
+            await fetcher.put(form, api.techAdmin.cities)
             router.push('/tech-admin/cities')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo actualizar la ciudad')
         }
     }
 

@@ -1,7 +1,8 @@
 import { Button, Label, TextInput } from 'flowbite-react';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, useState } from 'react';
-import * as apiEndpoints from 'lib/apiEndpoints'
+import fetcher from 'lib/fetcher';
+import * as api from 'lib/apiEndpoints'
 export interface IProvinceForm{
     _id:string,
     name:string
@@ -18,7 +19,6 @@ interface props{
 
 export default function ProvinceForm({provinceForm, newProvince=true }:props){
     const router = useRouter()
-    const contentType = 'application/json'
     const [form,setForm] = useState<IProvinceForm>({
         _id:provinceForm._id,
         name:provinceForm.name
@@ -26,53 +26,24 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
     const[errs, setErrs] = useState<IProvinceFormErrors>()
 
     const postData = async (form:IProvinceForm) => {
-        
-        
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.provinces, {
-                method: 'POST',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to create province')
-            }
+            await fetcher.post(form, api.techAdmin.provinces)
             router.push('/tech-admin/provinces')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo crear la provincia')
         }
     }
 
     const putData = async (form:IProvinceForm) => {
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.provinces, {
-                method: 'PUT',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to update province')
-                
-            }
+            await fetcher.put(form, api.techAdmin.provinces)
             router.push('/tech-admin/provinces')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo actualizar la provincia')
         }
     }
 

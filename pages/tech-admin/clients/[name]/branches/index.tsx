@@ -1,6 +1,10 @@
+import { getModelForClass } from '@typegoose/typegoose'
+import {Business} from 'backend/models/Business'
 import Client from 'backend/models/Client'
 import { IBranch, IClient } from 'backend/models/interfaces'
+import {Province} from 'backend/models/Province'
 import ClientBranchesTable from 'frontend/components/Tables/ClientBranchesTable'
+import dbConnect from 'lib/dbConnect'
 import { deSlugify, formatIds, slugify } from 'lib/utils'
 import { GetServerSidePropsContext } from 'next'
 import Link from 'next/link'
@@ -12,7 +16,6 @@ interface props{
 }
 
 export default function ClientView({client, branches}:props){
-    console.log(branches)
     return(
         <>
             <h1 className='text-lg'>Cliente: {client.name}</h1>
@@ -34,12 +37,11 @@ export default function ClientView({client, branches}:props){
 export async function getServerSideProps(ctx:GetServerSidePropsContext){
     const {params} = ctx
     if(!params) return {props:{}}
+    await dbConnect()
     const docClient = await Client.findOne({name:deSlugify(params.name as string)})
     if(!docClient) return {props:{}}
     const docBranches = await docClient.getBranches()
     const client = formatIds(docClient)
     const branches = formatIds(docBranches)
-    //console.log(branches)
-    
     return {props:{client, branches}}
 }

@@ -8,6 +8,7 @@ import mongoose from 'mongoose'
 import { slugify } from 'lib/utils'
 import { useState } from 'react'
 import DeleteModal from 'frontend/components/DeleteModal'
+import fetcher from 'lib/fetcher'
 
 interface props{
     province:IProvince,
@@ -17,42 +18,25 @@ interface props{
 export default function Item({province, deleteProvince}:props){
     const [toggleModal, setToggleModal] = useState(false);
 
-    const openModal = () => {
-        console.log("modal abierto")
-        setToggleModal(true);
-    };
-    const closeModal = () => {
-        console.log("modal cerrado")
-        setToggleModal(false);
-    };
-
-    const handleDelete = async () =>{
-            const contentType='application/json'
-            
-            try {
-                const res: Response = await fetch(apiEndpoints.techAdmin.provinces, {
-                    method: 'DELETE',
-                    headers:{
-                        Accept: contentType,
-                        'Content-Type': contentType,
-                        },
-                    body:JSON.stringify({_id:province._id})
-                })
-
-                // Throw error with status code in case Fetch API req failed
-                if (!res.ok) {
-                    console.log(res);
-                    throw new Error('failed to delete province')
-                }
-                deleteProvince(province._id)
-
-            } 
-            catch (error) {
-                console.log(error)
-
-            }
-        
+    const deleteData = async () => {
+        try {
+            await fetcher.delete({_id:province._id}, apiEndpoints.techAdmin.provinces)
+            deleteProvince(province._id as string)
+        } 
+        catch (error) {
+            console.log(error)
+        }
     }
+
+    function openModal(){
+        setToggleModal(true)
+    }    
+    
+    
+    function closeModal(){
+        setToggleModal(false)
+    }    
+    
     return(
         <Table.Row className='border-b'>
             <Table.Cell>{province.name}</Table.Cell>
@@ -67,7 +51,7 @@ export default function Item({province, deleteProvince}:props){
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>       
 
-                    <DeleteModal openModal={toggleModal} handleToggleModal={closeModal} handleDelete={handleDelete}/>
+                    <DeleteModal openModal={toggleModal} handleToggleModal={closeModal} handleDelete={deleteData}/>
                 </div>
             </Table.Cell>
         </Table.Row>

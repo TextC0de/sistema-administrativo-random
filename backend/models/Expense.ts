@@ -1,4 +1,4 @@
-import { prop, Ref, getModelForClass, modelOptions, ReturnModelType  } from "@typegoose/typegoose";
+import { prop, Ref, getModelForClass, modelOptions, ReturnModelType, DocumentType  } from "@typegoose/typegoose";
 import dbConnect from "lib/dbConnect";
 import { IPopulateParameter } from "./interfaces";
 import { ExpenseStatus, ExpenseType, PaySource } from "./types";
@@ -39,7 +39,15 @@ export class Expense{
     @prop({ref:  'Activity', required:false})
     activity?:Ref<Activity>
     
+    @prop({type:Boolean, default:false})
+    deleted:boolean
+
+
     static getPopulateParameters(){
+        getModelForClass(User)
+        getModelForClass(Image)
+        getModelForClass(Task)
+        getModelForClass(Activity)
         return [
             {
                 path:'doneBy'
@@ -60,6 +68,23 @@ export class Expense{
         ]
     }
 
+    static async findUndeleted(this:ReturnModelType<typeof Expense>, filter:Object = {}){
+        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+
+    static async findOneUndeleted(this:ReturnModelType<typeof Expense>, filter:Object = {}){
+        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+    
+    async softDelete(this:DocumentType<Expense>){
+        this.deleted = true
+        await this.save()
+    }
+
+    async restore(this:DocumentType<Expense>){
+        this.deleted = false
+        await this.save()
+    }
 
 }
 

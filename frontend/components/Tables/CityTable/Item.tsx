@@ -6,6 +6,7 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 import { useRouter } from 'next/router'
 import mongoose from 'mongoose'
 import { slugify } from 'lib/utils'
+import fetcher from 'lib/fetcher'
 interface props{
     city:ICity,
     deleteCity: (id:string | mongoose.Schema.Types.ObjectId) => void
@@ -14,30 +15,12 @@ interface props{
 export default function Item({city, deleteCity}:props){
 
     const deleteData = async () => {
-        //console.log('deleting');
-        const contentType = 'application/json'
-        
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.cities, {
-                method: 'DELETE', 
-                headers: {
-                    Accept: contentType,
-                    'Content-Type': contentType,
-                    },
-                body:JSON.stringify({_id:city._id})
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to delete City')
-            }
-            deleteCity(city._id)
-
+            await fetcher.delete({_id:city._id}, apiEndpoints.techAdmin.cities)
+            deleteCity(city._id as  string)
         } 
         catch (error) {
             console.log(error)
-
         }
     }
 

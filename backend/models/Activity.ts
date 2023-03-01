@@ -1,4 +1,4 @@
-import { prop, Ref, getModelForClass, ReturnModelType, modelOptions  } from "@typegoose/typegoose";
+import { prop, Ref, getModelForClass, ReturnModelType, modelOptions, DocumentType  } from "@typegoose/typegoose";
 import dbConnect from "lib/dbConnect";
 import { IPopulateParameter } from "./interfaces";
 import UserModel, {User} from './User'
@@ -29,25 +29,47 @@ export class Activity{
     @prop({type:Date, required:false})
     finishDate:Date
 
+    @prop({type:Boolean, default:false})
+    deleted:boolean
+
+
     static getPopulateParameters():IPopulateParameter[]{
+        getModelForClass(User)
+
         return [
             {
-                path:'openedBy'
+                path:'openedBy',
             },
             {
-                path:'participants'
+                path:'participants',
             }
         ]
     }
 
+    static async findUndeleted(this:ReturnModelType<typeof Activity>, filter:Object = {}){
+        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+
+    static async findOneUndeleted(this:ReturnModelType<typeof Activity>, filter:Object = {}){
+        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
+    }
+    
+    async softDelete(this:DocumentType<Activity>){
+        this.deleted = true
+        await this.save()
+    }
+
+    async restore(this:DocumentType<Activity>){
+        this.deleted = false
+        await this.save()
+    }
+
     async getTasks(this:Activity):Promise<Task[]>{
-        await dbConnect()
-        return TaskModel.find({activity:this}).populate(Task.getPopulateParameters())
+        return TaskModel.findUndeleted({activity:this})
     }
 
     async getExpenses(this:Activity):Promise<Expense[]>{
-        await dbConnect()
-        return ExpenseModel.find({activity:this}).populate(Expense.getPopulateParameters())
+        return ExpenseModel.findUndeleted({activity:this})
     }
 }
 

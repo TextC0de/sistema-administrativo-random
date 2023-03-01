@@ -3,8 +3,8 @@ import { useRouter } from 'next/router'
 import { useUser } from 'frontend/hooks/useUser';
 import Link from 'next/link';
 import { Button, TextInput } from 'flowbite-react';
-//import { mutate } from 'swr'
-
+import fetcher from 'lib/fetcher';
+import * as api from 'lib/apiEndpoints'
 interface IUserRegisterForm{
   firstName:string;
   lastName:string;
@@ -18,7 +18,7 @@ type Role = 'Tecnico' | 'Administrativo Tecnico' | 'Administrativo Contable' | '
 
 const RegisterForm = ({}) => {
   const router = useRouter()
-  const contentType = 'application/json'
+
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState('')
   const {loginUser} = useUser()
@@ -35,30 +35,12 @@ const RegisterForm = ({}) => {
   /* The POST method adds a new entry in the mongodb database. */
   const postData = async (form:IUserRegisterForm) => {
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          Accept: contentType,
-          'Content-Type': contentType,
-        },
-        body: JSON.stringify(form),
-      })
-
-      // Throw error with status code in case Fetch API req failed
-      if (!res.ok) {
-        throw new Error('failed to register user')
-      }
-      await fetch('/api/auth', {
-        method:'POST',
-        headers:{
-          Accept: contentType,
-          'Content-Type':contentType,
-        },
-        body:JSON.stringify({email: form.email, password:form.password })
-      })
+      await fetcher.post(form, api.registerUrl)
+      await fetcher.post({email:form.email, password:form.password}, api.authUrl)
       loginUser()
       router.push('/')
     } catch (error) {
+      console.log(error)
       setMessage('Failed to login')
     }
   }

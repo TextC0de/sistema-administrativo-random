@@ -4,6 +4,8 @@ import { useUser } from 'frontend/hooks/useUser'
 import * as GS from 'globalStyles'
 import Link from 'next/link';
 import { Button, TextInput } from 'flowbite-react';
+import fetcher from 'lib/fetcher';
+import * as api from 'lib/apiEndpoints'
 
 interface UserLoginForm {
   email:string;
@@ -12,7 +14,6 @@ interface UserLoginForm {
 
 export default function LoginForm({}){
   const router = useRouter()
-  const contentType = 'application/json'
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState('')
   const {loginUser} = useUser()
@@ -26,21 +27,7 @@ export default function LoginForm({}){
   /* The POST method adds a new entry in the mongodb database. */
   const postData = async (form:UserLoginForm) => {
     try {
-      const res: Response = await fetch('/api/auth', {
-        method: 'POST',
-        headers: {
-          Accept: contentType,
-          'Content-Type': contentType,
-        },
-        body: JSON.stringify(form),
-      })
-
-      // Throw error with status code in case Fetch API req failed
-      if (!res.ok) {
-        console.log(res);
-        throw new Error('failed to login')
-        
-      }
+      await fetcher.post(form, api.authUrl)
       loginUser()
       router.push('/')
     } 

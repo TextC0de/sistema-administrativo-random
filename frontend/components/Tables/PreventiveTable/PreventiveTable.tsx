@@ -2,8 +2,16 @@ import { IPreventive} from 'backend/models/interfaces'
 
 import Item from './Item'
 import {Table} from 'flowbite-react'
+import { useState } from 'react'
 
 export default function PreventiveTable({preventives}:{preventives:IPreventive[]}){
+    const [tablePreventive, setTablePreventive] = useState<IPreventive[]>(preventives)
+
+    const deletePreventive = (id:string) =>{
+        const newTable = (prev:IPreventive[]) => prev.filter(preventive => preventive._id !== id)
+        setTablePreventive(newTable(tablePreventive))
+    }
+
     return(
         <>
             <Table hoverable={true}  className='bg-white'>
@@ -20,7 +28,7 @@ export default function PreventiveTable({preventives}:{preventives:IPreventive[]
                         <Table.HeadCell>Acciones</Table.HeadCell>
                 </Table.Head >
                 <Table.Body >
-                    {preventives.map((preventive, index) => <Item key={index} preventive={preventive}/>)}
+                    {preventives.map((preventive, index) => <Item key={index} preventive={preventive} deletePreventive={deletePreventive}/>)}
                 </Table.Body>
             </Table>
         </>

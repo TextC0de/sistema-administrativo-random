@@ -1,14 +1,9 @@
 import { Button, Label, Select, TextInput } from 'flowbite-react';
 import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, useRef, useState } from 'react';
-import * as apiEndpoints from 'lib/apiEndpoints'
-import { IBusiness, ICity, IClient, IProvince } from 'backend/models/interfaces';
-import { FONT_MANIFEST } from 'next/dist/shared/lib/constants';
-import BusinessTable from 'frontend/components/Tables/BusinessTable';
-import { BsPlus } from 'react-icons/bs';
-import Business from 'backend/models/Business';
-import BranchBusinessTable from 'frontend/components/Tables/BusinessTable/BranchBusinessTable';
-import Preventive from 'backend/models/Preventive';
+import { ChangeEvent, useState } from 'react';
+import { IBusiness, ICity, IClient} from 'backend/models/interfaces';
+import fetcher from 'lib/fetcher';
+import * as api from 'lib/apiEndpoints'
 
 export interface IClientBranchForm{
     _id:string
@@ -32,73 +27,42 @@ interface props{
 
 export default function ClientBranchForm({branchForm, newBranch=true, cities, businesses}:props){
     const router = useRouter()
-    const contentType = 'application/json'
     const [form, setForm] = useState<IClientBranchForm>({
         _id:branchForm._id,
         number: branchForm.number,
         client: branchForm.client,
-        city: /* newBranch? cities[0] : */ branchForm.city,
+        city: branchForm.city,
         businesses: branchForm.businesses,
     })
     const[errs, setErrs] = useState<IClientBranchFormErrors>()
 
     const postData = async (form:IClientBranchForm) => {
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.branches, {
-                method: 'POST',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to create branch')
-            }
+            await fetcher.post(form, api.techAdmin.branches)
             router.push(`/tech-admin/clients/${form.client.name}/branches`)
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo crear la sucursal')
         }
     }
 
     const putData = async (form:IClientBranchForm) => {      
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.branches, {
-                method: 'PUT',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to update branch')
-                
-            }
+            await fetcher.put(form, api.techAdmin.branches)
             router.push(`/tech-admin/clients/${form.client.name}/branches`)
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo actualizar la sucursal')
         }
     }
 
     function selectCity(e:ChangeEvent<HTMLSelectElement>){
         const {value} = e.target
         const cityName = value.slice(0, value.indexOf(','))
-        //console.log(cityName);
-        
         const city = cities.find(city => city.name === cityName)
         if(city)setForm({...form, city})
-
     }
 
     function handleChange(e:ChangeEvent<HTMLInputElement>){
@@ -127,27 +91,16 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
             setErrs(errs)
         }
     }
-/* 
-    const selectBusiness = (e:any)=>{
-        const {value} = e.target
-        const business = businesses.filter(business => business.name === value)
-
-        
-    } */
 
     const addBusiness = (e:any) => {
         const {value} = e.target
         const business = businesses.find(business => business.name === value)
         if(business)setForm(prev=>{return {...prev, businesses: !prev.businesses.some(x => x._id === business._id)? [...prev.businesses, business] : prev.businesses}})
-
     }
 
     const deleteBranchBusiness = (id:string) =>{
-        //setBranchBusinesses(prev => prev.filter(business=>business._id!=id))
         setForm(prev=>{return {...prev, businesses:prev.businesses.filter(business => business._id!=id)}})
-        
     }
-
 
     return(
         <>
@@ -202,9 +155,6 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                         <option value="default" disabled hidden>Seleccione una empresa a agregar</option>
                         {businesses.map((business, index) =><option key={index} value={business.name}>{business.name}</option>)}
                     </Select>
-                   {/*  <Button onClick={addBusiness} className='col-span-1 gap-2'>
-                        <BsPlus size='20'/>
-                    </Button> */}
                 </div>
                 <ul className='rounded bg-teal-400 p-4'>
                     {form.businesses.map((business, index) =>{
@@ -220,7 +170,6 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                         )
                     })}
                 </ul>
-                {/* <BranchBusinessTable businesses={form.businesses} deleteBusiness={deleteBranchBusiness}/> */}
                 <Button size='sm' type='submit'>Guardar </Button>
             </form>
             <ul>

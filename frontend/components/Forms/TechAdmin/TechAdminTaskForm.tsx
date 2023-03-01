@@ -2,7 +2,8 @@ import { Button, Dropdown, Label, Select, Textarea } from 'flowbite-react';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, MouseEventHandler, useState } from 'react';
 import { IBranch, IBusiness, ICity, IClient, ITask, IUser } from 'backend/models/interfaces';
-import * as apiEndpoints from 'lib/apiEndpoints'
+import fetcher from 'lib/fetcher';
+import * as api from 'lib/apiEndpoints'
 import * as types from 'backend/models/types'
 export interface ITaskForm{
         _id:string
@@ -36,8 +37,6 @@ export interface props{
 
 const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clients, technicians}:props) =>{
     const router = useRouter()
-    
-    const contentType = 'application/json'
     const [errors, setErrors] = useState({})
     const [message, setMessage] = useState('')
     const [client, setClient] = useState(taskForm.branch.client?taskForm.branch.client.name:'')
@@ -60,59 +59,28 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
     const postData = async (form:ITaskForm) => {
         
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.tasks, {
-                method: 'POST',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify({...form, status:'Pendiente'}),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to create task')
-                
-            }
+            await fetcher.post(form, api.techAdmin.tasks)
             router.push('/tech-admin/tasks')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo crear la tarea')
         }
     }
 
     const putData = async (form:ITaskForm) => {      
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.tasks, {
-                method: 'PUT',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to update task')
-                
-            }
+            await fetcher.put(form, api.techAdmin.tasks)
             router.push('/tech-admin/tasks')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo actualizar la tarea')
         }
     }
 
     const selectClient = (event:ChangeEvent<HTMLSelectElement>) =>{
         const {value} = event.target
-        //setClient(value)
-        //console.log(branches[0]);
-        
         setFilteredBranches(branches.filter(branch => branch.client.name === value))
     }
 

@@ -1,7 +1,8 @@
 import { Button, Label, TextInput } from 'flowbite-react';
 import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, useState } from 'react';
-import * as apiEndpoints from 'lib/apiEndpoints'
+import { ChangeEvent, useState } from 'react';
+import fetcher from 'lib/fetcher';
+import * as api from 'lib/apiEndpoints'
 export interface IClientForm{
     _id:string
     name:string
@@ -18,7 +19,6 @@ interface props{
 
 export default function ClientForm({clientForm, newClient=true }:props){
     const router = useRouter()
-    const contentType = 'application/json'
     const [form,setForm] = useState<IClientForm>({
         _id:clientForm._id,
         name:clientForm.name
@@ -26,63 +26,30 @@ export default function ClientForm({clientForm, newClient=true }:props){
     const[errs, setErrs] = useState<IClientFormErrors>()
 
     const postData = async (form:IClientForm) => {
-        
-        
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.clients, {
-                method: 'POST',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to create client')
-            }
+            await fetcher.post(form, api.techAdmin.clients)
             router.push('/tech-admin/clients')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo crear al cliente')
         }
     }
 
     const putData = async (form:IClientForm) => {
-        const { id } = router.query
         try {
-            const res: Response = await fetch(apiEndpoints.techAdmin.clients + id, {
-                method: 'PUT',
-                headers: {
-                Accept: contentType,
-                'Content-Type': contentType,
-                },
-                body: JSON.stringify(form),
-            })
-
-            // Throw error with status code in case Fetch API req failed
-            if (!res.ok) {
-                console.log(res);
-                throw new Error('failed to update client')
-                
-            }
+            await fetcher.put(form, api.techAdmin.clients)
             router.push('/tech-admin/clients')
         } 
         catch (error) {
             console.log(error)
-
+            alert('No se pudo actualizar el cliente')
         }
     }
 
     function handleChange(e:ChangeEvent<HTMLInputElement>){
         const{value} = e.target
-
         setForm({...clientForm, name:value})
-        //console.log(form);
-        
     }
 
     const formValidate = () => {
