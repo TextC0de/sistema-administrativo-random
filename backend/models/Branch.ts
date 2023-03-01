@@ -28,7 +28,9 @@ export class Branch{
 
 
     static getPopulateParameters(){
-
+        getModelForClass(City)
+        getModelForClass(Client)
+        getModelForClass(Business)
         return [
             {
                 path:'city', 

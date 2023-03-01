@@ -44,6 +44,10 @@ export class Expense{
 
 
     static getPopulateParameters(){
+        getModelForClass(User)
+        getModelForClass(Image)
+        getModelForClass(Task)
+        getModelForClass(Activity)
         return [
             {
                 path:'doneBy'

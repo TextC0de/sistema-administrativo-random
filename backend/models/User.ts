@@ -51,6 +51,7 @@ export class User{
     deleted:boolean
 
     static getPopulateParameters(){
+        getModelForClass(City)
         return [
             {
               path:'city',

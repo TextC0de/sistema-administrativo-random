@@ -29,11 +29,7 @@ export default function Preventives({preventives}:IPreventiveProps){
 
 export async function getServerSideProps({req, res}:GetServerSidePropsContext){
     await dbConnect()
-    getModelForClass(Business)
-    getModelForClass(Client)
-    getModelForClass(Province)
     const docPreventives = await Preventive.findUndeleted({})
     if(!docPreventives) return {props:{}}
-    //console.log(docPreventives)
     return {props:{preventives:formatIds(docPreventives)}}
 }

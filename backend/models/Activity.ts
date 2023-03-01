@@ -34,15 +34,14 @@ export class Activity{
 
 
     static getPopulateParameters():IPopulateParameter[]{
+        getModelForClass(User)
+
         return [
             {
                 path:'openedBy',
-                match:{'openedBy.deleted':{$ne:true}}
             },
             {
                 path:'participants',
-                match:{'participants.deleted':{$ne:true}}
-
             }
         ]
     }

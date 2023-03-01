@@ -60,6 +60,12 @@ export class Task {
     deleted:boolean
 
     static getPopulateParameters(){
+        getModelForClass(Branch)
+        getModelForClass(Business)
+        getModelForClass(User)
+        getModelForClass(Image)
+        getModelForClass(Activity)
+
         return [
             {
                 path:'branch',

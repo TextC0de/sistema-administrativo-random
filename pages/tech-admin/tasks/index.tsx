@@ -29,15 +29,10 @@ export default function TechAdminTasks({tasks}:ITaskProps){
 
 export async function getServerSideProps({req, res}:GetServerSidePropsContext){
     await dbConnect()
-    getModelForClass(Business)
-    getModelForClass(User)
-    getModelForClass(Client)
-    getModelForClass(Province)
     const allTasks = await Task.findUndeleted({})
     if(!allTasks) return {props:{}}
     const pendingTasks = allTasks.filter(task => task.status === 'Pendiente')
     const sentTasks = allTasks.filter(task => task.status === 'Enviado')
     const docTasks = pendingTasks.concat(sentTasks)
-    //console.log(tasks)
     return {props:{tasks:formatIds(docTasks)}}
 }

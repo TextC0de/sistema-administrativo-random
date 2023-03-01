@@ -19,7 +19,8 @@ export class City{
     province:Ref<Province>
 
     static getPopulateParameters(){
-        return[{path:'province', model:'Province', match:{'province.deleted':{$ne:true}}}]
+        getModelForClass(Province)
+        return[{path:'province', model:'Province'}]
     }
 
     static async findUndeleted(this:ReturnModelType<typeof City>, filter:Object = {}){

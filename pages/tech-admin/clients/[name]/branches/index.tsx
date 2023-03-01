@@ -38,14 +38,10 @@ export async function getServerSideProps(ctx:GetServerSidePropsContext){
     const {params} = ctx
     if(!params) return {props:{}}
     await dbConnect()
-    getModelForClass(Province)
-    getModelForClass(Business)
     const docClient = await Client.findOne({name:deSlugify(params.name as string)})
     if(!docClient) return {props:{}}
     const docBranches = await docClient.getBranches()
     const client = formatIds(docClient)
     const branches = formatIds(docBranches)
-    //console.log(branches)
-    
     return {props:{client, branches}}
 }

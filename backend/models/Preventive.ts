@@ -42,6 +42,9 @@ export class Preventive {
     deleted:boolean
 
     static getPopulateParameters():IPopulateParameter[]{
+        getModelForClass(User)
+        getModelForClass(Business)
+        getModelForClass(Branch)
         return[
             {
                 path:'assigned',

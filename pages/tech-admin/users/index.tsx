@@ -26,7 +26,6 @@ export default function Users({users}:props){
 
 export async function getServerSideProps(ctx:GetServerSidePropsContext) {
     await dbConnect()
-    getModelForClass(Province)
     const docUsers = await User.findUndeleted({})
     return {props:{users:formatIds(docUsers)}}
 }
