@@ -1,7 +1,6 @@
-import { Table } from 'flowbite-react'
-import mongoose from 'mongoose'
-import { useState } from 'react'
 import { IBusiness } from 'backend/models/interfaces'
+import { useState } from 'react'
+import { Table } from 'flowbite-react'
 import Item from './Item'
 
 interface props{
@@ -10,7 +9,7 @@ interface props{
 export default function BusinessTable({businesses}:props){
     const [tableBusinesses, setTableBusinesses] = useState<IBusiness[]>(businesses)
 
-    const deleteBusiness = (id:string | mongoose.Schema.Types.ObjectId) =>{
+    const deleteBusiness = (id:string) =>{
         const newTable = (prev:IBusiness[]) => prev.filter(business => business._id !== id)
         setTableBusinesses(newTable(tableBusinesses))
     }

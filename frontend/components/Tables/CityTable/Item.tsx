@@ -1,18 +1,27 @@
-import { Button, Table } from 'flowbite-react'
 import { ICity } from 'backend/models/interfaces'
-import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Link from 'next/link'
 import * as apiEndpoints from 'lib/apiEndpoints'
-import { useRouter } from 'next/router'
-import mongoose from 'mongoose'
 import { slugify } from 'lib/utils'
 import fetcher from 'lib/fetcher'
+import { useState } from 'react'
+import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
+import { Table } from 'flowbite-react'
+import Modal from 'frontend/components/Modal'
+
 interface props{
     city:ICity,
-    deleteCity: (id:string | mongoose.Schema.Types.ObjectId) => void
+    deleteCity: (id:string ) => void
 }
 
 export default function Item({city, deleteCity}:props){
+
+    const [modal, setModal] = useState(false);
+    const openModal = () => {
+        setModal(true);
+    };
+    const closeModal = () => {
+        setModal(false);
+    };
 
     const deleteData = async () => {
         try {
@@ -36,9 +45,10 @@ export default function Item({city, deleteCity}:props){
                             <BsFillPencilFill color="gray" size="15"/>
                         </button>
                     </Link>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>       
+                    <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={deleteData}/>
                 </div>
             </Table.Cell>
         </Table.Row>

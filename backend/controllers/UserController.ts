@@ -43,12 +43,14 @@ const UserController = {
         res.status(200).json({data:{user:formatIds(docUser)}, statusCode:200})
     },
     postUser: async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) => {
+  
         const {body:{firstName, lastName, city, roles, email}} = req
         const password = nanoid(10)
         const fullName = `${firstName} ${lastName}`
         const newUser = {firstName, lastName, fullName, city, roles, email, password}
         await dbConnect()
         const deletedUser = await UserModel.findOne({email})
+        console.log("creando usuario")
         if(deletedUser){
             deletedUser.firstName = firstName
             deletedUser.lastName = lastName
@@ -59,10 +61,15 @@ const UserController = {
             await deletedUser.restore()
             return res.status(200).json({data:{user:formatIds(deletedUser)}, statusCode:200})
         }
-        const docUser = await UserModel.create({firstName, lastName, city, roles, email, password})
-        if (!docUser) return res.status(400).json({ error:'failed to create user', statusCode:400 })
-        await Mailer.sendNewUserPassword(newUser)
-        res.status(200).json({data:{user:formatIds(docUser)}, statusCode:200})
+        try{
+            const docUser = await UserModel.create(newUser)
+            if (!docUser) return res.status(400).json({ error:'failed to create user', statusCode:400 })
+            await Mailer.sendNewUserPassword(newUser)
+            res.status(200).json({data:{user:formatIds(docUser)}, statusCode:200})
+        }catch(e){
+            console.log(e)
+        }
+  
     },
     deleteUser: async(req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) => {
         const {body:{_id}} = req

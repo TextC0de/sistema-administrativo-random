@@ -16,8 +16,8 @@ export default function Modal({openModal,handleToggleModal, handleDelete}:props)
 return(
     <>
     { openModal &&
-    <div className="reletive flex items-center justify-center color-gray-600 opacity-25 blur-sm ">
-        <div className="flex flex-col items-center gap-4 color-white">
+    <div className="fixed left-0 top-0 flex items-center justify-center bg-gray-600/50 w-screen h-screen z-10">
+        <div className=" bg-white p-5 rounded-md flex flex-col items-center gap-4 color-white">
             <BsExclamationCircle size={40} color={'gray'} />
             <h3 className="mb-1 text-lg font-normal text-gray-500 dark:text-gray-400">
                 ¿Seguro que desea eliminar esta tarea?

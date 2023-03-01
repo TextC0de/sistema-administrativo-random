@@ -1,15 +1,14 @@
 import { ITask } from 'backend/models/interfaces'
-
 import Item from './Item'
 import {Table} from 'flowbite-react'
 import { useState } from 'react'
+
 export default function TechAdminTaskTable({tasks}:{tasks:ITask[]}){
     const [tableTasks, setTableTasks] = useState<ITask[]>(tasks)
 
     const deleteTask = (id:string) =>{
         const newTable = (prev:ITask[]) => prev.filter(task => task._id !== id)
         setTableTasks(newTable(tableTasks))
-
     }
     return(
         <div className='bg-white sm:rounded-none shadow-gray-100'>

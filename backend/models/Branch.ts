@@ -54,6 +54,8 @@ export class Branch{
     }
     
     async softDelete(this:DocumentType<Branch>){
+        console.log("softdelete");
+        
         this.deleted = true
         await this.save()
     }

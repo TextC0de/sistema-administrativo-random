@@ -1,13 +1,22 @@
-import { dmyDateString, toMonth } from 'lib/utils'
 import { IPreventive } from 'backend/models/interfaces'
-import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Link from 'next/link'
-import { Button, Table, Badge } from 'flowbite-react'
 import { Month } from 'backend/models/types'
+import { dmyDateString, toMonth } from 'lib/utils'
 import * as api from 'lib/apiEndpoints'
 import fetcher from 'lib/fetcher'
+import { useState } from 'react'
+import { Table, Badge } from 'flowbite-react'
+import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
+import Modal from 'frontend/components/Modal'
 
 export default function Item({preventive, deletePreventive}:{preventive:IPreventive, deletePreventive:(id:string)=>void}){
+    const [modal, setModal] = useState(false);
+    const openModal = () => {
+        setModal(true);
+    };
+    const closeModal = () => {
+        setModal(false);
+    };
 
     const deleteData = async () => {
         try {
@@ -41,10 +50,11 @@ export default function Item({preventive, deletePreventive}:{preventive:IPrevent
                             <BsFillPencilFill color="gray" size="15"/>
                         </button>
                     </Link>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>       
                 </div>
+                <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={deleteData}/>
             </Table.Cell>
         </Table.Row>
     )

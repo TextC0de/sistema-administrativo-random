@@ -1,22 +1,26 @@
-import { Button, Table } from 'flowbite-react'
 import { IProvince } from 'backend/models/interfaces'
-import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Link from 'next/link'
 import * as apiEndpoints from 'lib/apiEndpoints'
-import { useRouter } from 'next/router'
-import mongoose from 'mongoose'
 import { slugify } from 'lib/utils'
-import { useState } from 'react'
-import DeleteModal from 'frontend/components/DeleteModal'
 import fetcher from 'lib/fetcher'
+import { useState } from 'react'
+import { Table } from 'flowbite-react'
+import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
+import Modal from 'frontend/components/Modal'
 
 interface props{
     province:IProvince,
-    deleteProvince: (id:string | mongoose.Schema.Types.ObjectId) => void
+    deleteProvince: (id:string) => void
 }
 
 export default function Item({province, deleteProvince}:props){
     const [toggleModal, setToggleModal] = useState(false);
+    function openModal(){
+        setToggleModal(true)
+    }        
+    function closeModal(){
+        setToggleModal(false)
+    }    
 
     const deleteData = async () => {
         try {
@@ -28,15 +32,6 @@ export default function Item({province, deleteProvince}:props){
         }
     }
 
-    function openModal(){
-        setToggleModal(true)
-    }    
-    
-    
-    function closeModal(){
-        setToggleModal(false)
-    }    
-    
     return(
         <Table.Row className='border-b'>
             <Table.Cell>{province.name}</Table.Cell>
@@ -51,7 +46,7 @@ export default function Item({province, deleteProvince}:props){
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>       
 
-                    <DeleteModal openModal={toggleModal} handleToggleModal={closeModal} handleDelete={deleteData}/>
+                    <Modal openModal={toggleModal} handleToggleModal={closeModal} handleDelete={deleteData}/>
                 </div>
             </Table.Cell>
         </Table.Row>

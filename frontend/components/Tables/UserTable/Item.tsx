@@ -1,24 +1,30 @@
-import { Table } from 'flowbite-react'
 import { IUser } from 'backend/models/interfaces'
-import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
-import {CgPassword} from 'react-icons/cg'
 import Link from 'next/link'
 import * as apiEndpoints from 'lib/apiEndpoints'
-import mongoose from 'mongoose'
 import fetcher from 'lib/fetcher'
+import { useState } from 'react'
+import { Table } from 'flowbite-react'
+import {CgPassword} from 'react-icons/cg'
+import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
+import Modal from 'frontend/components/Modal'
+
 interface props{
     user:IUser,
-    deleteUser: (id:string | mongoose.Types.ObjectId) => void
+    deleteUser: (id:string ) => void
 }
 
 export default function Item({user, deleteUser}:props){
-
+    const [modal, setModal] = useState(false);
+    const openModal = () => {
+        setModal(true);
+    };
+    const closeModal = () => {
+        setModal(false);
+    };
     const deleteData = async () => {
-        //console.log('deleting');
-        
         try {
             await fetcher.delete({_id:user._id}, apiEndpoints.techAdmin.users)
-            deleteUser(user._id)
+            deleteUser(user._id as string)
         } 
         catch (error) {
             console.log(error)
@@ -46,12 +52,13 @@ export default function Item({user, deleteUser}:props){
                             <BsFillPencilFill color="gray" size="15"/>
                         </button>
                     </Link>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>   
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={reGeneratePassword}>
                         <CgPassword color='gray' size='15'/>
                     </button>
+                    <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={deleteData}/>
                 </div>
             </Table.Cell>
         </Table.Row>

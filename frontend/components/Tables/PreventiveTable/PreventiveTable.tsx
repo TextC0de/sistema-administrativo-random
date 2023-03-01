@@ -28,7 +28,7 @@ export default function PreventiveTable({preventives}:{preventives:IPreventive[]
                         <Table.HeadCell>Acciones</Table.HeadCell>
                 </Table.Head >
                 <Table.Body >
-                    {preventives.map((preventive, index) => <Item key={index} preventive={preventive} deletePreventive={deletePreventive}/>)}
+                    {tablePreventive.map((preventive, index) => <Item key={index} preventive={preventive} deletePreventive={deletePreventive}/>)}
                 </Table.Body>
             </Table>
         </>

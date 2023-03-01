@@ -1,13 +1,12 @@
-import { dmyDateString } from 'lib/utils'
 import { ITask } from 'backend/models/interfaces'
-import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Link from 'next/link'
-import { Badge, Button, Table } from 'flowbite-react'
-import { useState } from 'react'
-import Modal from 'frontend/components/Modal'
-import DeleteModal from 'frontend/components/DeleteModal'
+import { dmyDateString } from 'lib/utils'
 import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
+import { useState } from 'react'
+import { Badge, Table } from 'flowbite-react'
+import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
+import Modal from 'frontend/components/Modal'
 
 interface props{
     task: ITask,
@@ -34,7 +33,7 @@ export default function Item({task, deleteTask}:props){
     }
     return (
         <>
-            <Table.Row className='border-b'>
+            <Table.Row className='border-b static inset-0'>
                 <Table.Cell>{openedAt}</Table.Cell>
                 <Table.Cell>{task.business.name}</Table.Cell>
                 <Table.Cell>{task.branch.client.name}</Table.Cell>
@@ -56,7 +55,7 @@ export default function Item({task, deleteTask}:props){
                     </div>
                 </Table.Cell>
             </Table.Row> 
-            <DeleteModal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete}/>
+            <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete}/>
         </>
 
     )

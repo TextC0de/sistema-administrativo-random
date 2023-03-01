@@ -54,11 +54,19 @@ const BranchController = {
     deleteBranch: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{_id}} = req
         await dbConnect()
-        const deletedBranch = BranchModel.findById(_id)
-        if(!deletedBranch) return res.json({statusCode:500, error:'could not delete Branch'})
-        await deletedBranch.softDelete()
-        //const branch = formatIds(newBranch)
-        res.json({data:{message:'deleted branch succesfully'}})
+        try {
+            const deletedBranch = await BranchModel.findById(_id)
+            console.log(deletedBranch);
+            
+            if(!deletedBranch) return res.json({statusCode:500, error:'could not delete Branch'})
+            await deletedBranch.softDelete()
+            //const branch = formatIds(newBranch)
+            res.json({data:{message:'deleted branch succesfully'}})
+            
+        } catch (error) {
+            console.log(error);
+            
+        }
     }
 }
 

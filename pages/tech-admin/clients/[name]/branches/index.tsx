@@ -1,34 +1,20 @@
-import { getModelForClass } from '@typegoose/typegoose'
-import {Business} from 'backend/models/Business'
 import Client from 'backend/models/Client'
 import { IBranch, IClient } from 'backend/models/interfaces'
-import {Province} from 'backend/models/Province'
 import ClientBranchesTable from 'frontend/components/Tables/ClientBranchesTable'
 import dbConnect from 'lib/dbConnect'
 import { deSlugify, formatIds, slugify } from 'lib/utils'
 import { GetServerSidePropsContext } from 'next'
-import Link from 'next/link'
-import { BsPlus } from 'react-icons/bs'
+import TitleButton from 'frontend/components/TitleButton'
 
 interface props{
     client:IClient,
     branches:IBranch[]
 }
-
 export default function ClientView({client, branches}:props){
+    let name= `Cliente: ${client.name}`
     return(
         <>
-            <h1 className='text-lg'>Cliente: {client.name}</h1>
-            <div className='flex justify-between' >
-                <h2 className='text-lg'>Sucursales</h2>
-                <Link href={`/tech-admin/clients/[name]/branches/new`} as={`/tech-admin/clients/${slugify(client.name)}/branches/new`} >
-                    <button className='flex justify-between items-center'>
-                        <BsPlus size='30'/>
-                        <h4>Agregar una Sucursal</h4>
-                    </button>
-                </Link>
-            </div>
-            <hr className='mb-2'/>
+            <TitleButton title={name} path='/tech-admin/clients/[name]/branches/new' nameButton='Agregar sucursal'/>
             <ClientBranchesTable branches={branches}/>
         </>
     )

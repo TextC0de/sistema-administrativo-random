@@ -1,5 +1,4 @@
 import Link from 'next/link'
-
 interface props{
     title:string,
     path:string,

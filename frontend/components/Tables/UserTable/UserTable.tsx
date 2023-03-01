@@ -1,7 +1,6 @@
-import { Table } from 'flowbite-react'
-import mongoose from 'mongoose'
-import { useState } from 'react'
 import { IUser } from 'backend/models/interfaces'
+import { useState } from 'react'
+import { Table } from 'flowbite-react'
 import Item from './Item'
 
 interface props{
@@ -10,14 +9,11 @@ interface props{
 export default function UserTable({users}:props){
     const [tableUsers, setTableUsers] = useState<IUser[]>(users)
 
-    const deleteUser = (id:string | mongoose.Schema.Types.ObjectId) =>{
+    const deleteUser = (id:string) =>{
         const newTable = (prev:IUser[]) => prev.filter(user => user._id !== id)
-        //console.log(newTable(users));
-        
         setTableUsers(newTable(users))
     }
 
-    
     return(
         <div className='rounded-none shadow-none'>
             <Table hoverable={true} className='bg-white rounded-none shadow-none'>
