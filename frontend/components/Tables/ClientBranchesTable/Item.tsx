@@ -6,6 +6,7 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 import { useRouter } from 'next/router'
 import mongoose from 'mongoose'
 import fetcher from 'lib/fetcher'
+import useLoading from 'frontend/hooks/useLoading'
 
 interface props{
     branch:IBranch,
@@ -13,7 +14,9 @@ interface props{
 }
 
 export default function Item({branch, deleteBranch}:props){
-    console.log(branch)
+    const {startLoading, stopLoading} = useLoading()
+    const router = useRouter()
+
     const deleteData = async () => {
         try {
             await fetcher.delete({_id:branch._id}, apiEndpoints.techAdmin.branches)
@@ -25,18 +28,22 @@ export default function Item({branch, deleteBranch}:props){
         }
     }
 
+    async function navigateEdit(){
+        startLoading()
+        await router.push(`/tech-admin/clients/${branch.client.name}/branches/${branch.number}`)
+        stopLoading()
+    }
+
     return(
         <Table.Row>
             <Table.Cell>{branch.number}</Table.Cell>
             <Table.Cell>{`${branch.city.name}, ${branch.city.province.name}`}</Table.Cell>
             <Table.Cell>
                 <div className='flex justify-end space-x-4'>
-                    <Link href='/tech-admin/clients/[name]/branches/[number]' as={`/tech-admin/clients/${branch.client.name}/branches/${branch.number}`}>
-                        <Button outline={true} className='flex justify-evenly'>
-                            <BsFillPencilFill/>
-                            <h4>Editar</h4>
-                        </Button>
-                    </Link>
+                    <Button outline={true} className='flex justify-evenly' onClick={navigateEdit}>
+                        <BsFillPencilFill/>
+                        <h4>Editar</h4>
+                    </Button>
                     <Button outline={true} className='flex justify-evenly' onClick={deleteData}>
                         <BsFillTrashFill/>
                         <h4>Borrar</h4>

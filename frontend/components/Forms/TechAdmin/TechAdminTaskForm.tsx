@@ -5,6 +5,7 @@ import { IBranch, IBusiness, ICity, IClient, ITask, IUser } from 'backend/models
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import * as types from 'backend/models/types'
+import useLoading from 'frontend/hooks/useLoading';
 export interface ITaskForm{
         _id:string
         branch:IBranch,
@@ -40,7 +41,7 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
     const [errors, setErrors] = useState({})
     const [message, setMessage] = useState('')
     const [client, setClient] = useState(taskForm.branch.client?taskForm.branch.client.name:'')
-    const [filteredBranches, setFilteredBranches ] = useState<IBranch[]>()
+    const [filteredBranches, setFilteredBranches ] = useState<IBranch[]>(branches.filter(branch => branch.client.name === taskForm.branch.client.name))
     const [form, setForm] = useState<ITaskForm>({
         _id:taskForm._id,
         branch:taskForm.branch,
@@ -53,28 +54,34 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
     })
     //
 
-    
+    const {stopLoading, startLoading} = useLoading()
 
     /* The POST method adds a new entry in the mongodb database. */
     const postData = async (form:ITaskForm) => {
         
         try {
+            startLoading()
             await fetcher.post(form, api.techAdmin.tasks)
-            router.push('/tech-admin/tasks')
+            await router.push('/tech-admin/tasks')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo crear la tarea')
         }
     }
 
     const putData = async (form:ITaskForm) => {      
         try {
+            startLoading()
             await fetcher.put(form, api.techAdmin.tasks)
-            router.push('/tech-admin/tasks')
+            await router.push('/tech-admin/tasks')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo actualizar la tarea')
         }
     }
@@ -200,7 +207,7 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
                         name='branch'
                         defaultValue='default'
                     >
-                        <option value="default" hidden disabled>{newTask?'Seleccione una sucursal...':`${taskForm.branch.number.toString()}, ${taskForm.branch.city}`}</option>
+                        <option value="default" hidden disabled>{newTask?'Seleccione una sucursal...':`${taskForm.branch.number.toString()}, ${taskForm.branch.city.name}`}</option>
                         {filteredBranches && filteredBranches.map((branch, index)=> <option key={index}>{`${branch.number}, ${branch.city.name}`}</option>)}
                     </Select>
                 </div>

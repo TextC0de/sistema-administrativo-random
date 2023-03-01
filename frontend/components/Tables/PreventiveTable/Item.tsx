@@ -6,9 +6,13 @@ import { Button, Table, Badge } from 'flowbite-react'
 import { Month } from 'backend/models/types'
 import * as api from 'lib/apiEndpoints'
 import fetcher from 'lib/fetcher'
-
+import useLoading from 'frontend/hooks/useLoading'
+import { useRouter } from 'next/router'
 export default function Item({preventive, deletePreventive}:{preventive:IPreventive, deletePreventive:(id:string)=>void}){
 
+    const {startLoading, stopLoading} = useLoading()
+    const router = useRouter()
+    
     const deleteData = async () => {
         try {
             await fetcher.delete({_id:preventive._id}, api.techAdmin.preventives)
@@ -21,6 +25,12 @@ export default function Item({preventive, deletePreventive}:{preventive:IPrevent
 
     function imposedMonths(months:Month[]){
         return months.length>1?months.map(month => `${month}, `):months[0]
+    }
+
+    async function navigateEdit(){
+        startLoading()
+        await router.push(`/tech-admin/preventives/${preventive._id}`)
+        stopLoading()
     }
     
     return (
@@ -36,11 +46,9 @@ export default function Item({preventive, deletePreventive}:{preventive:IPrevent
             <Table.Cell>{preventive.batteryChangedAt?dmyDateString(new Date(preventive.batteryChangedAt)):''}</Table.Cell>
             <Table.Cell>
                 <div className='flex justify-evenly items-center'>
-                    <Link href='/tech-admin/preventives/[id]' as={`/tech-admin/preventives/${preventive._id}`}>
-                        <button className='p-0.5 hover:bg-gray-200 rounder-lg ' >
-                            <BsFillPencilFill color="gray" size="15"/>
-                        </button>
-                    </Link>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg ' onClick={navigateEdit} >
+                        <BsFillPencilFill color="gray" size="15"/>
+                    </button>
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>       

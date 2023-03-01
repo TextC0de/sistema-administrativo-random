@@ -6,6 +6,7 @@ import { IUser } from 'backend/models/interfaces'
 import { ProviderProps } from '../interfaces'
 import { useMemo } from 'react'
 import fetcher from 'lib/fetcher'
+import useLoading from 'frontend/hooks/useLoading'
 
 const INITIAL_STATE = {
     email:'',
@@ -19,7 +20,8 @@ const INITIAL_STATE = {
 const UserProvider = ({children}:ProviderProps) => {
 
     const [user, setUser] = useState<IUser>(INITIAL_STATE)
-    
+    const {startLoading, stopLoading} = useLoading()
+
     async function getUser():Promise<IUser>{
         try {
             const json:ResponseData = await fetcher.get(apiEndpoints.loggedInUser)
@@ -36,7 +38,9 @@ const UserProvider = ({children}:ProviderProps) => {
 
     //it logs in the user by sending a request to an endpoint that reads the access token cookie and returns the user corresponding to that access token
     async function loginUser(){
+        startLoading()
         setUser(await getUser())
+        stopLoading()
     }
 
     function isLoggedIn(){

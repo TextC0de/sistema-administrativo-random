@@ -4,6 +4,7 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 import { IProvince } from 'backend/models/interfaces';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
+import useLoading from 'frontend/hooks/useLoading';
 export interface ICityForm{
     _id:string
     name:string
@@ -23,7 +24,7 @@ interface props{
 
 export default function cityForm({cityForm, newCity=true, provinces}:props){
     const router = useRouter()
-
+    const {stopLoading, startLoading} = useLoading()
     const [form, setForm] = useState<ICityForm>({
         _id:cityForm._id,
         name:cityForm.name,
@@ -33,22 +34,28 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
 
     const postData = async (form:ICityForm) => {
         try {
+            startLoading()
             await fetcher.post(form, api.techAdmin.cities)
-            router.push('/tech-admin/cities')
+            await router.push('/tech-admin/cities')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo crear la ciudad')
         }
     }
 
     const putData = async (form:ICityForm) => {
         try {
+            startLoading()
             await fetcher.put(form, api.techAdmin.cities)
-            router.push('/tech-admin/cities')
+            await router.push('/tech-admin/cities')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo actualizar la ciudad')
         }
     }

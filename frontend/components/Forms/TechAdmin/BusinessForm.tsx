@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
+import useLoading from 'frontend/hooks/useLoading';
 
 export interface IBusinessForm{
     _id:string,
@@ -20,6 +21,7 @@ interface props{
 
 export default function BusinessForm({businessForm, newBusiness=true }:props){
     const router = useRouter()
+    const {stopLoading, startLoading} = useLoading()
     const [form,setForm] = useState<IBusinessForm>({
         _id:businessForm._id,
         name:businessForm.name
@@ -28,22 +30,28 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
 
     const postData = async (form:IBusinessForm) => {
         try {
+            startLoading()
             await fetcher.post(form, api.techAdmin.businesses)
-            router.push('/tech-admin/businesses')
+            await router.push('/tech-admin/businesses')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo crear la empresa')
         }
     }
 
     const putData = async (form:IBusinessForm) => {
         try {
+            startLoading()
             await fetcher.put(form, api.techAdmin.businesses)
-            router.push('/tech-admin/businesses')
+            await router.push('/tech-admin/businesses')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo actualizar la empresa')
         }
     }

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useUser } from 'frontend/hooks/useUser'
+import useUser from 'frontend/hooks/useUser'
 
 import { RiDashboardFill, 
         RiTestTubeLine, 
@@ -13,9 +13,11 @@ import { RiDashboardFill,
 
 import Item from './Item';
 
+
 export default function SideMenu(){
     const {user} = useUser()
     
+
     return (
         <div className="flex flex-col items-center w-52 h-full overflow-hidden text-gray-400 bg-gray-900">
             <div className="w-full px-1">

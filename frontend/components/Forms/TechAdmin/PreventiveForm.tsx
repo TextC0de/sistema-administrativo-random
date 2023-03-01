@@ -7,6 +7,7 @@ import * as api from 'lib/apiEndpoints'
 import * as types from 'backend/models/types'
 
 import { BsFillXCircleFill } from 'react-icons/bs';
+import useLoading from 'frontend/hooks/useLoading';
 export interface IPreventiveForm{
         _id:string
         branch:IBranch,
@@ -55,28 +56,34 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
     })
     //
 
-    
+    const {stopLoading, startLoading} = useLoading()
 
     /* The POST method adds a new entry in the mongodb database. */
     const postData = async (form:IPreventiveForm) => {
         
         try {
+            startLoading()
             await fetcher.post(form, api.techAdmin.preventives)
-            router.push('/tech-admin/preventives')
+            await router.push('/tech-admin/preventives')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo crear el preventivo')
         }
     }
 
     const putData = async (form:IPreventiveForm) => {      
         try {
+            startLoading()
             await fetcher.put(form, api.techAdmin.preventives)
             router.push('/tech-admin/preventives')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo actualizar el preventivo')
         }
     }

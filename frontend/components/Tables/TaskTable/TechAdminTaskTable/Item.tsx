@@ -7,6 +7,8 @@ import { useState } from 'react'
 import DeleteModal from 'frontend/components/DeleteModal'
 import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
+import { useRouter } from 'next/router'
+import useLoading from 'frontend/hooks/useLoading'
 
 interface props{
     task: ITask,
@@ -17,6 +19,17 @@ export default function Item({task, deleteTask}:props){
     const closedAt = task.closedAt? dmyDateString(new Date(task.closedAt)): task.closedAt
 
     const [modal, setModal] = useState(false);
+
+    const {startLoading, stopLoading} = useLoading()
+    const router = useRouter()
+    
+
+    async function navigateEdit(){
+        startLoading()
+        await router.push(`/tech-admin/tasks/${task._id}`)
+        stopLoading()
+    }
+
     const openModal = () => {
         setModal(true);
     };
@@ -44,11 +57,9 @@ export default function Item({task, deleteTask}:props){
                 <Table.Cell>{closedAt? closedAt :''}</Table.Cell>
                 <Table.Cell>
                     <div className='flex justify-evenly items-center'>
-                        <Link href='/tech-admin/tasks/[id]' as={`/tech-admin/tasks/${task._id}`}>
-                            <button className='p-0.5 hover:bg-gray-200 rounder-lg'>
-                                <BsFillPencilFill color="gray" size="15"/>
-                            </button>
-                        </Link>
+                        <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={navigateEdit}>
+                            <BsFillPencilFill color="gray" size="15"/>
+                        </button>
                         <button onClick={openModal} className='p-0.5 hover:bg-gray-200 rounder-lg'>
                             <BsFillTrashFill color="gray" size="15"/>
                         </button>

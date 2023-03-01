@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useState, ChangeEvent } from "react";
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
+import useLoading from "frontend/hooks/useLoading";
 
 export interface IUserForm{
     _id:string,
@@ -43,24 +44,32 @@ export default function UserForm({userForm, newUser=true, cities}:props){
     })
     const[errs, setErrs] = useState<IUserFormErrors>()
 
+    const {stopLoading, startLoading} = useLoading()
+
     const postData = async (form:IUserForm) => {
         try {
+            startLoading()
             await fetcher.post(form, api.techAdmin.users)
-            router.push('/tech-admin/users')
+            await router.push('/tech-admin/users')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo crear el usuario')
         }
     }
 
     const putData = async (form:IUserForm) => {
         try {
+            startLoading()
             await fetcher.put(form, api.techAdmin.users)
-            router.push('/tech-admin/users')
+            await router.push('/tech-admin/users')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo actualizar el usuario')
         }
     }

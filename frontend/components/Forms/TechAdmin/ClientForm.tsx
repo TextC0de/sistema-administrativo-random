@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { ChangeEvent, useState } from 'react';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
+import useLoading from 'frontend/hooks/useLoading';
 export interface IClientForm{
     _id:string
     name:string
@@ -24,25 +25,31 @@ export default function ClientForm({clientForm, newClient=true }:props){
         name:clientForm.name
     })
     const[errs, setErrs] = useState<IClientFormErrors>()
-
+    const {stopLoading, startLoading} = useLoading()
     const postData = async (form:IClientForm) => {
         try {
+            startLoading()
             await fetcher.post(form, api.techAdmin.clients)
-            router.push('/tech-admin/clients')
+            await router.push('/tech-admin/clients')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo crear al cliente')
         }
     }
 
     const putData = async (form:IClientForm) => {
         try {
+            startLoading()
             await fetcher.put(form, api.techAdmin.clients)
             router.push('/tech-admin/clients')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo actualizar el cliente')
         }
     }

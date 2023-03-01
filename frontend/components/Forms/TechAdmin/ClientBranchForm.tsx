@@ -4,6 +4,7 @@ import { ChangeEvent, useState } from 'react';
 import { IBusiness, ICity, IClient} from 'backend/models/interfaces';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
+import useLoading from 'frontend/hooks/useLoading';
 
 export interface IClientBranchForm{
     _id:string
@@ -27,6 +28,7 @@ interface props{
 
 export default function ClientBranchForm({branchForm, newBranch=true, cities, businesses}:props){
     const router = useRouter()
+    const {stopLoading, startLoading} = useLoading()
     const [form, setForm] = useState<IClientBranchForm>({
         _id:branchForm._id,
         number: branchForm.number,
@@ -38,22 +40,28 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
 
     const postData = async (form:IClientBranchForm) => {
         try {
+            startLoading()
             await fetcher.post(form, api.techAdmin.branches)
-            router.push(`/tech-admin/clients/${form.client.name}/branches`)
+            await router.push(`/tech-admin/clients/${form.client.name}/branches`)
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo crear la sucursal')
         }
     }
 
     const putData = async (form:IClientBranchForm) => {      
         try {
+            startLoading()
             await fetcher.put(form, api.techAdmin.branches)
-            router.push(`/tech-admin/clients/${form.client.name}/branches`)
+            await router.push(`/tech-admin/clients/${form.client.name}/branches`)
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo actualizar la sucursal')
         }
     }
