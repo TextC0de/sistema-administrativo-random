@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { Table } from 'flowbite-react'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Modal from 'frontend/components/Modal'
+import { useRouter } from 'next/router'
 
 interface props{
     province:IProvince,
@@ -51,7 +52,7 @@ export default function Item({province, deleteProvince}:props){
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={navigateEdit}>
                         <BsFillPencilFill color="gray" size="15"/>
                     </button>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>       
 

@@ -8,6 +8,7 @@ import { useState } from 'react'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import { Table } from 'flowbite-react'
 import Modal from 'frontend/components/Modal'
+import { useRouter } from 'next/router'
 
 interface props{
     city:ICity,
@@ -15,7 +16,7 @@ interface props{
 }
 
 export default function Item({city, deleteCity}:props){
-
+    const router = useRouter()
     const [modal, setModal] = useState(false);
     const openModal = () => {
         setModal(true);

@@ -5,7 +5,8 @@ import { dmyDateString, toMonth } from 'lib/utils'
 import * as api from 'lib/apiEndpoints'
 import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
-import { useRouter } from 'next/router'import { useState } from 'react'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
 import { Table, Badge } from 'flowbite-react'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Modal from 'frontend/components/Modal'
@@ -58,7 +59,7 @@ export default function Item({preventive, deletePreventive}:{preventive:IPrevent
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg ' onClick={navigateEdit} >
                         <BsFillPencilFill color="gray" size="15"/>
                     </button>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>       
                 </div>

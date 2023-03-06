@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { Button, Table } from 'flowbite-react'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Modal from 'frontend/components/Modal'
+import { useRouter } from 'next/router'
 
 interface props{
     branch:IBranch,
@@ -56,7 +57,7 @@ export default function Item({branch, deleteBranch}:props){
                         <BsFillTrashFill color="gray" size="15"/>
                     </button> 
                     
-            <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={deleteData}/>
+            <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={openModal}/>
                 </div>
             </Table.Cell>
         </Table.Row>

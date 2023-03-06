@@ -65,7 +65,7 @@ export default function Item({user, deleteUser}:props){
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={navigateEdit}>
                         <BsFillPencilFill color="gray" size="15"/>
                     </button>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>   
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={reGeneratePassword}>
