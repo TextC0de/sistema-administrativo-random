@@ -5,6 +5,7 @@ import { IBusiness, ICity, IClient} from 'backend/models/interfaces';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading';
+import { BsFillXCircleFill } from 'react-icons/bs';
 
 export interface IClientBranchForm{
     _id:string
@@ -129,6 +130,7 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                     placeholder={branchForm.number.toString()}
                     onChange={handleChange}
                     value={form.number}
+                    disabled={newBranch?false:true}
                     />
                 </div>
                 <div id='select-city'>
@@ -145,7 +147,8 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                         onChange={selectCity}
                         name='city'
                         defaultValue='default'
-                        //value={form.city.province?`${form.city.name}, ${form.city.province.name}`:''}
+                        disabled={newBranch?false:true}
+                        
                     >
                         <option value="default" disabled hidden>{newBranch? 'Seleccione una localidad...':`${form.city.name}, ${form.city.province.name}`}</option>
                         {cities.map((city, index)=> <option key={index}>{`${city.name}, ${city.province.name} `}</option>)}
@@ -164,21 +167,21 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                         {businesses.map((business, index) =><option key={index} value={business.name}>{business.name}</option>)}
                     </Select>
                 </div>
-                <ul className='rounded bg-teal-400 p-4'>
+                <ul>
                     {form.businesses.map((business, index) =>{
                         return(
-                            <li key={index}>
-                                <div className='flex justify-between items-center'>
+                            <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block' key={index}>
+                                <div className='flex justify-between items-center gap-2 font-semibold'>
                                     {business.name}
-                                    <Button onClick={()=>deleteBranchBusiness(business._id as string)} className='cursor-pointer'>
-                                        X
-                                    </Button>
+                                    <button className='rounded-full bg-white ' onClick={()=>deleteBranchBusiness(business._id as string)}>
+                                            <BsFillXCircleFill color='gray' size={20} />
+                                        </button>
                                 </div>
                             </li>
                         )
                     })}
                 </ul>
-                <Button size='sm' type='submit'>Guardar </Button>
+                <Button size='sm' type='submit'>Guardar</Button>
             </form>
             <ul>
                 {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}

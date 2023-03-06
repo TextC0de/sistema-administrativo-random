@@ -8,6 +8,7 @@ import { Button, Table } from 'flowbite-react'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Modal from 'frontend/components/Modal'
 import { useRouter } from 'next/router'
+import Business from 'backend/models/Business'
 
 interface props{
     branch:IBranch,
@@ -47,6 +48,7 @@ export default function Item({branch, deleteBranch}:props){
         <Table.Row className='border-b'>
             <Table.Cell>{branch.number}</Table.Cell>
             <Table.Cell>{`${branch.city.name}, ${branch.city.province.name}`}</Table.Cell>
+            <Table.Cell>{branch.businesses.length >1?branch.businesses.map(business => `${business.name}, `):`${branch.businesses[0].name}`}</Table.Cell>
             <Table.Cell>
                 <div className='flex justify-center gap-2 items-center'>
 
