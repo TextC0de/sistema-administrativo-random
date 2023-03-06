@@ -68,11 +68,15 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
         let err : IBusinessFormErrors = { 
            name:''
         }
-        //console.log(form.name);
-        
         if (!form.name) err.name = 'name is required'
         
         return err
+    }
+
+    async function goBack(){
+        startLoading()
+        await router.push('/tech-admin/businesses')
+        stopLoading()
     }
 
     const handleSubmit = (e:any) => {
@@ -88,7 +92,9 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
     }    
     return(
         <>
-            <form className='flex flex-col gap-4 w-50' onSubmit={handleSubmit}>
+            <form className='flex flex-col gap-4 w-1/2 mx-auto pt-4 bg-gray-50 rounded-3xl p-4 my-4' onSubmit={handleSubmit}>
+                <h2 className="text-lg">{newBusiness?'Agregar Empresa':'Editar Empresa'}</h2>
+                <hr className="mb-2"/>
                 <div>
                     <div className='mb-2 block'>
                         <Label
@@ -105,7 +111,10 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
                     onChange={handleChange}
                     />
                 </div>
-                <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                <div className='flex flex-row justify-between'>
+                    <Button size='sm' color='gray' onClick={goBack}> Cancelar </Button>
+                    <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                </div>
             </form>
             <ul>
                 {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}

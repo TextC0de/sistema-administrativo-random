@@ -72,6 +72,12 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
         setForm({...form, name:value})        
     }
 
+    async function goBack(){
+        startLoading()
+        await router.push('/tech-admin/cities')
+        stopLoading()
+    }
+
     const formValidate = () => {
         let err : ICityFormErrors = { 
            name:'',
@@ -96,7 +102,9 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
 
     return(
         <>
-            <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+            <form className='flex flex-col gap-4 w-1/2 p-4 rounded-3xl mx-auto my-4 bg-gray-50' onSubmit={handleSubmit}>
+                <h2 className="text-lg">{newCity?'Agregar Localidad':'Editar Localidad'}</h2>
+                <hr className="mb-2"/>
                 <div>
                     <div className='mb-2 block'>
                         <Label
@@ -133,7 +141,10 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
                         {provinces.map((province, index)=> <option key={index}>{province.name}</option>)}
                     </Select>
                 </div>
-                <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                <div className='flex flex-row justify-between'>
+                    <Button size='sm' onClick={goBack} color='gray'> Cancelar </Button>
+                    <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                </div>
             </form>
             <ul>
                 {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}

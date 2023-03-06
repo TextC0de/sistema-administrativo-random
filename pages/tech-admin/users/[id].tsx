@@ -24,8 +24,6 @@ export default function EditUser({cities, user}:props){
     } 
     return (
         <>
-            <h2 className="text-lg">Editar usuario</h2>
-            <hr className="mb-2"/>
             <UserForm userForm={userForm} newUser={false} cities={cities} />
         </>
     )

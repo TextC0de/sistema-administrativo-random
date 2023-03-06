@@ -131,9 +131,17 @@ export default function UserForm({userForm, newUser=true, cities}:props){
         }
     }
 
+    async function goBack(){
+        startLoading()
+        await router.push('/tech-admin/users')
+        stopLoading()
+    }
+
     return(
         <>
-            <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+            <form className='flex flex-col gap-4 bg-gray-50 rounded-3xl p-4 mx-auto w-1/2 mt-4' onSubmit={handleSubmit}>
+                <h2 className="text-lg">{newUser?'Crear usuario':'Editar usuario'}</h2>
+                <hr className="mb-2"/>
                 <div>
                     <div className='mb-2 block'>
                         <Label
@@ -227,7 +235,10 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                         {cities.map((city, index)=> <option key={index}>{`${city.name}, ${city.province.name}`}</option>)}
                     </Select>
                 </div>
-                <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                <div className="flex flex-row justify-between">
+                    <Button size='sm' onClick={goBack} color='gray'> Cancelar </Button>
+                    <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                </div>
             </form>
             <ul>
                 {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}

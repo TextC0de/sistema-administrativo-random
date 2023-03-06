@@ -86,9 +86,17 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
         }
     }
 
+    async function goBack(){
+        startLoading()
+        await router.push('/tech-admin/provinces')
+        stopLoading()
+    }
+
     return(
         <>
-            <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+            <form className='flex flex-col gap-4 w-1/2 mx-auto my-4 bg-gray-50 rounded-3xl p-4' onSubmit={handleSubmit}>
+                <h2 className="text-lg">{newProvince?'Agregar Provincia':'Editar Provincia'}</h2>
+                <hr className="mb-2"/>
                 <div>
                     <div className='mb-2 block'>
                         <Label
@@ -105,7 +113,10 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
                     onChange={handleChange}
                     />
                 </div>
-                <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                <div className='flex flex-row justify-between'>
+                    <Button size='sm' color='gray' onClick={goBack}> Cancelar </Button>
+                    <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                </div>
             </form>
             <ul>
                 {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}

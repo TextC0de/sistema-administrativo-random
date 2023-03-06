@@ -41,7 +41,7 @@ export default function Header(): JSX.Element{
     }
 
     return(
-        <header className='header sticky top-0 bg-white shadow-md flex items-center justify-between h-16 px-6 py-02' >
+        <header className='header sticky top-0 bg-white shadow-md flex items-center justify-between h-16 px-6 py-02 z-50' >
             <div className='flex-shrink-0 flex items-center justify-center'>
                 <button onClick={navigate} >
                         <Image     

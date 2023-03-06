@@ -70,6 +70,12 @@ export default function ClientForm({clientForm, newClient=true }:props){
         return err
     }
 
+    async function goBack(){
+        startLoading()
+        await router.push('/tech-admin/clients')
+        stopLoading()
+    }
+
     const handleSubmit = (e:any) => {
         e.preventDefault()   
         const errs = formValidate()
@@ -82,7 +88,9 @@ export default function ClientForm({clientForm, newClient=true }:props){
 
     return(
         <>
-            <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+            <form className='flex flex-col gap-4 bg-gray-50 w-1/2 rounded-3xl p-4 mx-auto my-4' onSubmit={handleSubmit}>
+                <h2 className="text-lg">{newClient?'Agregar Cliente':'Editar Cliente'}</h2>
+                <hr className="mb-2"/>
                 <div>
                     <div className='mb-2 block'>
                         <Label
@@ -99,7 +107,10 @@ export default function ClientForm({clientForm, newClient=true }:props){
                     onChange={handleChange}
                     />
                 </div>
-                <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                <div className='flex flex-row justify-between'>
+                    <Button size='sm' onClick={goBack} color='gray'> Cancelar </Button>
+                    <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                </div>
             </form>
             <ul>
                 {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}
