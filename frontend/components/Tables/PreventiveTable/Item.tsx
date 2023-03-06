@@ -1,4 +1,4 @@
-import { IPreventive } from 'backend/models/interfaces'
+import { IPreventive, IUser } from 'backend/models/interfaces'
 import Link from 'next/link'
 import { Month } from 'backend/models/types'
 import { dmyDateString, toMonth } from 'lib/utils'
@@ -37,6 +37,10 @@ export default function Item({preventive, deletePreventive}:{preventive:IPrevent
         return months.length>1?months.map(month => `${month}, `):months[0]
     }
 
+    function selectedTechs(techs:IUser[]){
+        return techs.length > 1?techs.map(tech => `${tech.fullName}, `): techs[0].fullName
+    }
+
     async function navigateEdit(){
         startLoading()
         await router.push(`/tech-admin/preventives/${preventive._id}`)
@@ -47,7 +51,7 @@ export default function Item({preventive, deletePreventive}:{preventive:IPrevent
         <Table.Row className='border-b'>
             <Table.Cell>{preventive.business.name}</Table.Cell>
             <Table.Cell>{`${preventive.branch.number}, ${preventive.branch.client.name}, ${preventive.branch.city.name}`}</Table.Cell>
-            <Table.Cell>{preventive.assigned.length > 1?`${preventive.assigned.map(tech => `${tech.fullName}, `)}`: `${preventive.assigned[0].fullName}`}</Table.Cell>
+            <Table.Cell>{selectedTechs(preventive.assigned)}</Table.Cell>
             <Table.Cell>{preventive.frequency?`Cada ${preventive.frequency} meses`:''}</Table.Cell>
             <Table.Cell>{preventive.months? imposedMonths(preventive.months):''}</Table.Cell>
             <Table.Cell>{preventive.observations}</Table.Cell>
