@@ -3,6 +3,7 @@ import Link from 'next/link'
 import * as apiEndpoints from 'lib/apiEndpoints'
 import { slugify } from 'lib/utils'
 import fetcher from 'lib/fetcher'
+import useLoading from 'frontend/hooks/useLoading'
 import { useState } from 'react'
 import { Table } from 'flowbite-react'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
@@ -14,6 +15,10 @@ interface props{
 }
 
 export default function Item({province, deleteProvince}:props){
+
+    const {startLoading, stopLoading} = useLoading()
+    const router = useRouter()
+    
     const [toggleModal, setToggleModal] = useState(false);
     function openModal(){
         setToggleModal(true)
@@ -32,17 +37,21 @@ export default function Item({province, deleteProvince}:props){
         }
     }
 
+    async function navigateEdit(){
+        startLoading()
+        await router.push(`/tech-admin/provinces/${slugify(province.name)}`)
+        stopLoading()
+    }
+
     return(
         <Table.Row className='border-b'>
             <Table.Cell>{province.name}</Table.Cell>
             <Table.Cell>
             <div className='flex justify-center gap-2 items-center'>
-                    <Link href='/tech-admin/provinces/[name]' as={`/tech-admin/provinces/${slugify(province.name)}`}>
-                        <button className='p-0.5 hover:bg-gray-200 rounder-lg' >
-                            <BsFillPencilFill color="gray" size="15"/>
-                        </button>
-                    </Link>
-                    <button onClick={openModal} className='p-0.5 hover:bg-gray-200 rounder-lg' >
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={navigateEdit}>
+                        <BsFillPencilFill color="gray" size="15"/>
+                    </button>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>       
 

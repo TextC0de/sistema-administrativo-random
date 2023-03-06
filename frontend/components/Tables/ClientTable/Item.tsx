@@ -6,6 +6,7 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 import { useRouter } from 'next/router'
 import { slugify } from 'lib/utils'
 import fetcher from 'lib/fetcher'
+import useLoading from 'frontend/hooks/useLoading'
 import { useState } from 'react'
 import Modal from 'frontend/components/Modal'
 
@@ -15,7 +16,7 @@ interface props{
 }
 
 export default function Item({client, deleteClient}:props){
-    const [modal, setModal] = useState(false);
+    const {startLoading, stopLoading} = useLoading()    const [modal, setModal] = useState(false);
     const openModal = () => {
         setModal(true);
     };
@@ -24,8 +25,17 @@ export default function Item({client, deleteClient}:props){
     };
     
     const router = useRouter()
-    function handleClick(){
-        router.push(`/tech-admin/clients/${slugify(client.name)}/branches`)
+    
+    async function handleClick(){
+        startLoading()
+        await router.push(`/tech-admin/clients/${slugify(client.name)}/branches`)
+        stopLoading()
+    }
+
+    async function navigateEdit(){
+        startLoading()
+        await router.push(`/tech-admin/clients/${slugify(client.name)}/edit`)
+        stopLoading()
     }
 
     const deleteData = async () => {
@@ -42,13 +52,11 @@ export default function Item({client, deleteClient}:props){
         <Table.Row className='border-b'>
             <Table.Cell onClick={handleClick}>{client.name}</Table.Cell>
             <Table.Cell>
-                <div className='flex justify-center gap-2 items-center'>
-                    <Link href='/tech-admin/clients/[name]/edit' as={`/tech-admin/clients/${slugify(client.name)}/edit`}>
-                        <button className='p-0.5 hover:bg-gray-200 rounder-lg' >
-                            <BsFillPencilFill color="gray" size="15"/>
-                        </button>
-                    </Link>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
+                <div className='flex justify-center gap-2 items-center'>          
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={navigateEdit}>
+                        <BsFillPencilFill color="gray" size="15"/>
+                    </button>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={deleteData}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>
                     <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={deleteData}/>       

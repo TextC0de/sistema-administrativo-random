@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
+import useLoading from 'frontend/hooks/useLoading';
 export interface IProvinceForm{
     _id:string,
     name:string
@@ -24,25 +25,31 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
         name:provinceForm.name
     })
     const[errs, setErrs] = useState<IProvinceFormErrors>()
-
+    const {stopLoading, startLoading} = useLoading()
     const postData = async (form:IProvinceForm) => {
         try {
+            startLoading()
             await fetcher.post(form, api.techAdmin.provinces)
             router.push('/tech-admin/provinces')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo crear la provincia')
         }
     }
 
     const putData = async (form:IProvinceForm) => {
         try {
+            startLoading()
             await fetcher.put(form, api.techAdmin.provinces)
-            router.push('/tech-admin/provinces')
+            await router.push('/tech-admin/provinces')
+            stopLoading()
         } 
         catch (error) {
             console.log(error)
+            stopLoading()
             alert('No se pudo actualizar la provincia')
         }
     }

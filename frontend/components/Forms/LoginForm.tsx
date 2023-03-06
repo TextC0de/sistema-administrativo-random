@@ -1,11 +1,12 @@
 import { useState, ChangeEvent, FormEvent } from 'react'
 import { useRouter } from 'next/router'
-import { useUser } from 'frontend/hooks/useUser'
+import  useUser from 'frontend/hooks/useUser'
 import * as GS from 'globalStyles'
 import Link from 'next/link';
 import { Button, TextInput } from 'flowbite-react';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
+import useLoading from 'frontend/hooks/useLoading';
 
 interface UserLoginForm {
   email:string;
@@ -14,6 +15,7 @@ interface UserLoginForm {
 
 export default function LoginForm({}){
   const router = useRouter()
+  const {startLoading, stopLoading} = useLoading()
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState('')
   const {loginUser} = useUser()
@@ -27,12 +29,15 @@ export default function LoginForm({}){
   /* The POST method adds a new entry in the mongodb database. */
   const postData = async (form:UserLoginForm) => {
     try {
+      startLoading()
       await fetcher.post(form, api.authUrl)
       loginUser()
-      router.push('/')
+      await router.push('/')
+      stopLoading()
     } 
     catch (error) {
       console.log(error)
+      stopLoading()
       alert('wrong email/password')
     }
   }
@@ -67,7 +72,7 @@ export default function LoginForm({}){
 
   return (
     <>
-      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+      <form className='flex flex-col gap-4 w-1/4 m-auto mt-6' onSubmit={handleSubmit}>
         <label htmlFor='email'>Email</label>
         <TextInput
           type='email'

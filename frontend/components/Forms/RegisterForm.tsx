@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useState } from 'react'
 import { useRouter } from 'next/router'
-import { useUser } from 'frontend/hooks/useUser';
+import useUser from 'frontend/hooks/useUser';
 import Link from 'next/link';
 import { Button, TextInput } from 'flowbite-react';
 import fetcher from 'lib/fetcher';
