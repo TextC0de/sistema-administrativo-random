@@ -1,10 +1,7 @@
-import Link from 'next/link'
-
 import logo from 'public/logo_placeholder.png'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import * as apiEndpoints from 'lib/apiEndpoints'
-
 import useUser from 'frontend/hooks/useUser'
 import { useEffect } from 'react'
 import { Button } from 'flowbite-react'
@@ -17,28 +14,30 @@ export default function Header(): JSX.Element{
     const {user, loginUser, logoutUser, isLoggedIn} = useUser()
     const {startLoading, stopLoading} = useLoading()
     const logout = async() => {
-        
         try {
             startLoading()
             await fetcher.get(apiEndpoints.logoutUrl)
-            stopLoading()
+            
         } catch (error) {
             console.log(error)
             stopLoading()
             alert('Falló al intentar desloguear al usuario')
         }
         logoutUser()
-        router.push('/login')
+        await router.push('/login')
+        stopLoading()
     }
 
     useEffect(()=>{
-        //console.log('logging user');
-        //console.log(isLoggedIn());
+        startLoading()
         if(!isLoggedIn()) loginUser()
+        stopLoading()
     },[])
 
     function navigate(){
+        startLoading()
         router.push('/')
+        stopLoading()
     }
 
     return(
@@ -53,7 +52,7 @@ export default function Header(): JSX.Element{
                         />  
                 </button>
                 </div>
-                {isLoggedIn() && <h2 className='flex items-center text-lg'>Hola {`${user.firstName}`}!</h2>}
+                {isLoggedIn() && <h2 className='flex items-center text-lg'>Hola {user.firstName}!</h2>}
                 <div className='flex justify-end'>
                     {
                     isLoggedIn() && 

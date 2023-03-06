@@ -31,10 +31,9 @@ export default function LoginForm({}){
     try {
       startLoading()
       await fetcher.post(form, api.authUrl)
-      stopLoading()
       loginUser()
-
-      router.push('/')
+      await router.push('/')
+      stopLoading()
     } 
     catch (error) {
       console.log(error)
