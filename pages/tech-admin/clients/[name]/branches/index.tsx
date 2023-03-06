@@ -14,7 +14,7 @@ export default function ClientView({client, branches}:props){
     let name= `Cliente: ${client.name}`
     return(
         <>
-            <TitleButton title={name} path='/tech-admin/clients/[name]/branches/new' nameButton='Agregar sucursal'/>
+            <TitleButton title={name} path={`/tech-admin/clients/${slugify(client.name)}/branches/new`} nameButton='Agregar sucursal'/>
             <ClientBranchesTable branches={branches}/>
         </>
     )
