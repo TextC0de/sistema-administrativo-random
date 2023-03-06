@@ -37,11 +37,11 @@ export interface props{
 }
 
 const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clients, technicians}:props) =>{
-    const router = useRouter()
+    const router = useRouter()    
     const [errors, setErrors] = useState({})
     const [message, setMessage] = useState('')
     const [client, setClient] = useState(taskForm.branch.client?taskForm.branch.client.name:'')
-    const [filteredBranches, setFilteredBranches ] = useState<IBranch[]>(branches.filter(branch => branch.client.name === taskForm.branch.client.name))
+    const [filteredBranches, setFilteredBranches ] = useState<IBranch[]>(newTask?[]:branches.filter(branch => branch.client.name === taskForm.branch.client.name))
     const [form, setForm] = useState<ITaskForm>({
         _id:taskForm._id,
         branch:taskForm.branch,
@@ -167,11 +167,18 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
         }
     }
 
+    async function goBack(){
+        startLoading()
+        await router.push('/tech-admin/tasks')
+        stopLoading()
+    }
+
 
     return(
         <>
-            <form id='task' className='flex flex-col' onSubmit={handleSubmit}>
-
+            <form id='task' className='flex flex-col w-1/2 bg-gray-50 p-4 mx-auto my-4 rounded-3xl' onSubmit={handleSubmit}>
+                <h2 className="text-lg">{newTask?'Agregar Tarea':'Editar Tarea'}</h2>
+                <hr className="my-2"/>
                 <div id='select-client'>
                     <div className='mb-2 block'>
                         <Label
@@ -289,9 +296,10 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
                         
                     />
                 </div>
-                <Button type='submit'>
-                    Guardar
-                </Button>
+                <div className='flex flex-row justify-between mt-4'>
+                    <Button color='gray' onClick={goBack}> Cancelar </Button>
+                    <Button type='submit'> Guardar </Button>
+                </div>
             </form>
         </>
     )

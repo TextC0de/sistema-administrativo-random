@@ -184,10 +184,17 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
         setForm(prev => {return{...prev, months: prev.months.filter(prev => prev != month)}})
     }
 
+    async function goBack(){
+        startLoading()
+        await router.push('/tech-admin/preventives')
+        stopLoading()
+    }
+
     return(
         <>
-            <form id='task' className='flex flex-col mb-4' onSubmit={handleSubmit}>
-
+            <form id='task' className='flex flex-col my-4 mx-auto w-1/2 bg-gray-50 rounded-3xl p-4' onSubmit={handleSubmit}>
+                <h2 className="text-lg">{newPreventive?'Agregar Preventivo':'Editar Preventivo'}</h2>
+                <hr className="my-2"/>
                 <div id='select-client'>
                     <div className='mb-2 block'>
                         <Label
@@ -201,8 +208,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         required={true}
                         onChange={selectClient}
                         name='select-client'
-                        defaultValue={'default'}
-                        
+                        defaultValue={'default'}                        
                     >
                         <option value="default" hidden disabled>{newPreventive?'Seleccione un cliente...' : `${client}`}</option>
                         {clients.map((client, index)=> <option key={index}>{client.name}</option>)}
@@ -294,7 +300,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         />
                     </div>
 
-                    <div className='grid grid-cols-6 gap-4'>
+                    <div className='w-full'>
                         <Select
                             id='technicians'
                             onChange={addTechnician}
@@ -331,7 +337,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         className='text-lg'
                         />
                     </div>
-                    <div className='grid grid-cols-6 gap-4'>
+                    <div className=''>
                         <Select
                             id='months'
                             onChange={addMonth}
@@ -356,12 +362,11 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                             )
                         })}
                     </ul>
-                    {/*<MonthTable months={form.months} deleteMonth={deleteMonth}/>*/}
                 </div>
-                
-                <Button type='submit'>
-                    Guardar
-                </Button>
+                <div className='flex flex-row justify-between'>
+                    <Button color='gray' onClick={goBack}> Cancelar </Button>
+                    <Button type='submit'> Guardar </Button>
+                </div>
             </form>
         </>
     )

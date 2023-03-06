@@ -22,8 +22,6 @@ export default function NewUser({cities}:props){
     } 
     return (
         <>
-            <h2 className="text-lg">Crear un nuevo usuario</h2>
-            <hr className="mb-2"/>
             <UserForm userForm={userForm} newUser={true} cities={cities} />
         </>
     )

@@ -5,8 +5,6 @@ import Head from 'next/head'
 import Header from 'frontend/components/Header'
 import UserProvider from 'frontend/context/userContext/UserProvider'
 import Main from 'frontend/components/Main'
-import Footer from 'frontend/components/Footer'
-import AppWrapper from 'frontend/components/AppWrapper'
 
 function MyApp({ Component, pageProps }: AppProps) {
   
