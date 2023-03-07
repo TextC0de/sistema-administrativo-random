@@ -111,10 +111,17 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
         setForm(prev=>{return {...prev, businesses:prev.businesses.filter(business => business._id!=id)}})
     }
 
+    async function goBack(){
+        startLoading()
+        await router.push(`/tech-admin/clients/${form.client.name}/branches`)
+        stopLoading()
+    }
+
     return(
         <>
-            <form className='flex flex-col gap-4 mb-4 w-52' onSubmit={handleSubmit}>
+            <form className='flex flex-col gap-4 my-4 w-1/2 mx-auto bg-gray-50  p-4 rounded-3xl' onSubmit={handleSubmit}>
                 <h2 className='text-lg'>{`${newBranch? `Agregar una sucursal para `:`Editar la sucursal  ${branchForm.number} de`} ${branchForm.client.name}`}</h2>
+                <hr />
                 <div>
                     <div className='mb-2 block'>
                         <Label
@@ -181,7 +188,10 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                         )
                     })}
                 </ul>
-                <Button size='sm' type='submit'>Guardar</Button>
+                <div className='flex flex-row justify-between'>
+                    <Button size='sm' color='gray' onClick={goBack}> Cancelar</Button>
+                    <Button size='sm' type='submit'>Guardar</Button>
+                </div>
             </form>
             <ul>
                 {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}
