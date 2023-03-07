@@ -119,9 +119,10 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
 
     return(
         <>
-            <form className='flex flex-col gap-4 my-4 w-1/2 mx-auto bg-gray-50  p-4 rounded-3xl' onSubmit={handleSubmit}>
-                <h2 className='text-lg'>{`${newBranch? `Agregar una sucursal para `:`Editar la sucursal  ${branchForm.number} de`} ${branchForm.client.name}`}</h2>
-                <hr />
+            <form className='flex flex-col gap-4 bg-white rounded-xl border border-gray-150 p-4 mx-auto w-1/2 my-4' onSubmit={handleSubmit}>
+                <h2 className='text-lg'>
+                    {`${branchForm.client.name} : ${newBranch? `Agregar una sucursal`:`Editar la sucursal  ${branchForm.number}`}`}
+                </h2>
                 <div>
                     <div className='mb-2 block'>
                         <Label
@@ -161,8 +162,8 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                         {cities.map((city, index)=> <option key={index}>{`${city.name}, ${city.province.name} `}</option>)}
                     </Select>
                 </div>
-                <Label value='Empresas que trabajan en esta sucursal' className='text-lg'/>
-                <Label value='Seleccione del menu desplegable para agregar'/>
+                <hr className='mt-1'/>
+                <Label value='Empresas contratadas' className='text-lg'/>
                 <div className='grid grid-cols-6 gap-4'>
                     <Select
                         id='branchBusinesses'
@@ -170,7 +171,7 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                         value='default'
                         className='col-span-5'
                     >
-                        <option value="default" disabled hidden>Seleccione una empresa a agregar</option>
+                        <option value="default" disabled hidden>Seleccione las empresas a agregar</option>
                         {businesses.map((business, index) =><option key={index} value={business.name}>{business.name}</option>)}
                     </Select>
                 </div>

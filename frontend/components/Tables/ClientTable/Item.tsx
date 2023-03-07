@@ -1,6 +1,7 @@
 import { Table } from 'flowbite-react'
 import { IClient } from 'backend/models/interfaces'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
+import {HiMagnifyingGlassPlus} from 'react-icons/hi2'
 import Link from 'next/link'
 import * as apiEndpoints from 'lib/apiEndpoints'
 import { useRouter } from 'next/router'
@@ -51,9 +52,12 @@ export default function Item({client, deleteClient}:props){
 
     return(
         <Table.Row className='border-b'>
-            <Table.Cell onClick={handleClick}>{client.name}</Table.Cell>
+            <Table.Cell>{client.name}</Table.Cell>
             <Table.Cell>
                 <div className='flex justify-center gap-2 items-center'>          
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={handleClick}>
+                        <HiMagnifyingGlassPlus color="gray" size="15"/>
+                    </button>
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={navigateEdit}>
                         <BsFillPencilFill color="gray" size="15"/>
                     </button>
