@@ -20,7 +20,7 @@ export default function BranchTable({branches}:props){
                 <Table.Head className='bg-white border-b'>
                     <Table.HeadCell>Sucursal</Table.HeadCell>
                     <Table.HeadCell>Localidad</Table.HeadCell>
-                    <Table.HeadCell>Sistemas presentes</Table.HeadCell>
+                    <Table.HeadCell>Empresas contratadas</Table.HeadCell>
                     <Table.HeadCell className='w-40 text-center'>Acciones</Table.HeadCell>
                 </Table.Head>
                 <Table.Body>
