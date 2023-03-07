@@ -1,6 +1,6 @@
 import { Button, Dropdown, Label, Select, Textarea } from 'flowbite-react';
 import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, MouseEventHandler, useState } from 'react';
+import { ChangeEvent, FormEvent, MouseEventHandler, useEffect, useState } from 'react';
 import { IBranch, IBusiness, ICity, IClient, IPreventive, IUser } from 'backend/models/interfaces';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
@@ -22,9 +22,11 @@ export interface IPreventiveForm{
 }
 
 export interface IPreventiveFormErrors{
+    client:string,
     branch:string,
     business:string,
     assigned:string,
+    frequency:string,
 }
 
 export interface props{
@@ -38,8 +40,8 @@ export interface props{
 
 const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branches, clients, technicians}:props) =>{
     const router = useRouter()
-    const [errors, setErrors] = useState({})
-    const [message, setMessage] = useState('')
+    const [errors, setErrors] = useState<IPreventiveFormErrors>({} as IPreventiveFormErrors)
+    const [submitted, setSubmitted] = useState<boolean>(false)
     const [client, setClient] = useState(preventiveForm.branch.client?preventiveForm.branch.client.name:'')
     const [filteredBranches, setFilteredBranches ] = useState<IBranch[]>()
     const [form, setForm] = useState<IPreventiveForm>({
@@ -55,6 +57,10 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
         observations:preventiveForm.observations,
     })
     //
+
+    useEffect(()=>{
+        if(submitted)formValidate()
+    }, [form])
 
     const {stopLoading, startLoading} = useLoading()
 
@@ -78,7 +84,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.preventives)
-            router.push('/tech-admin/preventives')
+            await router.push('/tech-admin/preventives')
             stopLoading()
         } 
         catch (error) {
@@ -130,32 +136,37 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
 
     const selectFrequency = (event:ChangeEvent<HTMLSelectElement>) =>{
         const {value} = event.target
-
         setForm({...form, frequency:parseInt(value) as types.Frequency})
     }
 
     const formValidate = () => {
         let err : IPreventiveFormErrors = { 
+            client:'',
             branch:'',
             business:'',
             assigned:'',
-            //openedAt:'',
-            //status:''}
+            frequency:'',
         }
-        if (!form.branch) err.branch = 'branch is required'
-        if (!form.business) err.business = 'business is required'
-        if (!form.assigned) err.assigned = 'technician is required'
-        
+        if (Object.keys(form.branch).length < 1){
+            err.branch = 'Se debe especificar la sucursal'
+            err.client = 'Se debe seleccionar el cliente'
+        }
+        if (Object.keys(form.business).length < 1) err.business = 'Se debe especificar la empresa'
+        if (form.assigned.length < 1) err.assigned = 'Se requiere al menos un tecnico asignado'
+        if(!form.frequency && form.months.length < 1) err.frequency = 'Se debe definir o la frecuencia o los meses impuestos por el cliente'
+        setErrors(err)
         return err
     }
 
-    const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+    const handleSubmit = async() => {
+        startLoading()
+        setSubmitted(true)
         const errs = formValidate()
-        if (errs.branch === '' && errs.business === '' && errs.assigned === '') {
-            newPreventive?postData(form):putData(form)
+        if (errs.branch === '' && errs.business === '' && errs.assigned === '' && errs.client === '' && errs.frequency === '') {
+            newPreventive? await postData(form): await putData(form)
+            stopLoading()
         } else {
-            setErrors({ errs })
+            stopLoading()
         }
     }
 
@@ -163,20 +174,20 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
         const {value} = e.target
         const technician = technicians.find(technician => technician.fullName === value)
         if(technician)setForm(prev=>{return {...prev, assigned: !prev.assigned.some(x => x._id === technician._id)? [...prev.assigned, technician] : prev.assigned}})
-
-    }
+    }   
 
     const deleteTechnician = (id:string) =>{
+        
         //setBranchBusinesses(prev => prev.filter(business=>business._id!=id))
-        setForm(prev=>{return {...prev, assigned:prev.assigned.filter(technician => technician._id!=id)}})
+        setForm(prev=>{
+            return ({...prev, assigned:prev.assigned.filter(technician => technician._id!=id)})
+        })
         
     }
 
     const addMonth = (e:any) => {
         const {value}= e.target
         console.log(value)
-
-
         setForm(prev => {return {...prev, months: !prev.months.some(month => month === value)? [...prev.months, value] :prev.months}})
     }
 
@@ -192,7 +203,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
 
     return(
         <>
-            <form id='task' className='flex flex-col my-4 mx-auto w-1/2 bg-gray-50 rounded-3xl p-4' onSubmit={handleSubmit}>
+            <div id='task' className='flex flex-col my-4 mx-auto w-1/2 bg-gray-50 rounded-3xl p-4'>
                 <h2 className="text-lg">{newPreventive?'Agregar Preventivo':'Editar Preventivo'}</h2>
                 <hr className="my-2"/>
                 <div id='select-client'>
@@ -208,11 +219,20 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         required={true}
                         onChange={selectClient}
                         name='select-client'
-                        defaultValue={'default'}                        
+                        defaultValue={'default'}
+                        color={`${errors.branch? 'failure':''}`}                        
                     >
                         <option value="default" hidden disabled>{newPreventive?'Seleccione un cliente...' : `${client}`}</option>
                         {clients.map((client, index)=> <option key={index}>{client.name}</option>)}
                     </Select>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='branch'
+                        value={errors.client}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id='select-branch'>
                     <div className='mb-2 block'>
@@ -228,10 +248,19 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         onChange={selectBranch}
                         name='branch'
                         defaultValue='default'
+                        color={`${errors.branch? 'failure':''}`}
                     >
                         <option value="default" hidden disabled>{newPreventive?'Seleccione una sucursal...':`${preventiveForm.branch.number.toString()}, ${preventiveForm.branch.city}`}</option>
                         {filteredBranches && filteredBranches.map((branch, index)=> <option key={index}>{`${branch.number}, ${branch.city.name}`}</option>)}
                     </Select>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='branch'
+                        value={errors.branch}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id='select-business'>
                     <div className='mb-2 block'>
@@ -248,10 +277,19 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         onChange={selectBusiness}
                         name='business'
                         defaultValue='default'
+                        color={`${errors.business? 'failure':''}`}
                     >
                         <option value="default" hidden disabled>{newPreventive?'Seleccione una empresa...':preventiveForm.business.name}</option>
                         {form.branch && form.branch.businesses && form.branch.businesses.map((business, index)=> <option key={index}>{business.name}</option>)}
                     </Select>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='branch'
+                        value={errors.business}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id='select-frequency'>
                     <div className='mb-2 block'>
@@ -267,10 +305,19 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         onChange={selectFrequency}
                         name='frequency'
                         defaultValue='default'
+                        color={`${errors.frequency? 'failure':''}`}
                     >
                         <option value="default" hidden disabled>{newPreventive?'Seleccione la frequencia': preventiveForm.frequency? preventiveForm.frequency>1?`Cada ${preventiveForm.frequency} meses`:'Todos los meses':'Seleccione la frequencia'}</option>
                         {types.frequencies.map((frequency, index)=> <option key={index} value={frequency}>{frequency>1?`Cada ${frequency} meses`:`Todos los meses`}</option>)}
                     </Select>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='frequency error'
+                        value={errors.frequency}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id="textarea">
                     <div className="mb-2 block">
@@ -288,7 +335,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         required={true}
                         value={form.observations}
                         rows={4}
-                        
+                        color='white'
                     />
                 </div>
                 <div id='select-technician'>
@@ -306,6 +353,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                             onChange={addTechnician}
                             value='default'
                             className='mb-4'
+                            color={`${errors.assigned? 'failure':''}`}
                         >
                             <option value="default" disabled hidden>Seleccione un tecnico para agregar</option>
                             {technicians.map((technician, index) =><option key={index} value={technician.fullName}>{technician.fullName}</option>)}
@@ -326,6 +374,14 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                             )
                         })}
                     </ul>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='assigned error'
+                        value={errors.assigned}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
 
                     {/* <TechnicianTable technicians={form.assigned} deleteTechnician={deleteTechnician}/> */}
                 </div>
@@ -343,6 +399,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                             onChange={addMonth}
                             value='default'
                             className='mb-4'
+                            color={`${errors.frequency? 'failure':''}`}
                         >
                             <option value="default" disabled hidden>Seleccione un mes para agregar</option>
                             {types.months.map((month, index) =><option key={index} value={month}>{month}</option>)}
@@ -363,11 +420,19 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         })}
                     </ul>
                 </div>
+                <div className='mb-2 block'>
+                    <Label
+                    htmlFor='months error'
+                    value={errors.frequency}
+                    className='text-lg'
+                    color='failure'
+                    />
+                </div>
                 <div className='flex flex-row justify-between'>
                     <Button color='gray' onClick={goBack}> Cancelar </Button>
-                    <Button type='submit'> Guardar </Button>
+                    <Button onClick={handleSubmit}> Guardar </Button>
                 </div>
-            </form>
+            </div>
         </>
     )
 }

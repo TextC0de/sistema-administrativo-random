@@ -48,8 +48,8 @@ export default function SideMenu(){
             <div className="w-full px-1">
                 <>
                     {
-                        sideMenu.map((item:IItem, index:number)=> {
-                            if(item.role==='') return <Item key={index} selectItem={selectItem} {...item}/>                    
+                        sideMenu.map((item:IItem)=> {
+                            if(item.role==='') return <Item key={item.id} selectItem={selectItem} {...item}/>                    
                         })
                     }
                     {
@@ -59,8 +59,8 @@ export default function SideMenu(){
                             return(
                                 user?.roles?.includes(role) &&
                                 <div key={index} className="flex flex-col items-center w-full mt-1 border-t border-gray-700">
-                                    {sideMenu.map((item:IItem, index:number) => {
-                                        if(user.roles?.includes(item.role as Role) && item.role === role) return <Item key={index} selectItem={selectItem} {...item} /> 
+                                    {sideMenu.map((item:IItem) => {
+                                        if(user.roles?.includes(item.role as Role) && item.role === role) return <Item key={item.id} selectItem={selectItem} {...item} /> 
                                     })}
                                 </div>
                             )
@@ -68,7 +68,6 @@ export default function SideMenu(){
                     }
                 </>
             </div>
-
         </div>
     )
 }

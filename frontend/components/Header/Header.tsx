@@ -7,8 +7,7 @@ import { useEffect } from 'react'
 import { Button } from 'flowbite-react'
 import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
-
-
+import {GrLogout } from 'react-icons/gr'
 export default function Header(): JSX.Element{
     const router = useRouter()
     const {user, loginUser, logoutUser, isLoggedIn} = useUser()
@@ -29,9 +28,7 @@ export default function Header(): JSX.Element{
     }
 
     useEffect(()=>{
-        startLoading()
         if(!isLoggedIn()) loginUser()
-        stopLoading()
     },[])
 
     function navigate(){
@@ -57,7 +54,10 @@ export default function Header(): JSX.Element{
                     {
                     isLoggedIn() && 
                         <Button onClick={logout}>
-                            Sign out
+                            <div className='flex flex-row justify-between items-center'>
+
+                                <GrLogout color=''/>
+                            </div>
                         </Button>
                     }
                 </div>
