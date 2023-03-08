@@ -28,9 +28,9 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
     const [form, setForm] = useState<ICityForm>({
         _id:cityForm._id,
         name:cityForm.name,
-        province: newCity? provinces[0] : cityForm.province
+        province: cityForm.province
     })
-    const[errs, setErrs] = useState<ICityFormErrors>()
+    const[errors, setErrors] = useState<ICityFormErrors>({} as ICityFormErrors)
 
     const postData = async (form:ICityForm) => {
         try {
@@ -83,20 +83,20 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
            name:'',
            province:''
         }
-        if (!form.name) err.name = 'name is required'
-        if (!form.province) err.province = 'province is required'
+        if (!form.name) err.name = 'Se debe especificar un nombre'
+        if (Object.keys(form.province).length < 1) err.province = 'Se debe especificar la provincia'
         
         return err
     }
 
     const handleSubmit = (e:any) => {
         e.preventDefault()
-        const errs = formValidate()
+        const errors = formValidate()
         
-        if (errs.name === '' ) {
+        if (errors.name === '' ) {
             newCity ? postData(form) : putData(form)
         } else {
-            setErrs(errs)
+            setErrors(errors)
         }
     }
 
@@ -120,7 +120,16 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
                     placeholder={cityForm.name}
                     onChange={handleChange}
                     value={form.name}
+                    color={errors.name?'failure':''}
                     />
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='name error'
+                        value={errors.name}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id='select-province'>
                     <div className='mb-2 block'>
@@ -136,19 +145,25 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
                         onChange={selectProvince}
                         name='province'
                         defaultValue='default'
+                        color={errors.province?'failure':''}
                     >
                         <option value='default' disabled hidden>{newCity?'Seleccione una provincia':cityForm.province.name}</option>
                         {provinces.map((province, index)=> <option key={index}>{province.name}</option>)}
                     </Select>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='province error'
+                        value={errors.province}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div className='flex flex-row justify-between'>
                     <Button size='sm' onClick={goBack} color='gray'> Cancelar </Button>
                     <Button size='sm' onClick={handleSubmit}> Guardar </Button>
                 </div>
             </form>
-            <ul>
-                {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}
-            </ul>
         </>
     )
 }

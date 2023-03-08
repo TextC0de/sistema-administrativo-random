@@ -1,6 +1,6 @@
 import { Button, Label, TextInput } from 'flowbite-react';
 import { useRouter } from 'next/router';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading';
@@ -24,8 +24,9 @@ export default function ClientForm({clientForm, newClient=true }:props){
         _id:clientForm._id,
         name:clientForm.name
     })
-    const[errs, setErrs] = useState<IClientFormErrors>()
+    const [errors, setErrors] = useState<IClientFormErrors>({} as IClientFormErrors)
     const {stopLoading, startLoading} = useLoading()
+    const [submitted, setSubmitted] = useState<boolean>(false)
     const postData = async (form:IClientForm) => {
         try {
             startLoading()
@@ -63,12 +64,14 @@ export default function ClientForm({clientForm, newClient=true }:props){
         let err : IClientFormErrors = { 
            name:''
         }
-        //console.log(form.name);
-        
-        if (!form.name) err.name = 'name is required'
-        
+        if (!form.name) err.name = 'Se debe especificar un nombre'
+        setErrors(err)
         return err
     }
+
+    useEffect(()=>{
+        if(submitted)formValidate()
+    },[form])
 
     async function goBack(){
         startLoading()
@@ -78,11 +81,12 @@ export default function ClientForm({clientForm, newClient=true }:props){
 
     const handleSubmit = (e:any) => {
         e.preventDefault()   
+        setSubmitted(true)
         const errs = formValidate()
         if (errs.name === '' ) {
             newClient ? postData(form) : putData(form)
         } else {
-            setErrs(errs)
+            setErrors(errs)
         }
     }
 
@@ -105,16 +109,23 @@ export default function ClientForm({clientForm, newClient=true }:props){
                     sizing='md'
                     placeholder={clientForm.name}
                     onChange={handleChange}
+                    color={errors.name?'failure':''}
                     />
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='branch'
+                        value={errors.name}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
+
                 <div className='flex flex-row justify-between'>
                     <Button size='sm' onClick={goBack} color='gray'> Cancelar </Button>
-                    <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                    <Button size='sm' type='submit'> Guardar </Button>
                 </div>
             </form>
-            <ul>
-                {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}
-            </ul>
         </>
     )
 }

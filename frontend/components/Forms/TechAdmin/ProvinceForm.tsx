@@ -1,6 +1,6 @@
 import { Button, Label, TextInput } from 'flowbite-react';
 import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading';
@@ -24,7 +24,8 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
         _id:provinceForm._id,
         name:provinceForm.name
     })
-    const[errs, setErrs] = useState<IProvinceFormErrors>()
+    const[errors, setErrors] = useState<IProvinceFormErrors>({} as IProvinceFormErrors)
+    const [submitted, setSubmitted] = useState<boolean>(false)
     const {stopLoading, startLoading} = useLoading()
     const postData = async (form:IProvinceForm) => {
         try {
@@ -56,11 +57,12 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
 
     function handleChange(e:ChangeEvent<HTMLInputElement>){
         const{value} = e.target
-
         setForm({...provinceForm, name:value})
-        console.log(form);
-        
     }
+
+    useEffect(()=>{
+        if(submitted)formValidate()
+    },[form])
 
     const formValidate = () => {
         let err : IProvinceFormErrors = { 
@@ -68,21 +70,22 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
         }
         //console.log(form.name);
         
-        if (!form.name) err.name = 'name is required'
-        
+        if (!form.name) err.name = 'Se debe especificar un nombre'
+        setErrors(err)
         return err
     }
 
     const handleSubmit = (e:any) => {
         e.preventDefault()
+        setSubmitted(true)
         //console.log('estoy submiteando');
         
-        const errs = formValidate()
+        const errors = formValidate()
         
-        if (errs.name === '' ) {
+        if (errors.name === '' ) {
             newProvince ? postData(form) : putData(form)
         } else {
-            setErrs(errs)
+            setErrors(errors)
         }
     }
 
@@ -111,16 +114,22 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
                     sizing='md'
                     placeholder={provinceForm.name}
                     onChange={handleChange}
+                    color={errors.name?'failure':''}
                     />
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='name error'
+                        value={errors.name}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div className='flex flex-row justify-between'>
                     <Button size='sm' color='gray' onClick={goBack}> Cancelar </Button>
                     <Button size='sm' onClick={handleSubmit}> Guardar </Button>
                 </div>
             </form>
-            <ul>
-                {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}
-            </ul>
         </>
     )
 }

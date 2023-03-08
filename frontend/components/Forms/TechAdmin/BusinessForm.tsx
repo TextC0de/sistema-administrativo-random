@@ -1,6 +1,6 @@
 import { Button, Label, TextInput } from 'flowbite-react';
 import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading';
@@ -26,7 +26,8 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
         _id:businessForm._id,
         name:businessForm.name
     })
-    const[errs, setErrs] = useState<IBusinessFormErrors>()
+    const [submitted, setSubmitted] = useState<boolean>(false)
+    const[errors, setErrors] = useState<IBusinessFormErrors>({} as IBusinessFormErrors)
 
     const postData = async (form:IBusinessForm) => {
         try {
@@ -64,12 +65,16 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
         
     }
 
+    useEffect(()=>{
+        if(submitted) formValidate()
+    }, [form])
+
     const formValidate = () => {
         let err : IBusinessFormErrors = { 
            name:''
         }
-        if (!form.name) err.name = 'name is required'
-        
+        if (!form.name) err.name = 'Se debe especificar un nombre'
+        setErrors(err)
         return err
     }
 
@@ -78,16 +83,14 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
         await router.push('/tech-admin/businesses')
         stopLoading()
     }
-
     const handleSubmit = (e:any) => {
+        setSubmitted(true)
         e.preventDefault()
         
         const errs = formValidate()
         
         if (errs.name === '' ) {
             newBusiness ? postData(form) : putData(form)
-        } else {
-            setErrs(errs)
         }
     }    
     return(
@@ -107,18 +110,24 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
                     id='name'
                     type='text'
                     sizing='md'
+                    color={errors.name?'failure':''}
                     placeholder={businessForm.name}
                     onChange={handleChange}
                     />
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='name error'
+                        value={errors.name}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div className='flex flex-row justify-between'>
                     <Button size='sm' color='gray' onClick={goBack}> Cancelar </Button>
                     <Button size='sm' onClick={handleSubmit}> Guardar </Button>
                 </div>
             </form>
-            <ul>
-                {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}
-            </ul>
         </>
     )
 }

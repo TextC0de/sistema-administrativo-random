@@ -382,8 +382,6 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
                         color='failure'
                         />
                     </div>
-
-                    {/* <TechnicianTable technicians={form.assigned} deleteTechnician={deleteTechnician}/> */}
                 </div>
                 <div id='select-month'>
                     <div className='mb-2 block'>

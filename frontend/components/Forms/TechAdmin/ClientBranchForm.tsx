@@ -1,6 +1,6 @@
 import { Button, Label, Select, TextInput } from 'flowbite-react';
 import { useRouter } from 'next/router';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { IBusiness, ICity, IClient} from 'backend/models/interfaces';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
@@ -18,6 +18,7 @@ export interface IClientBranchForm{
 export interface IClientBranchFormErrors{
     number:string
     city:string
+    businesses:string
 }
 
 interface props{
@@ -37,7 +38,8 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
         city: branchForm.city,
         businesses: branchForm.businesses,
     })
-    const[errs, setErrs] = useState<IClientBranchFormErrors>()
+    const[errors, setErrors] = useState<IClientBranchFormErrors>({} as IClientBranchFormErrors)
+    const [submitted, setSubmitted] = useState<boolean>(false)
 
     const postData = async (form:IClientBranchForm) => {
         try {
@@ -79,25 +81,29 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
         setForm({...form, number:parseInt(value)})        
     }
 
+    useEffect(()=>{
+        if(submitted) formValidate()
+    }, [form])
+
     const formValidate = () => {
         let err : IClientBranchFormErrors = {
             number:'',
-            city:''
+            city:'',
+            businesses:''
         }
-        if (!form.number) err.number = 'number is required'
-        if (!form.city) err.city = 'city is required'
-        
+        if (!form.number) err.number = 'Se debe proporcionar un numero'
+        if (Object.keys(form.city).length < 1) err.city = 'Se debe especificar la ciudad'
+        if (form.businesses.length < 1) err.businesses = 'Se debe seleccionar al menos una empresa'
+        setErrors(err)
         return err
     }
 
     const handleSubmit = (e:any) => {
         e.preventDefault()
-        const errs = formValidate()
-        
-        if (errs.number === '' && errs.city === '') {
+        setSubmitted(true)
+        const errors = formValidate()
+        if (errors.number === '' && errors.city === '') {
             newBranch ? postData(form) : putData(form)
-        } else {
-            setErrs(errs)
         }
     }
 
@@ -139,7 +145,16 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                     onChange={handleChange}
                     value={form.number}
                     disabled={newBranch?false:true}
+                    color={errors.number?'failure':''}
                     />
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='number error'
+                        value={errors.number}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id='select-city'>
                     <div className='mb-2 block'>
@@ -156,47 +171,61 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                         name='city'
                         defaultValue='default'
                         disabled={newBranch?false:true}
-                        
+                        color={errors.city?'failure':''}
                     >
                         <option value="default" disabled hidden>{newBranch? 'Seleccione una localidad...':`${form.city.name}, ${form.city.province.name}`}</option>
                         {cities.map((city, index)=> <option key={index}>{`${city.name}, ${city.province.name} `}</option>)}
                     </Select>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='city error'
+                        value={errors.city}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <hr className='mt-1'/>
                 <Label value='Empresas contratadas' className='text-lg'/>
-                <div className='grid grid-cols-6 gap-4'>
+                <div>
                     <Select
                         id='branchBusinesses'
                         onChange={addBusiness}
                         value='default'
                         className='col-span-5'
+                        color={errors.businesses?'failure':''}
                     >
                         <option value="default" disabled hidden>Seleccione las empresas a agregar</option>
                         {businesses.map((business, index) =><option key={index} value={business.name}>{business.name}</option>)}
                     </Select>
+                    <ul>
+                        {form.businesses.map((business, index) =>{
+                            return(
+                                <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block' key={index}>
+                                    <div className='flex justify-between items-center gap-2 font-semibold'>
+                                        {business.name}
+                                        <button className='rounded-full bg-white ' onClick={()=>deleteBranchBusiness(business._id as string)}>
+                                                <BsFillXCircleFill color='gray' size={20} />
+                                            </button>
+                                    </div>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='business error'
+                        value={errors.businesses}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
-                <ul>
-                    {form.businesses.map((business, index) =>{
-                        return(
-                            <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block' key={index}>
-                                <div className='flex justify-between items-center gap-2 font-semibold'>
-                                    {business.name}
-                                    <button className='rounded-full bg-white ' onClick={()=>deleteBranchBusiness(business._id as string)}>
-                                            <BsFillXCircleFill color='gray' size={20} />
-                                        </button>
-                                </div>
-                            </li>
-                        )
-                    })}
-                </ul>
                 <div className='flex flex-row justify-between'>
                     <Button size='sm' color='gray' onClick={goBack}> Cancelar</Button>
                     <Button size='sm' type='submit'>Guardar</Button>
                 </div>
             </form>
-            <ul>
-                {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}
-            </ul>
         </>
     )
 }

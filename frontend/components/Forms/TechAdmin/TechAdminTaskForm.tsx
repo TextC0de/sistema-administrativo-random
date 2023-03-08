@@ -1,16 +1,17 @@
 import { Button, Dropdown, Label, Select, Textarea } from 'flowbite-react';
 import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, MouseEventHandler, useState } from 'react';
+import { ChangeEvent, FormEvent, MouseEventHandler, useEffect, useState } from 'react';
 import { IBranch, IBusiness, ICity, IClient, ITask, IUser } from 'backend/models/interfaces';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import * as types from 'backend/models/types'
 import useLoading from 'frontend/hooks/useLoading';
+import { BsFillXCircleFill } from 'react-icons/bs';
 export interface ITaskForm{
         _id:string
         branch:IBranch,
         business:IBusiness,
-        assigned?:IUser,
+        assigned:IUser[],
         description:string,
         openedAt:Date,
         taskType:types.TaskType | '',
@@ -22,7 +23,7 @@ export interface ITaskFormErrors{
     business:string,
     assigned:string,
     description:string,
-    //openedAt:string,
+    client:string,
     taskType:string,
     //status:string,
 }
@@ -38,15 +39,16 @@ export interface props{
 
 const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clients, technicians}:props) =>{
     const router = useRouter()    
-    const [errors, setErrors] = useState({})
+    const [errors, setErrors] = useState<ITaskFormErrors>({} as ITaskFormErrors)
     const [message, setMessage] = useState('')
+    const [submitted, setSubmitted] = useState<boolean>(false)
     const [client, setClient] = useState(taskForm.branch.client?taskForm.branch.client.name:'')
     const [filteredBranches, setFilteredBranches ] = useState<IBranch[]>(newTask?[]:branches.filter(branch => branch.client.name === taskForm.branch.client.name))
     const [form, setForm] = useState<ITaskForm>({
         _id:taskForm._id,
         branch:taskForm.branch,
-        business:taskForm.business || [],
-        assigned:taskForm.assigned,
+        business:taskForm.business,
+        assigned:taskForm.assigned || [],
         taskType:taskForm.taskType,
         description:taskForm.description,
         openedAt:taskForm.openedAt,
@@ -111,17 +113,20 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
         }) 
     }
 
-    const selectTechnician = (event:ChangeEvent<HTMLSelectElement>) =>{
-        const {name, value} = event.target
+    const addTechnician = (e:ChangeEvent<HTMLSelectElement>) => {
+        const {value} = e.target
         const technician = technicians.find(technician => technician.fullName === value)
+        if(technician)setForm(prev=>{return {...prev, assigned: !prev.assigned.some(x => x._id === technician._id)? [...prev.assigned, technician] : prev.assigned}})
+    }   
 
-        setForm({
-        ...form,
-        [name]: technician,
-        }) 
+    const deleteTechnician = (id:string) =>{
+        
+        //setBranchBusinesses(prev => prev.filter(business=>business._id!=id))
+        setForm(prev=>{
+            return ({...prev, assigned:prev.assigned.filter(technician => technician._id!=id)})
+        })
+        
     }
-
-
 
     const changeDescription = (event:ChangeEvent<HTMLTextAreaElement>) => {
         const {name, value} = event.target
@@ -134,7 +139,6 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
 
     const selectTaskType = (event:ChangeEvent<HTMLSelectElement>) =>{
         const {value} = event.target
-
         setForm({...form, taskType:value as types.TaskType})
     }
 
@@ -145,25 +149,29 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
             assigned:'',
             taskType:'',
             description:'',
+            client:'',
             //openedAt:'',
             //status:''}
         }
-        if (!form.branch) err.branch = 'branch is required'
-        if (!form.business) err.business = 'business is required'
-        if (!form.assigned) err.assigned = 'technician is required'
-        if (!form.taskType) err.taskType = 'task type is required'
-        if (!form.description) err.description = 'description is required'
-        
+        if (Object.keys(form.branch).length < 1) err.branch = 'Se debe especificar una sucursal'
+        if (Object.keys(form.branch).length < 1) err.client = 'Se debe especificar un cliente'
+        if (Object.keys(form.business).length < 1) err.business = 'Se debe especificar una empresa'
+        if ((form.assigned as IUser[]).length < 1) err.assigned = 'Al menos un tecnico debe ser asignado'
+        if (!form.taskType) err.taskType = 'Se debe especificar el tipo de la tarea'
+        if (!form.description) err.description = 'Se debe proveer una descripcion'
+        setErrors(err)
         return err
     }
 
-    const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+    useEffect(()=>{
+        if(submitted)formValidate()
+    },[form])
+
+    const handleSubmit = () => {
+        setSubmitted(true)
         const errs = formValidate()
         if (errs.branch === '' && errs.business === '' && errs.assigned === '' && errs.taskType === '' && errs.description === '') {
             newTask? postData(form):putData(form)
-        } else {
-            setErrors({ errs })
         }
     }
 
@@ -176,7 +184,7 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
 
     return(
         <>
-            <form id='task' className='flex flex-col w-1/2 bg-gray-50 p-4 mx-auto my-4 rounded-3xl' onSubmit={handleSubmit}>
+            <div id='task' className='flex flex-col w-1/2 bg-gray-50 p-4 mx-auto my-4 rounded-3xl' >
                 <h2 className="text-lg">{newTask?'Agregar Tarea':'Editar Tarea'}</h2>
                 <hr className="my-2"/>
                 <div id='select-client'>
@@ -193,11 +201,20 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
                         onChange={selectClient}
                         name='select-client'
                         defaultValue={'default'}
+                        color={errors.branch?'failure':''}
                         
                     >
                         <option value="default" hidden disabled>{newTask?'Seleccione un cliente...' : `${client}`}</option>
                         {clients.map((client, index)=> <option key={index}>{client.name}</option>)}
                     </Select>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='client error'
+                        value={errors.branch}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id='select-branch'>
                     <div className='mb-2 block'>
@@ -213,10 +230,19 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
                         onChange={selectBranch}
                         name='branch'
                         defaultValue='default'
+                        color={errors.branch?'failure':''}
                     >
                         <option value="default" hidden disabled>{newTask?'Seleccione una sucursal...':`${taskForm.branch.number.toString()}, ${taskForm.branch.city.name}`}</option>
                         {filteredBranches && filteredBranches.map((branch, index)=> <option key={index}>{`${branch.number}, ${branch.city.name}`}</option>)}
                     </Select>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='branch error'
+                        value={errors.branch}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id='select-business'>
                     <div className='mb-2 block'>
@@ -233,30 +259,63 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
                         onChange={selectBusiness}
                         name='business'
                         defaultValue='default'
+                        color={errors.business?'failure':''}
                     >
                         <option value="default" hidden disabled>{newTask?'Seleccione una empresa...':taskForm.business.name}</option>
                         {form.branch && form.branch.businesses && form.branch.businesses.map((business, index)=> <option key={index}>{business.name}</option>)}
                     </Select>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='branch error'
+                        value={errors.business}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id='select-technician'>
                     <div className='mb-2 block'>
                         <Label
                         htmlFor='assigned'
-                        value='Elegi al tecnico'
+                        value='Elegi a los tecnicos responsables de este preventivo'
                         className='text-lg'
                         />
                     </div>
-                    <Select
-                        id='technicians'
-                        required={true}
-                        onChange={selectTechnician}
-                        name='assigned'
-                        placeholder={taskForm.assigned?.fullName || ''}
-                        defaultValue='default'
-                    >
-                        <option value="default" hidden disabled>{newTask?'Seleccione un tecnico...': taskForm.assigned?.fullName}</option>
-                        {technicians.map((technician, index)=> <option key={index}>{technician.fullName}</option>)}
-                    </Select>
+                    <div className='w-full'>
+                        <Select
+                            id='technicians'
+                            onChange={addTechnician}
+                            value='default'
+                            className='mb-4'
+                            color={`${errors.assigned? 'failure':''}`}
+                        >
+                            <option value="default" disabled hidden>Seleccione un tecnico para agregar</option>
+                            {technicians.map((technician, index) =><option key={index} value={technician.fullName}>{technician.fullName}</option>)}
+                        </Select>
+                    </div>
+
+                    <ul>
+                        {form.assigned.map((technician, index) =>{
+                            return(
+                                <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block' key={index}>
+                                    <div className='flex justify-between items-center gap-2 font-semibold'>
+                                        {technician.fullName}
+                                        <button className='rounded-full bg-white ' onClick={()=>deleteTechnician(technician._id as string)}>
+                                            <BsFillXCircleFill color='gray' size={20} />
+                                        </button>
+                                    </div>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='assigned error'
+                        value={errors.assigned}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id='select-taskType'>
                     <div className='mb-2 block'>
@@ -272,10 +331,19 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
                         onChange={selectTaskType}
                         name='taskType'
                         defaultValue='default'
+                        color={errors.taskType?'failure':''}
                     >
                         <option value="default" hidden disabled>{newTask?'Seleccione el tipo de servicio':taskForm.taskType}</option>
                         {types.taskTypes.map((taskType, index)=> <option key={index}>{taskType}</option>)}
                     </Select>
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='assigned error'
+                        value={errors.taskType}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id="textarea">
                     <div className="mb-2 block">
@@ -293,14 +361,22 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
                         required={true}
                         value={form.description}
                         rows={4}
-                        
+                        color={errors.description?'failure':''}
                     />
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='assigned error'
+                        value={errors.description}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div className='flex flex-row justify-between mt-4'>
                     <Button color='gray' onClick={goBack}> Cancelar </Button>
-                    <Button type='submit'> Guardar </Button>
+                    <Button onClick={handleSubmit}> Guardar </Button>
                 </div>
-            </form>
+            </div>
         </>
     )
 }
