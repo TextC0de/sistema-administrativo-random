@@ -20,8 +20,8 @@ export class Task {
     @prop({ref:'Business', required:true})
     business:Ref<Business>
     
-    @prop({ref:'User', required:true})
-    assigned:Ref<User>
+    @prop({type:mongoose.SchemaTypes.Array, ref:'User', required:true})
+    assigned:Ref<User>[]
 
     @prop({type:Date, required:true})
     openedAt:Date

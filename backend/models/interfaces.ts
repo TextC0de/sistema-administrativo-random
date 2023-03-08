@@ -137,7 +137,7 @@ export interface ITask {
   _id:mongoose.Types.ObjectId | string,
   branch:IBranch,
   business:IBusiness,
-  assigned?:IUser,
+  assigned:IUser[],
   openedAt:Date,
   taskType:types.TaskType,
   status:types.TaskStatus,

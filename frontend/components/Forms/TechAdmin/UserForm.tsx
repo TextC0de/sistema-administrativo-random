@@ -2,7 +2,7 @@ import { IUser, ICity } from "backend/models/interfaces";
 import { Role, roles } from "backend/models/types";
 import { Label, TextInput, Select, Button, Checkbox } from "flowbite-react";
 import { useRouter } from "next/router";
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from "frontend/hooks/useLoading";
@@ -42,8 +42,8 @@ export default function UserForm({userForm, newUser=true, cities}:props){
         email:userForm.email,
         password:''
     })
-    const[errs, setErrs] = useState<IUserFormErrors>()
-
+    const[errors, setErrors] = useState<IUserFormErrors>({} as IUserFormErrors)
+    const [submitted, setSubmitted] = useState<boolean>(false)
     const {stopLoading, startLoading} = useLoading()
 
     const postData = async (form:IUserForm) => {
@@ -111,24 +111,27 @@ export default function UserForm({userForm, newUser=true, cities}:props){
            email:'',
            roles:''
         }
-        if (!form.firstName) err.firstName = 'firstName is required'
-        if (!form.lastName) err.lastName = 'lastName is required'
-        if (!form.email) err.email = 'email is required'
-        if (!form.roles) err.roles = 'roles are required'
-        
+        if (!form.firstName) err.firstName = 'El nombre es requerido'
+        if (!form.lastName) err.lastName = 'El apellido es requerido'
+        if (!form.email) err.email = 'La direccion de email es requerida'
+        if (form.roles.length < 1) err.roles = 'Se le debe asignar al menos un rol al usuario'
+        setErrors(err)
         return err
     }
 
+    useEffect(()=>{
+        if(submitted) formValidate()
+    },[form])
+
     const handleSubmit = (e:any) => {
+        setSubmitted(true)
         e.preventDefault()
-        const errs = formValidate()
+        const errors = formValidate()
         
-        if (errs.firstName === '' && errs.lastName === '' && errs.email === '' && errs.roles === '') {
-            setForm({...form, password:'webada2020'})
+        if (errors.firstName === '' && errors.lastName === '' && errors.email === '' && errors.roles === '') {
+            //setForm({...form, password:'webada2020'})
             newUser ? postData(form) : putData(form)
-        } else {
-            setErrs(errs)
-        }
+        } 
     }
 
     async function goBack(){
@@ -158,7 +161,17 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                     placeholder={userForm.firstName}
                     onChange={handleChange}
                     value={form.firstName}
+                    color={errors.firstName?'failure':''}
+
                     />
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='name error'
+                        value={errors.firstName}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div>
                     <div className='mb-2 block'>
@@ -176,7 +189,16 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                     placeholder={userForm.lastName}
                     onChange={handleChange}
                     value={form.lastName}
+                    color={errors.lastName?'failure':''}
                     />
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='name error'
+                        value={errors.lastName}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div>
                     <div className='mb-2 block'>
@@ -194,7 +216,16 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                     placeholder={userForm.email}
                     onChange={handleChange}
                     value={form.email}
+                    color={errors.email?'failure':''}
                     />
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='email error'
+                        value={errors.email}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div className='mb-2 block'>
                         <Label
@@ -211,11 +242,20 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                         id={`${role}`}
                         defaultChecked={userForm.roles.includes(role)}
                         onChange={checkboxChange}
+                        color={errors.roles?'failure':''}
                         />
                         <Label htmlFor={`${role}`}>
                             {role}
                         </Label>
                     </div>)}
+                    <div className='mb-2 block'>
+                        <Label
+                        htmlFor='roles error'
+                        value={errors.roles}
+                        className='text-lg'
+                        color='failure'
+                        />
+                    </div>
                 </div>
                 <div id='select-city'>
                     <div className='mb-2 block'>
@@ -240,9 +280,6 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                     <Button size='sm' onClick={handleSubmit}> Guardar </Button>
                 </div>
             </form>
-            <ul>
-                {errs && Object.values(errs).map((err, index)=><li key={index}>{err}</li>)}
-            </ul>
         </>
     )
 }

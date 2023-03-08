@@ -4,7 +4,7 @@ import { formatIds, trimTask } from 'lib/utils';
 import Task from '../models/Task';
 import { NextConnectApiRequest } from './interfaces';
 import { ResponseData } from './types';
-import User from 'backend/models/User'
+import UserModel, {User} from 'backend/models/User'
 import { ITask } from 'backend/models/interfaces';
 
 
@@ -28,11 +28,12 @@ const TaskController = {
             image, 
             workOrderNumber, 
             closedAt
-        }:ITask = body
+        } = body
+        const assignedIds = assigned.map((user:User)=> user._id)
         const taskForm = {
             branch, 
             business, 
-            assigned, 
+            assigned:assignedIds, 
             taskType, 
             openedAt, 
             status,
@@ -43,7 +44,9 @@ const TaskController = {
             operatorName, 
             image, 
             workOrderNumber, 
-            closedAt}
+            closedAt
+        }
+        
         try {
             const newTask = await Task.findByIdAndUpdate(_id, taskForm, {
                 new: true,
@@ -64,7 +67,8 @@ const TaskController = {
         const {branch, business, assigned, taskType, description, participants, activity, operatorName, image, workOrderNumber, closedAt} = body
         const openedAt = new Date()
         const status = 'Pendiente'
-        const taskForm = {branch, business, assigned, taskType, openedAt, status, description, participants, activity, operatorName, image, workOrderNumber,closedAt}
+        const assignedIds = assigned.map((user:User)=> user._id)
+        const taskForm = {branch, business, assigned:assignedIds, taskType, openedAt, status, description, participants, activity, operatorName, image, workOrderNumber,closedAt}
         try {
             const newTask = await Task.create(taskForm)
             if(!newTask) return res.json({statusCode:500, error:'could not create Task'})
@@ -86,7 +90,7 @@ const TaskController = {
     getTechTasks: async (req:NextConnectApiRequest, res: NextApiResponse<ResponseData>) =>{
         const {userId} = req
         await dbConnect()
-        const docUser = await User.findById(userId)
+        const docUser = await UserModel.findById(userId)
         if(!docUser) return res.json({statusCode:500, error:'User not found'})
         const docTasks = await docUser.getTasks()
         const tasks = formatIds(docTasks)

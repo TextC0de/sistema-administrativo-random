@@ -21,7 +21,7 @@ export default function NewTask(props:props){
         _id:'',
         branch:{} as IBranch,
         business:{} as IBusiness,
-        assigned:{} as IUser,
+        assigned:[] as IUser[],
         taskType:'',
         openedAt:{} as Date,
         status:'',

@@ -1,4 +1,4 @@
-import { ITask } from 'backend/models/interfaces'
+import { ITask, IUser } from 'backend/models/interfaces'
 import Link from 'next/link'
 import { dmyDateString } from 'lib/utils'
 import fetcher from 'lib/fetcher'
@@ -30,12 +30,18 @@ export default function Item({task, deleteTask}:props){
         stopLoading()
     }
 
+    function selectedTechs(techs:IUser[]){
+        return techs.length > 1?techs.map(tech => `${tech.fullName}, `): techs[0].fullName
+    }
+
     const openModal = () => {
         setModal(true);
     };
     const closeModal = () => {
         setModal(false);
     };
+
+
     const handleDelete = async () =>{
         try {
             await fetcher.delete({_id:task._id}, api.techAdmin.tasks)
@@ -51,7 +57,7 @@ export default function Item({task, deleteTask}:props){
                 <Table.Cell>{task.business.name}</Table.Cell>
                 <Table.Cell>{task.branch.client.name}</Table.Cell>
                 <Table.Cell>{`${task.branch.number}, ${task.branch.city.name}, ${task.branch.city.province.name}`}</Table.Cell>
-                <Table.Cell>{task.assigned? task.assigned.fullName:'Sin asignar' }</Table.Cell>
+                <Table.Cell>{ selectedTechs(task.assigned)}</Table.Cell>
                 <Table.Cell>{task.taskType}</Table.Cell>
                 <Table.Cell><Badge color='warning'>{task.status}</Badge></Table.Cell>
                 <Table.Cell>{closedAt? closedAt :''}</Table.Cell>
