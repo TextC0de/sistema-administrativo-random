@@ -13,29 +13,25 @@ export default function Main({children}:{children:JSX.Element | JSX.Element[]}){
     function LoadingWrapper(){
         
         return(
-            <>
+            <div className='h-full mx-auto '>
                 {
                     isLoading? 
-                    <div className="h-screen bg-white flex items-center justify-center">
-                        <div className="text-center">
-                            <Spinner aria-label="Center-aligned spinner example" />
-                        </div>    
-                    </div>
+                    <div className="bg-white h-full flex items-center justify-center"><Spinner/></div>
                     :
                     <>
                         {children}
                     </>
                 }
-            </>
+            </div>
         )
     }
 
     return (
-        <main className='h-screen bg-gray-100 '>
+        <main className='h-screen select-none pt-16'>
             {isLoggedIn() && 
-                <div className="select-none">
+                <div className='h-full'>
                     <SideMenu />
-                    <div className='w-full mx-auto pl-52'>
+                    <div className='h-full pl-52'>
                         <LoadingWrapper />
                     </div>
                 </div>
