@@ -38,7 +38,7 @@ export default function Main({children}:{children:JSX.Element | JSX.Element[]}){
             }
             {!isLoggedIn() && <LoadingWrapper />}
             <>
-                {alerts.map((alert)=> <Alert {...alert} />)}
+                {alerts.map((alert)=> <Alert id={alert.key as string} {...alert} />)}
             </>
         </main>
     )

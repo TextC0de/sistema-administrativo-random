@@ -9,6 +9,7 @@ import { Table } from 'flowbite-react'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Modal from 'frontend/components/Modal'
 import { useRouter } from 'next/router'
+import useAlert from 'frontend/hooks/useAlert'
 
 interface props{
     province:IProvince,
@@ -19,7 +20,7 @@ export default function Item({province, deleteProvince}:props){
 
     const {startLoading, stopLoading} = useLoading()
     const router = useRouter()
-    
+    const {triggerAlert} = useAlert()
     const [toggleModal, setToggleModal] = useState(false);
     function openModal(){
         setToggleModal(true)
@@ -35,6 +36,7 @@ export default function Item({province, deleteProvince}:props){
         } 
         catch (error) {
             console.log(error)
+            //triggerAlert({type:'Failure', message:`No se pudo eliminar la provincia ${province.name}`})
         }
     }
 

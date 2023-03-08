@@ -2,16 +2,19 @@ import { IProvince } from 'backend/models/interfaces'
 import { useState } from 'react'
 import { Table } from 'flowbite-react'
 import Item from './Item'
+import useAlert from 'frontend/hooks/useAlert'
 
 interface props{
     provinces:IProvince[]
 }
 export default function ProvinceTable({provinces}:props){
     const [tableProvinces, setTableProvinces] = useState<IProvince[]>(provinces)
-
+    const {triggerAlert} = useAlert()
     const deleteProvince = (id:string) =>{
-        const newTable = (prev:IProvince[]) => prev.filter(province => province._id !== id)
-        setTableProvinces(newTable(provinces))
+        const province =  tableProvinces.find(province => province._id === id)
+        setTableProvinces(tableProvinces.filter(province => province._id !== id))
+        if(!province) return
+        triggerAlert({type:'Success', message:`La provincia ${province.name} se elimino correctamente`})
     }
 
     

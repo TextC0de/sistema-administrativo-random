@@ -5,6 +5,7 @@ import { IProvince } from 'backend/models/interfaces';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading';
+import useAlert from 'frontend/hooks/useAlert';
 export interface ICityForm{
     _id:string
     name:string
@@ -31,18 +32,20 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
         province: cityForm.province
     })
     const[errors, setErrors] = useState<ICityFormErrors>({} as ICityFormErrors)
+    const {triggerAlert} = useAlert()
 
     const postData = async (form:ICityForm) => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.cities)
             await router.push('/tech-admin/cities')
+            triggerAlert({type:'Success', message:'La localidad fue creada correctamente'})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo crear la ciudad')
+            triggerAlert({type:'Failure', message:'No se pudo crear la localidad'})
         }
     }
 
@@ -51,12 +54,13 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
             startLoading()
             await fetcher.put(form, api.techAdmin.cities)
             await router.push('/tech-admin/cities')
+            triggerAlert({type:'Success', message:'La localidad fue actualizada correctamente'})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo actualizar la ciudad')
+            triggerAlert({type:'Failure', message:'No se pudo actualizar la localidad'})
         }
     }
 

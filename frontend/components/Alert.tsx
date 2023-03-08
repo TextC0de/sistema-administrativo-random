@@ -1,12 +1,15 @@
 import { AlertType } from "frontend/context/alertContext/AlertProvider";
 import { BsCheckLg, BsX} from 'react-icons/bs'
 import {AiOutlineWarning, AiOutlineInfoCircle} from 'react-icons/ai'
+import useAlert from "frontend/hooks/useAlert";
+
 interface props{
   message:string,
-  type:AlertType
+  type:AlertType,
+  id:string
 }
 
-export default function Alert ({message, type}:props){
+export default function Alert ({message, type, id}:props){
   
   function Icon(){
     switch (type) {
@@ -29,7 +32,8 @@ export default function Alert ({message, type}:props){
         return 'bg-blue-600'
     }
   }
-  
+  const {removeAlert} = useAlert()
+
   return(
         <div className="flex w-96 shadow-lg rounded-lg">
           <div className={` ${color()} py-4 px-6 rounded-l-lg flex items-center`}>
@@ -37,7 +41,7 @@ export default function Alert ({message, type}:props){
           </div>
           <div className="px-4 py-6 bg-white rounded-r-lg flex justify-between items-center w-full border border-l-transparent border-gray-200">
             <div>{message}</div>
-            <button>
+            <button onClick={()=>removeAlert(id)}>
               <BsX />
             </button>
           </div>

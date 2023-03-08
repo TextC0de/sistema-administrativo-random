@@ -7,6 +7,7 @@ import * as api from 'lib/apiEndpoints'
 import * as types from 'backend/models/types'
 import useLoading from 'frontend/hooks/useLoading';
 import { BsFillXCircleFill } from 'react-icons/bs';
+import useAlert from 'frontend/hooks/useAlert';
 export interface ITaskForm{
         _id:string
         branch:IBranch,
@@ -57,7 +58,7 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
     //
 
     const {stopLoading, startLoading} = useLoading()
-
+    const {triggerAlert} = useAlert()
     /* The POST method adds a new entry in the mongodb database. */
     const postData = async (form:ITaskForm) => {
         
@@ -66,11 +67,12 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
             await fetcher.post(form, api.techAdmin.tasks)
             await router.push('/tech-admin/tasks')
             stopLoading()
+            triggerAlert({type:'Success', message:`El tarea para ${form.business.name} en la sucursal ${form.branch.number} del cliente ${client} fue creada correctamente`})
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo crear la tarea')
+            triggerAlert({type:'Failure', message:`No se pudo crear la tarea para ${form.business.name} en la sucursal ${form.branch.number} del cliente ${client}`})
         }
     }
 
@@ -80,16 +82,18 @@ const TechAdminTaskForm = ({taskForm, newTask = true, businesses, branches, clie
             await fetcher.put(form, api.techAdmin.tasks)
             await router.push('/tech-admin/tasks')
             stopLoading()
+            triggerAlert({type:'Success', message:`El tarea para ${form.business.name} en la sucursal ${form.branch.number} del cliente ${client} fue actualizada correctamente`})
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo actualizar la tarea')
+            triggerAlert({type:'Failure', message:`No se pudo actualizar la tarea para ${form.business.name} en la sucursal ${form.branch.number} del cliente ${client}`})
         }
     }
 
     const selectClient = (event:ChangeEvent<HTMLSelectElement>) =>{
         const {value} = event.target
+        setClient(value)
         setFilteredBranches(branches.filter(branch => branch.client.name === value))
     }
 

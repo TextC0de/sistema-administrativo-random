@@ -25,12 +25,16 @@ const AlertProvider = ({children}:ProviderProps) => {
         newAlert.key = nanoid()
         setAlerts([...alerts, newAlert])
         setTimeout(()=>{
-            setAlerts(alerts.filter(alert=> alert.key != newAlert.key))
+            removeAlert(newAlert.key as string)
         }, 5000)
     }
 
+    function removeAlert(key:string){
+        setAlerts(alerts.filter(alert=> alert.key != key))
+    }
+
     return(
-        <AlertContext.Provider value={{alerts, triggerAlert}}>
+        <AlertContext.Provider value={{alerts, triggerAlert, removeAlert}}>
             {children}
         </AlertContext.Provider>
     )

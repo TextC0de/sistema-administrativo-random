@@ -35,7 +35,7 @@ export default function ClientForm({clientForm, newClient=true }:props){
             startLoading()
             await fetcher.post(form, api.techAdmin.clients)
             await router.push('/tech-admin/clients')
-            triggerAlert({type:'Success', message: 'El cliente fue creado con exito'})
+            triggerAlert({type:'Success', message: `El cliente de nombre "${form.name}" fue creado con exito`})
             stopLoading()
         } 
         catch (error) {
