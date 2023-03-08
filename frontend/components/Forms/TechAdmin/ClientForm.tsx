@@ -4,6 +4,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading';
+import useAlert from 'frontend/hooks/useAlert';
 export interface IClientForm{
     _id:string
     name:string
@@ -27,17 +28,20 @@ export default function ClientForm({clientForm, newClient=true }:props){
     const [errors, setErrors] = useState<IClientFormErrors>({} as IClientFormErrors)
     const {stopLoading, startLoading} = useLoading()
     const [submitted, setSubmitted] = useState<boolean>(false)
+    const {triggerAlert} = useAlert()
+
     const postData = async (form:IClientForm) => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.clients)
             await router.push('/tech-admin/clients')
+            triggerAlert({type:'Success', message: 'El cliente fue creado con exito'})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo crear al cliente')
+            triggerAlert({type:'Failure', message:'No se pudo crear el cliente'})
         }
     }
 
@@ -45,13 +49,14 @@ export default function ClientForm({clientForm, newClient=true }:props){
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.clients)
-            router.push('/tech-admin/clients')
+            await router.push('/tech-admin/clients')
+            triggerAlert({type:'Success', message: 'El cliente fue actualizado con exito'})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo actualizar el cliente')
+            triggerAlert({type:'Success', message: 'No se pudo actualizar el cliente'})
         }
     }
 

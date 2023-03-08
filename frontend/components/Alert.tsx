@@ -1,6 +1,6 @@
 import { AlertType } from "frontend/context/alertContext/AlertProvider";
-import {AiOutlineWarning, BsCheckLg, BsX, AiOutlineInfoCircle} from 'react-icons/all'
-
+import { BsCheckLg, BsX} from 'react-icons/bs'
+import {AiOutlineWarning, AiOutlineInfoCircle} from 'react-icons/ai'
 interface props{
   message:string,
   type:AlertType
