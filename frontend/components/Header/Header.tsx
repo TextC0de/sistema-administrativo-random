@@ -53,12 +53,11 @@ export default function Header(): JSX.Element{
                 <div className='flex justify-end'>
                     {
                     isLoggedIn() && 
-                        <Button onClick={logout}>
+                        <button className="flex p-2 pl-2.5 justify-content hover:bg-gray-300 border border-gray-200 rounded-lg select-none" onClick={logout}>
                             <div className='flex flex-row justify-between items-center'>
-
-                                <GrLogout color=''/>
+                                <GrLogout size={18}/>
                             </div>
-                        </Button>
+                        </button>
                     }
                 </div>
         </header>
