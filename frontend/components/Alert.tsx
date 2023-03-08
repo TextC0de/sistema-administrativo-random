@@ -14,35 +14,37 @@ export default function Alert ({message, type, id}:props){
   function Icon(){
     switch (type) {
       case 'Success':
-        return (<BsCheckLg />)
+        return (<BsCheckLg color="green" size={15}/>)
       case 'Failure':
-        return (<AiOutlineWarning />)
+        return (<AiOutlineWarning color="red" />)
       case 'Info':
-        return (<AiOutlineInfoCircle />)
+        return (<AiOutlineInfoCircle color="blue"/>)
     }
   }
 
   function color(){
     switch (type) {
       case 'Success':
-        return 'bg-green-600'
+        return 'green'
       case 'Failure':
-        return 'bg-red-600'
+        return 'red'
       case 'Info':
-        return 'bg-blue-600'
+        return 'blue'
     }
   }
   const {removeAlert} = useAlert()
 
   return(
-        <div className="flex w-96 shadow-lg rounded-lg">
-          <div className={` ${color()} py-4 px-6 rounded-l-lg flex items-center`}>
-            <Icon />
+        <div className={`fixed right-0 bottom-0 bg-${color()}-200 flex justify-between items-center shadow-lg rounded-lg border border-${color()}-500 w-96 p-2 m-4`}>
+          <div className="pl-6">
+            <Icon />  
           </div>
           <div className="px-4 py-6 bg-white rounded-r-lg flex justify-between items-center w-full border border-l-transparent border-gray-200">
-            <div>{message}</div>
+            <div className={`text-${color()}-900`}>
+              {message}
+            </div>
             <button onClick={()=>removeAlert(id)}>
-              <BsX />
+              <BsX size={20} color={color()}/>
             </button>
           </div>
         </div>
