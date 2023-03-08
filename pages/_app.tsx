@@ -1,9 +1,10 @@
 import 'frontend/styles/globals.css'
 import type { AppProps } from 'next/app'
 import LoadingProvider from 'frontend/context/loadingContext/LoadingProvider'
+import UserProvider from 'frontend/context/userContext/UserProvider'
+import AlertProvider from 'frontend/context/alertContext/AlertProvider'
 import Head from 'next/head'
 import Header from 'frontend/components/Header'
-import UserProvider from 'frontend/context/userContext/UserProvider'
 import Main from 'frontend/components/Main'
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -15,12 +16,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <LoadingProvider>
         <UserProvider>
-          <div className='flex flex-col'>
-            <Header />
-            <Main>
-              <Component {...pageProps} />
-            </Main>
-          </div>
+          <AlertProvider>
+            <div className='flex flex-col'>
+              <Header />
+              <Main>
+                <Component {...pageProps} />
+              </Main>
+            </div>
+          </AlertProvider>
         </UserProvider>
       </LoadingProvider>
     </>

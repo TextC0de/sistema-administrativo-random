@@ -1,11 +1,14 @@
 import { Spinner } from 'flowbite-react'
+import useAlert from 'frontend/hooks/useAlert'
 import useLoading from 'frontend/hooks/useLoading'
 import useUser from 'frontend/hooks/useUser'
+import Alert from '../Alert'
 import SideMenu from './SideMenu'
 
 export default function Main({children}:{children:JSX.Element | JSX.Element[]}){
     const {isLoggedIn} = useUser()
     const {isLoading} = useLoading()
+    const {alerts} = useAlert()
 
     function LoadingWrapper(){
         
@@ -15,8 +18,8 @@ export default function Main({children}:{children:JSX.Element | JSX.Element[]}){
                     isLoading? 
                     <div className="h-screen bg-white flex items-center justify-center">
                         <div className="text-center">
-    <Spinner aria-label="Center-aligned spinner example" />
-  </div>
+                            <Spinner aria-label="Center-aligned spinner example" />
+                        </div>    
                     </div>
                     :
                     <>
@@ -38,6 +41,9 @@ export default function Main({children}:{children:JSX.Element | JSX.Element[]}){
                 </div>
             }
             {!isLoggedIn() && <LoadingWrapper />}
+            <>
+                {alerts.map((alert)=> <Alert {...alert} />)}
+            </>
         </main>
     )
 }
