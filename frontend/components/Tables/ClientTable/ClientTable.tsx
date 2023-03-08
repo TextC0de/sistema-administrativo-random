@@ -10,8 +10,7 @@ export default function ClientTable({clients}:props){
     const [tableClients, setTableClients] = useState<IClient[]>(clients)
 
     const deleteClient = (id:string) =>{
-        const newTable = (prev:IClient[]) => prev.filter(client => client._id !== id)
-        setTableClients(newTable(clients))
+        setTableClients(tableClients.filter(client=> client._id !== id))
     }
 
     

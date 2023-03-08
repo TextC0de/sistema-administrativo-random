@@ -56,7 +56,7 @@ export default function ClientForm({clientForm, newClient=true }:props){
         catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Success', message: 'No se pudo actualizar el cliente'})
+            triggerAlert({type:'Failure', message: 'No se pudo actualizar el cliente'})
         }
     }
 

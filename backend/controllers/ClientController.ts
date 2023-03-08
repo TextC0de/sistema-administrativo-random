@@ -38,11 +38,14 @@ const ClientController={
     },
     deleteClient: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:_id} = req
-    
+        console.log(_id);
+        
         await dbConnect()
         const deletedClient = await Client.findById(_id)
+        console.log(deletedClient);
+        
         if(!deletedClient) return res.json({statusCode:500, error:'could not delete Client'})
-        await deletedClient.restore()
+        await deletedClient.softDelete()
         res.json({data:{message:'deleted Client succesfully'}})
     }
 }
