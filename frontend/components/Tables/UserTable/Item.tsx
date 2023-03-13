@@ -4,7 +4,7 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
 import { useRouter } from 'next/router'
-
+import useAlert from 'frontend/hooks/useAlert'
 import { useState } from 'react'
 import { Table } from 'flowbite-react'
 import {CgPassword} from 'react-icons/cg'
@@ -21,9 +21,12 @@ export default function Item({user, deleteUser}:props){
     const {startLoading, stopLoading} = useLoading()
     const router = useRouter()
     const [modal, setModal] = useState(false);
+    const {triggerAlert} = useAlert()
+
     const openModal = () => {
         setModal(true);
     };
+    
     const closeModal = () => {
         setModal(false);
     };
@@ -31,9 +34,11 @@ export default function Item({user, deleteUser}:props){
         try {
             await fetcher.delete({_id:user._id}, apiEndpoints.techAdmin.users)
             deleteUser(user._id as string)
+            triggerAlert({type:'Success', message:`El usuario ${user.firstName} ${user.lastName} fue eliminado correctamente`})
         } 
         catch (error) {
             console.log(error)
+            triggerAlert({type:'Failure', message:`No se pudo eliminar el usuario ${user.firstName} ${user.lastName}`})
         }
     }
 

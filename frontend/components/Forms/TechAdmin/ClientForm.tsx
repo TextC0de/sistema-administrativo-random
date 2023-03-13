@@ -41,7 +41,7 @@ export default function ClientForm({clientForm, newClient=true }:props){
         catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Failure', message:'No se pudo crear el cliente'})
+            triggerAlert({type:'Failure', message:`No se pudo crear el cliente "${form.name}"`})
         }
     }
 
@@ -50,13 +50,13 @@ export default function ClientForm({clientForm, newClient=true }:props){
             startLoading()
             await fetcher.put(form, api.techAdmin.clients)
             await router.push('/tech-admin/clients')
-            triggerAlert({type:'Success', message: 'El cliente fue actualizado con exito'})
+            triggerAlert({type:'Success', message: `El cliente de nombre "${form.name}" fue actualizado con exito`})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Failure', message: 'No se pudo actualizar el cliente'})
+            triggerAlert({type:'Failure', message: `No se pudo actualizar el cliente "${form.name}"`})
         }
     }
 

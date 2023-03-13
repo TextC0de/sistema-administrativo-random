@@ -33,10 +33,11 @@ export default function Item({province, deleteProvince}:props){
         try {
             await fetcher.delete({_id:province._id}, apiEndpoints.techAdmin.provinces)
             deleteProvince(province._id as string)
+            triggerAlert({type:'Success', message:`La provincia ${province.name} se elimino correctamente`})
         } 
         catch (error) {
             console.log(error)
-            //triggerAlert({type:'Failure', message:`No se pudo eliminar la provincia ${province.name}`})
+            triggerAlert({type:'Failure', message:`No se pudo eliminar la provincia ${province.name}`})
         }
     }
 

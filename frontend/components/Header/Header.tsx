@@ -28,7 +28,7 @@ export default function Header(): JSX.Element{
     }
 
     useEffect(()=>{
-        if(!isLoggedIn()) loginUser()
+        if(!isLoggedIn) loginUser()
     },[])
 
     function navigate(){
@@ -49,10 +49,10 @@ export default function Header(): JSX.Element{
                         />  
                 </button>
                 </div>
-                {isLoggedIn() && <h2 className='flex items-center text-lg'>Hola {user.firstName}!</h2>}
+                {isLoggedIn && <h2 className='flex items-center text-lg'>Hola {user.firstName}!</h2>}
                 <div className='flex justify-end'>
                     {
-                    isLoggedIn() && 
+                    isLoggedIn && 
                         <button className="flex p-2 pl-3 justify-content hover:bg-gray-200 border border-gray-200 rounded-lg select-none" onClick={logout}>
                             <div className='flex flex-row justify-between items-center'>
                                 <GrLogout size={18}/>

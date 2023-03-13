@@ -15,16 +15,16 @@ function MyApp({ Component, pageProps }: AppProps) {
           <title>Sistema Administrativo Random S.R.L</title>
       </Head>
       <LoadingProvider>
-        <UserProvider>
-          <AlertProvider>
+        <AlertProvider>
+          <UserProvider>
             <div className='flex flex-col'>
               <Header />
               <Main>
                 <Component {...pageProps} />
               </Main>
             </div>
-          </AlertProvider>
-        </UserProvider>
+          </UserProvider>
+        </AlertProvider>
       </LoadingProvider>
     </>
   )

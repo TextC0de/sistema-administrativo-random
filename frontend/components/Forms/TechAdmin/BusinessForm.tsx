@@ -36,13 +36,13 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
             startLoading()
             await fetcher.post(form, api.techAdmin.businesses)
             await router.push('/tech-admin/businesses')
-            triggerAlert({type:'Success', message:`Se creo la empresa de nombre "${form.name}"`})
+            triggerAlert({type:'Success', message:`Se creo la empresa "${form.name}" correctamente`})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Failure', message:'No se pudo crear la empresa'})
+            triggerAlert({type:'Failure', message:`No se pudo crear la empresa "${form.name}"`})
         }
     }
 
@@ -51,12 +51,12 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
             startLoading()
             await fetcher.put(form, api.techAdmin.businesses)
             await router.push('/tech-admin/businesses')
-            triggerAlert({type:'Success', message:`Se actualizo la empresa correctamente`})
+            triggerAlert({type:'Success', message:`Se actualizo la empresa "${form.name}" correctamente`})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
-            triggerAlert({type:'Failure', message:`No se pudo actualizar la empresa`})
+            triggerAlert({type:'Failure', message:`No se pudo actualizar la empresa "${form.name}"`})
             stopLoading()
         }
     }

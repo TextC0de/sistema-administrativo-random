@@ -10,15 +10,20 @@ import { useState } from 'react'
 import { Table, Badge } from 'flowbite-react'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Modal from 'frontend/components/Modal'
+import useAlert from 'frontend/hooks/useAlert'
 
 export default function Item({preventive, deletePreventive}:{preventive:IPreventive, deletePreventive:(id:string)=>void}){
 
     const {startLoading, stopLoading} = useLoading()
     const router = useRouter()
-        const [modal, setModal] = useState(false);
+    const [modal, setModal] = useState(false);
+    const {triggerAlert} = useAlert()
+
+    
     const openModal = () => {
         setModal(true);
     };
+    
     const closeModal = () => {
         setModal(false);
     };
@@ -27,9 +32,11 @@ export default function Item({preventive, deletePreventive}:{preventive:IPrevent
         try {
             await fetcher.delete({_id:preventive._id}, api.techAdmin.preventives)
             deletePreventive(preventive._id as string)
+            triggerAlert({type:'Success', message:`El preventivo de ${preventive.business.name} para la sucursal ${preventive.branch.number} del cliente ${preventive.branch.client.name} fue eliminado correctamente`})
         } 
         catch (error) {
             console.log(error)
+            triggerAlert({type:'Failure', message:`No se pudo eliminar el preventivo de ${preventive.business.name} para la sucursal ${preventive.branch.number} del cliente ${preventive.branch.client.name}, compruebe su conexion`})
         }
     }
 

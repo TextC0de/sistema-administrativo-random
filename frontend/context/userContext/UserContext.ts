@@ -6,7 +6,7 @@ interface UserContextProps{
     user: IUser;
     loginUser: () => Promise<void>;
     logoutUser: () => void;
-    isLoggedIn: () => boolean;
+   isLoggedIn: boolean;
 }
 
 const UserContext = createContext<UserContextProps>({} as UserContextProps)

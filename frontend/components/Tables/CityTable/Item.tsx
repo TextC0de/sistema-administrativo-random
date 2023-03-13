@@ -9,6 +9,7 @@ import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import { Table } from 'flowbite-react'
 import Modal from 'frontend/components/Modal'
 import { useRouter } from 'next/router'
+import useAlert from 'frontend/hooks/useAlert'
 
 interface props{
     city:ICity,
@@ -25,14 +26,17 @@ export default function Item({city, deleteCity}:props){
         setModal(false);
     };
     const {startLoading, stopLoading} = useLoading()
+    const {triggerAlert} = useAlert()
 
     const deleteData = async () => {
         try {
             await fetcher.delete({_id:city._id}, apiEndpoints.techAdmin.cities)
             deleteCity(city._id as  string)
+            triggerAlert({type:'Success', message:`La empresa ${city.name} fue eliminada correctamente`})
         } 
         catch (error) {
             console.log(error)
+            triggerAlert({type:'Failure', message:`No se pudo eliminar la empresa ${city.name}, compruebe la conexión a internet`})
         }
     }
 

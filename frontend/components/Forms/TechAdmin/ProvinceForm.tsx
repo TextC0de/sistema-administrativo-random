@@ -101,7 +101,7 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
 
     return(
         <>
-            <form className='flex flex-col gap-4 w-1/2 mx-auto my-4 bg-gray-50 rounded-3xl p-4' onSubmit={handleSubmit}>
+            <form className='flex flex-col gap-4 w-1/2 mx-auto bg-gray-50 rounded-3xl p-4' onSubmit={handleSubmit}>
                 <h2 className="text-lg">{newProvince?'Agregar Provincia':'Editar Provincia'}</h2>
                 <hr className="mb-2"/>
                 <div>

@@ -47,13 +47,13 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
             startLoading()
             await fetcher.post(form, api.techAdmin.branches)
             await router.push(`/tech-admin/clients/${form.client.name}/branches`)
-            triggerAlert({type:'Success', message:`La sucursal de numero ${form.number} para el cliente "${form.client.name}" fue creada correctamente`})
+            triggerAlert({type:'Success', message:`La sucursal de numero ${form.number} para el cliente ${form.client.name} fue creada correctamente`})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Failure', message:`No se pudo crear la sucursal para el cliente "${form.client.name}"`})
+            triggerAlert({type:'Failure', message:`No se pudo crear la sucursal ${form.number} para el cliente ${form.client.name}`})
         }
     }
 
@@ -62,14 +62,14 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
             startLoading()
             await fetcher.put(form, api.techAdmin.branches)
             await router.push(`/tech-admin/clients/${form.client.name}/branches`)
-            triggerAlert({type:'Success', message:`La sucursal de numero ${form.number} del cliente "${form.client.name}" fue actualizada correctamente`})
+            triggerAlert({type:'Success', message:`La sucursal de numero ${form.number} del cliente ${form.client.name} fue actualizada correctamente`})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Failure', message:`No se pudo actualizar la sucursal ${form.number} del cliente "${form.client.name}"`})
-            alert('No se pudo actualizar la sucursal')
+            triggerAlert({type:'Failure', message:`No se pudo actualizar la sucursal ${form.number} del cliente ${form.client.name}`})
+            //alert('No se pudo actualizar la sucursal')
         }
     }
 

@@ -50,7 +50,7 @@ export default function Item({client, deleteClient}:props){
         } 
         catch (error) {
             console.log(error)
-            triggerAlert({type:'Failure', message:'No se pudo eliminar el cliente'})
+            triggerAlert({type:'Failure', message:`No se pudo eliminar el cliente ${client.name}`})
         }
     }
 

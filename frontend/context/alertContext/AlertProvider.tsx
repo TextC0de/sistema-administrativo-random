@@ -6,6 +6,7 @@ import { ProviderProps } from '../interfaces'
 import { useMemo } from 'react'
 import fetcher from 'lib/fetcher'
 import { nanoid } from 'nanoid'
+import Alert from 'frontend/components/Alert'
 
 export type AlertType = 'Success' | 'Failure' | 'Info'
 
@@ -34,8 +35,11 @@ const AlertProvider = ({children}:ProviderProps) => {
     }
 
     return(
-        <AlertContext.Provider value={{alerts, triggerAlert, removeAlert}}>
+        <AlertContext.Provider value={{triggerAlert, removeAlert}}>
             {children}
+            <>
+                {alerts.map((alert)=> <Alert id={alert.key as string} {...alert} />)}
+            </>
         </AlertContext.Provider>
     )
 }
