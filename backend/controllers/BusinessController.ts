@@ -6,7 +6,7 @@ import { NextConnectApiRequest } from './interfaces';
 import { ResponseData } from './types';
 
 const BusinessController = {
-    putBusiness: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    put: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{_id, name}} = req
     
         await dbConnect()
@@ -20,7 +20,7 @@ const BusinessController = {
         const business = formatIds(newBusiness)
         res.json({data:{business, message:'updated Business succesfully'}})
     },
-    postBusiness: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    post: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{name}} = req
         await dbConnect()
         const businessForm = {name}
@@ -36,7 +36,7 @@ const BusinessController = {
         const business = formatIds(newBusiness)
         res.json({data:{business, message:'created Business succesfully'}})
     },
-    deleteBusiness: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=> {
+    delete: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=> {
         const {body:_id} = req
     
         await dbConnect()
@@ -45,6 +45,12 @@ const BusinessController = {
         //const Business = formatIds(newBusiness)
         await deletedBusiness.softDelete()
         res.json({data:{message:'deleted Business succesfully'}})
+    },
+    get:async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+        await dbConnect()
+        const businesses = await Business.findUndeleted()
+        if(!businesses) return res.json({statusCode:500, error:'no businesses found'})
+        res.json({data:{businesses:formatIds(businesses), message:'businesses found'}, statusCode:200})
     }
 }
 

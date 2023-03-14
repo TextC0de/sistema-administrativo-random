@@ -6,7 +6,7 @@ import dbConnect from 'lib/dbConnect';
 import { formatIds } from 'lib/utils';
 
 const CityController = {
-    putCity: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    put: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{_id, name, province}} = req
     
         await dbConnect()
@@ -20,7 +20,7 @@ const CityController = {
         const city = formatIds(newCity)
         res.json({data:{city, message:'updated city succesfully'}})
     },
-    postCity: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    post: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{name, province}} = req    
         await dbConnect()
         const cityForm = {name, province:province._id}
@@ -40,7 +40,7 @@ const CityController = {
         }
     
     },
-    deleteCity: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    delete: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{_id}} = req
         //console.log(_id);
         
@@ -51,7 +51,14 @@ const CityController = {
 
         //const City = formatIds(newCity)
         res.json({data:{message:'deleted city succesfully'}})
-    }
+    },
+    get:async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+        //console.log(_id);
+        await dbConnect()
+        const cities = await CityModel.findUndeleted()
+        if(!cities) return res.json({statusCode:500, error:'no cities were found'})
+        res.json({data:{cities:formatIds(cities), message:'cities found'}})
+    },
 }
 
 export default CityController

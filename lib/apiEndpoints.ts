@@ -29,4 +29,5 @@ export const techAdmin:any = {
     clients: techAdminBase + 'clients/',
     preventives: techAdminBase + 'preventives/',
     users: techAdminBase + 'users/',
+    techs: techAdminBase + 'users/techs/'
 }

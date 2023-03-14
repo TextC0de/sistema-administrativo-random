@@ -94,6 +94,12 @@ const UserController = {
         if(!newDocUser) return res.status(400).json({ error:'failed to delete user', statusCode:400 })
         await Mailer.sendResetPassword(newUser)
         res.status(200).json({data:{user:formatIds(newDocUser)}, statusCode:200})
+    },
+    getTechs:async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+        await dbConnect()
+        const techs = await UserModel.findUndeleted({roles:'Tecnico'})
+        if(!techs) return res.json({statusCode:500, error:'no techs found'})
+        res.json({data:{techs:formatIds(techs), message:'techs found'}, statusCode:200})
     }
 }
 

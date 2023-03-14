@@ -7,7 +7,7 @@ import { ResponseData } from './types';
 
 
 const ClientController={
-    putClient: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    put: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{_id, name}} = req
     
         await dbConnect()
@@ -21,7 +21,7 @@ const ClientController={
         const client = formatIds(newClient)
         res.json({data:{client, message:'updated Client succesfully'}})
     },
-    postClient: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    post: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{name}} = req
         await dbConnect()
         const clientForm = {name}
@@ -36,17 +36,19 @@ const ClientController={
         const client = formatIds(newClient)
         res.json({data:{client, message:'created Client succesfully'}})
     },
-    deleteClient: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    delete: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:_id} = req
-        console.log(_id);
-        
         await dbConnect()
         const deletedClient = await Client.findById(_id)
-        console.log(deletedClient);
-        
         if(!deletedClient) return res.json({statusCode:500, error:'could not delete Client'})
         await deletedClient.softDelete()
         res.json({data:{message:'deleted Client succesfully'}})
+    },
+    get:async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+        await dbConnect()
+        const clients = await Client.findUndeleted()
+        if(!clients) return res.json({statusCode:500, error:'no clients found'})
+        res.json({data:{clients:formatIds(clients), message:'clients found'}, statusCode:200})
     }
 }
 

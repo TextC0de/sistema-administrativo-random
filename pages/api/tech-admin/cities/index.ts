@@ -1,11 +1,13 @@
 import CityController from 'backend/controllers/CityController'
 import protectedHandler from 'backend/handlers/protectedHandler';
 
-protectedHandler.post(CityController.postCity)
+protectedHandler.post(CityController.post)
 
-protectedHandler.put(CityController.putCity)
+protectedHandler.put(CityController.put)
 
-protectedHandler.delete(CityController.deleteCity)
+protectedHandler.delete(CityController.delete)
+
+protectedHandler.get(CityController.get)
 
 export default protectedHandler
 

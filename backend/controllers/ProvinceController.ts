@@ -6,7 +6,7 @@ import { NextConnectApiRequest } from './interfaces';
 import { ResponseData } from './types';
 
 const ProvinceController = {
-    putProvince: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    put: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{_id,name}} = req
     
         await dbConnect()
@@ -20,7 +20,7 @@ const ProvinceController = {
         const province = formatIds(newProvince)
         res.json({data:{province, message:'updated province succesfully'}})
     },
-    postProvince: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    post: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{name}} = req
         await dbConnect()
         const provinceForm = {name}
@@ -35,7 +35,7 @@ const ProvinceController = {
         const province = formatIds(newProvince)
         res.json({data:{province, message:'created province succesfully'}})
     },
-    deleteProvince: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+    delete: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
         const {body:{_id}} = req
     
         await dbConnect()
@@ -43,6 +43,12 @@ const ProvinceController = {
         if(!deletedProvince) return res.json({statusCode:500, error:'could not delete province'})
         await deletedProvince.softDelete()
         res.json({data:{message:'deleted province succesfully'}})
+    },
+    get:async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
+        await dbConnect()
+        const provinces = await Province.findUndeleted()
+        if(!provinces) return res.json({statusCode:500, error:'no provinces found'})
+        res.json({data:{provinces:formatIds(provinces), message:'provinces found'}, statusCode:200})
     }
 }
 
