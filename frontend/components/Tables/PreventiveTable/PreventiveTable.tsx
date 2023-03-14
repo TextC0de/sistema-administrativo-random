@@ -1,19 +1,50 @@
 import { IPreventive} from 'backend/models/interfaces'
 
 import Item from './Item'
-import {Table} from 'flowbite-react'
+import {Label, Select, Table} from 'flowbite-react'
 import { useState } from 'react'
 
-export default function PreventiveTable({preventives}:{preventives:IPreventive[]}){
-    const [tablePreventive, setTablePreventive] = useState<IPreventive[]>(preventives)
+const filterTypes = ['Localidad', 'Provincia', 'Tecnico', 'Empresa', 'Cliente']
 
+export default function PreventiveTable({preventives}:{preventives:IPreventive[]}){
+    const [allPreventives, setAllPreventives] = useState<IPreventive[]>(preventives)
+    const [filtered, setFiltered] = useState<IPreventive[]>(allPreventives)
+    const [entities, setEntities] = useState<any>([])
     const deletePreventive = (id:string) =>{
         const newTable = (prev:IPreventive[]) => prev.filter(preventive => preventive._id !== id)
-        setTablePreventive(newTable(tablePreventive))
+        setAllPreventives(newTable(allPreventives))
     }
+
+    
 
     return(
         <>
+            <div className='flex flex-col'>
+                Filtro
+                <hr />
+                <div className='flex flex-row'>
+                    <Label 
+                        value='Tipo: '
+                    /> 
+                    <Select
+                    defaultValue='default'
+                    placeholder='default'
+                    >
+                        <option value="default">Seleccione el tipo...</option>
+                        {filterTypes.map(type=> <option value={type}>{type}</option>)}
+                    </Select>
+                    <Label 
+                        value='Entidad: '
+                    /> 
+                    <Select
+                    defaultValue='default'
+                    placeholder='default'
+                    >
+                        <option value="default">Seleccione el tipo...</option>
+                        {filterTypes.map(type=> <option value={type}>{type}</option>)}
+                    </Select>
+                </div>
+            </div>
             <Table hoverable={true}  className='bg-white'>
                 <Table.Head className='bg-white border-b'>
                         <Table.HeadCell>Empresa</Table.HeadCell>
@@ -28,7 +59,7 @@ export default function PreventiveTable({preventives}:{preventives:IPreventive[]
                         <Table.HeadCell>Acciones</Table.HeadCell>
                 </Table.Head >
                 <Table.Body >
-                    {tablePreventive.map((preventive, index) => <Item key={index} preventive={preventive} deletePreventive={deletePreventive}/>)}
+                    {allPreventives.map((preventive, index) => <Item key={index} preventive={preventive} deletePreventive={deletePreventive}/>)}
                 </Table.Body>
             </Table>
         </>
