@@ -27,7 +27,7 @@ export default function Main({children}:{children:JSX.Element | JSX.Element[]}){
     }
 
     return (
-        <main className='h-screen select-none pt-16'>
+        <main className='h-screen bg-gray-200 select-none pt-16'>
             {isLoggedIn() && 
                 <div className='h-full'>
                     <SideMenu />
