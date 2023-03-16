@@ -1,16 +1,85 @@
-import { ITask } from 'backend/models/interfaces'
+import { IBusiness, ICity, IClient, IProvince, ITask, IUser } from 'backend/models/interfaces'
 import Item from './Item'
 import {Table} from 'flowbite-react'
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
+import Filter from 'frontend/components/Filter'
 
-export default function TechAdminTaskTable({tasks}:{tasks:ITask[]}){
+interface props{
+    tasks:ITask[]
+    cities:ICity[]
+    provinces:IProvince[]
+    clients:IClient[]
+    businesses:IBusiness[]
+    techs:IUser[]
+}
+
+export default function TechAdminTaskTable({tasks, cities, provinces, clients, businesses, techs}:props){
     const [tableTasks, setTableTasks] = useState<ITask[]>(tasks)
+    const [type, setType] = useState<string>('')
+    const [entities, setEntities] = useState<any[]>([] as any[])
+    const filterTypes = ['Localidad', 'Provincia', 'Tecnico', 'Empresa', 'Cliente']
+        
+
+    function selectEntity(e:ChangeEvent<HTMLSelectElement>){
+        const {value} = e.target
+        switch(type){
+            case 'Localidad':
+                setTableTasks(tasks.filter(task => task.branch.city.name === value))
+                break;
+            case 'Provincia':
+                setTableTasks(tasks.filter(task => task.branch.city.province.name === value))
+                break
+            case 'Tecnico':
+                setTableTasks(tasks.filter(task => task.assigned.some(tech=>tech.fullName===value)))
+                break
+            case 'Empresa':
+                setTableTasks(tasks.filter(task => task.business.name === value))
+                break
+            case 'Cliente':
+                setTableTasks(tasks.filter(task => task.branch.client.name === value))
+                break
+            default:
+                setTableTasks(tasks)
+                break;
+        }
+    }
+
+    function selectType(e:ChangeEvent<HTMLSelectElement>){
+        const {value} = e.target
+
+        setType(value)
+        switch (value) {
+            case 'Localidad':
+                setEntities(cities)
+                break;
+            case 'Provincia':
+                setEntities(provinces)
+                break
+            case 'Tecnico':
+                setEntities(techs)
+                break
+            case 'Empresa':
+                setEntities(businesses)
+                break
+            case 'Cliente':
+                setEntities(clients)
+            default:
+                break;
+        }
+    }
+
+    function clearFilter(){
+        setType('')
+        setEntities([] as any[])
+        setTableTasks(tasks)
+    }
 
     const deleteTask = (id:string) =>{
         setTableTasks(tableTasks.filter(task => task._id !== id))
     }
     return(
         <div className='bg-white sm:rounded-none shadow-gray-100'>
+            <Filter types={filterTypes} entities={entities} selectType={selectType} selectEntity={selectEntity} clearFilter={clearFilter}/>
             <Table hoverable={true} className='bg-white'>
                 <Table.Head className='bg-white border-b'>
                     <Table.HeadCell>Fecha apertura</Table.HeadCell>

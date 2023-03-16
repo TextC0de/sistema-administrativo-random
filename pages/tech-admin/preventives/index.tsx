@@ -10,8 +10,8 @@ import Province from 'backend/models/Province'
 import User from 'backend/models/User'
 import Business from 'backend/models/Business'
 import Client from 'backend/models/Client'
-import Filter from 'frontend/components/Tables/PreventiveTable/Filter'
-import { useState } from 'react'
+import Filter from 'frontend/components/Filter'
+import { ChangeEvent, useState } from 'react'
 
 interface IPreventiveProps{
     preventives:IPreventive[]
@@ -22,46 +22,13 @@ interface IPreventiveProps{
     clients:IClient[]
 }
 
-const filterTypes = ['Localidad', 'Provincia', 'Tecnico', 'Empresa', 'Cliente']
-
-export default function Preventives({preventives, cities, provinces, techs, businesses, clients}:IPreventiveProps){
-    const [type, setType] = useState<string>('')
-    const [entities, setEntities] = useState<any[]>([] as any[])
-    const [filteredPreventives, setFilteredPreventives] = useState<IPreventive[]>(preventives)
-
-    function selectEntity(entity:any){
-        switch(type){
-            
-        }
-    }
-
-    function selectType(type:string){
-        setType(type)
-        switch (type) {
-            case 'Localidad':
-                setEntities(cities)
-                break;
-            case 'Provincia':
-                setEntities(provinces)
-                break
-            case 'Tecnico':
-                setEntities(techs)
-                break
-            case 'Empresa':
-                setEntities(businesses)
-                break
-            case 'Cliente':
-                setEntities(clients)
-            default:
-                break;
-        }
-    }
+export default function Preventives(props:IPreventiveProps){
+    //const tableProps = {cities, provinces, techs, businesses, clients}
 
     return(
         <>
             <TitleButton title='Preventivos' path='/tech-admin/preventives/new' nameButton='Agregar preventivo'/>
-            <Filter types={filterTypes} entities={entities} selectType={selectType} selectEntity={selectEntity}/>
-            <PreventiveTable preventives={preventives}/>
+            <PreventiveTable {...props}/>
         </>
     )
 }

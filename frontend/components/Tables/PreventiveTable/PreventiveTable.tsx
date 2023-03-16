@@ -1,21 +1,94 @@
-import { IPreventive} from 'backend/models/interfaces'
+import { IBusiness, ICity, IClient, IPreventive, IProvince, IUser} from 'backend/models/interfaces'
 
 import Item from './Item'
 import {Table} from 'flowbite-react'
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
+import Filter from 'frontend/components/Filter'
 
-export default function PreventiveTable({preventives}:{preventives:IPreventive[]}){
+
+
+interface IPreventiveProps{
+    preventives:IPreventive[]
+    cities:ICity[], 
+    provinces:IProvince[], 
+    techs:IUser[], 
+    businesses:IBusiness[], 
+    clients:IClient[]
+}
+
+export default function PreventiveTable({preventives, cities, provinces, techs, businesses, clients}:IPreventiveProps){
     const [preventivesTable, setPreventivesTable] = useState<IPreventive[]>(preventives)
-    
+    const [type, setType] = useState<string>('')
+    const [entities, setEntities] = useState<any[]>([] as any[])
+    const filterTypes = ['Localidad', 'Provincia', 'Tecnico', 'Empresa', 'Cliente']
+        
+
+    function selectEntity(e:ChangeEvent<HTMLSelectElement>){
+        const {value} = e.target
+        //+console.log(value);
+        
+        switch(type){
+            case 'Localidad':
+                //const city = cities.find(city=>city.name === value)
+                setPreventivesTable(preventives.filter(preventive => preventive.branch.city.name === value))
+                break;
+            case 'Provincia':
+                setPreventivesTable(preventives.filter(preventive => preventive.branch.city.province.name === value))
+                break
+            case 'Tecnico':
+                setPreventivesTable(preventives.filter(preventive => preventive.assigned.some(tech=>tech.fullName === value)))
+                break
+            case 'Empresa':
+                setPreventivesTable(preventives.filter(preventive => preventive.business.name === value))
+                break
+            case 'Cliente':    
+                setPreventivesTable(()=>preventives.filter(preventive => preventive.branch.client.name === value))
+                break
+            default:
+                setPreventivesTable(preventives)
+                break;
+        }
+    }
+
+    function selectType(e:ChangeEvent<HTMLSelectElement>){
+        const {value} = e.target
+
+        setType(value)
+        switch (value) {
+            case 'Localidad':
+                setEntities(cities)
+                break;
+            case 'Provincia':
+                setEntities(provinces)
+                break
+            case 'Tecnico':
+                setEntities(techs)
+                break
+            case 'Empresa':
+                setEntities(businesses)
+                break
+            case 'Cliente':
+                setEntities(clients)
+            default:
+                break;
+        }
+    }
+
+    function clearFilter(){
+        setType('')
+        setEntities([] as any[])
+        setPreventivesTable(preventives)
+    }
+
     const deletePreventive = (id:string) =>{
-        const newTable = (prev:IPreventive[]) => prev.filter(preventive => preventive._id !== id)
-        setPreventivesTable(newTable(preventivesTable))
+        setPreventivesTable(preventivesTable.filter(preventive => preventive._id !== id))
     }
 
     
 
     return(
         <>
+            <Filter types={filterTypes} entities={entities} selectType={selectType} selectEntity={selectEntity} clearFilter={clearFilter}/>
             <Table hoverable={true}  className='bg-white'>
                 <Table.Head className='bg-white border-b'>
                         <Table.HeadCell>Empresa</Table.HeadCell>
