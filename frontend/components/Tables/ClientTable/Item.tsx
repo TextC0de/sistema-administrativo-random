@@ -10,6 +10,7 @@ import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
 import { useState } from 'react'
 import Modal from 'frontend/components/Modal'
+import useAlert from 'frontend/hooks/useAlert'
 
 interface props{
     client:IClient,
@@ -19,6 +20,7 @@ interface props{
 export default function Item({client, deleteClient}:props){
     const {startLoading, stopLoading} = useLoading()    
     const [modal, setModal] = useState(false);
+    const {triggerAlert} = useAlert()
     const openModal = () => {
         setModal(true);
     };
@@ -44,9 +46,11 @@ export default function Item({client, deleteClient}:props){
         try {
             await fetcher.delete({_id:client._id}, apiEndpoints.techAdmin.clients)
             deleteClient(client._id as string)
+            triggerAlert({type:'Success', message:`Se elimino el cliente ${client.name}`})
         } 
         catch (error) {
             console.log(error)
+            triggerAlert({type:'Failure', message:`No se pudo eliminar el cliente ${client.name}`})
         }
     }
 

@@ -6,6 +6,7 @@ import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading';
 import { BsFillXCircleFill } from 'react-icons/bs';
+import useAlert from 'frontend/hooks/useAlert';
 
 export interface IClientBranchForm{
     _id:string
@@ -40,18 +41,19 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
     })
     const[errors, setErrors] = useState<IClientBranchFormErrors>({} as IClientBranchFormErrors)
     const [submitted, setSubmitted] = useState<boolean>(false)
-
+    const {triggerAlert} = useAlert()
     const postData = async (form:IClientBranchForm) => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.branches)
             await router.push(`/tech-admin/clients/${form.client.name}/branches`)
+            triggerAlert({type:'Success', message:`La sucursal de numero ${form.number} para el cliente ${form.client.name} fue creada correctamente`})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo crear la sucursal')
+            triggerAlert({type:'Failure', message:`No se pudo crear la sucursal ${form.number} para el cliente ${form.client.name}`})
         }
     }
 
@@ -60,12 +62,14 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
             startLoading()
             await fetcher.put(form, api.techAdmin.branches)
             await router.push(`/tech-admin/clients/${form.client.name}/branches`)
+            triggerAlert({type:'Success', message:`La sucursal de numero ${form.number} del cliente ${form.client.name} fue actualizada correctamente`})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo actualizar la sucursal')
+            triggerAlert({type:'Failure', message:`No se pudo actualizar la sucursal ${form.number} del cliente ${form.client.name}`})
+            //alert('No se pudo actualizar la sucursal')
         }
     }
 
@@ -98,8 +102,7 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
         return err
     }
 
-    const handleSubmit = (e:any) => {
-        e.preventDefault()
+    const handleSubmit = () => {
         setSubmitted(true)
         const errors = formValidate()
         if (errors.number === '' && errors.city === '') {
@@ -125,7 +128,7 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
 
     return(
         <>
-            <form className='flex flex-col gap-4 bg-white rounded-xl border border-gray-150 p-4 mx-auto w-1/2 my-4' onSubmit={handleSubmit}>
+            <div className='flex flex-col gap-4 bg-white rounded-xl border border-gray-150 p-4 mx-auto w-1/2 my-4' onSubmit={handleSubmit}>
                 <h2 className='text-lg'>
                     {`${branchForm.client.name} : ${newBranch? `Agregar una sucursal`:`Editar la sucursal  ${branchForm.number}`}`}
                 </h2>
@@ -223,9 +226,9 @@ export default function ClientBranchForm({branchForm, newBranch=true, cities, bu
                 </div>
                 <div className='flex flex-row justify-between'>
                     <Button size='sm' color='gray' onClick={goBack}> Cancelar</Button>
-                    <Button size='sm' type='submit'>Guardar</Button>
+                    <Button size='sm' onClick={handleSubmit}>Guardar</Button>
                 </div>
-            </form>
+            </div>
         </>
     )
 }

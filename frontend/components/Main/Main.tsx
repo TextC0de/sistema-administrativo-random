@@ -1,14 +1,13 @@
 import { Spinner } from 'flowbite-react'
-import useAlert from 'frontend/hooks/useAlert'
 import useLoading from 'frontend/hooks/useLoading'
 import useUser from 'frontend/hooks/useUser'
-import Alert from '../Alert'
+import { useMemo } from 'react'
 import SideMenu from './SideMenu'
 
 export default function Main({children}:{children:JSX.Element | JSX.Element[]}){
     const {isLoggedIn} = useUser()
     const {isLoading} = useLoading()
-    const {alerts} = useAlert()
+
 
     function LoadingWrapper(){
         
@@ -26,20 +25,24 @@ export default function Main({children}:{children:JSX.Element | JSX.Element[]}){
         )
     }
 
-    return (
-        <main className='h-screen bg-gray-200 select-none pt-16'>
-            {isLoggedIn() && 
-                <div className='h-full'>
-                    <SideMenu />
-                    <div className='h-full pl-52'>
-                        <LoadingWrapper />
+    function Main(){
+
+        return (
+            <main className='h-screen select-none pt-16'>
+                {isLoggedIn && 
+                    <div className='h-full'>
+                        <SideMenu />
+                        <div className='h-full pl-52 pt-4'>
+                            <LoadingWrapper />
+                        </div>
                     </div>
-                </div>
-            }
-            {!isLoggedIn() && <LoadingWrapper />}
-            <>
-                {alerts.map((alert)=> <Alert {...alert} />)}
-            </>
-        </main>
-    )
+                }
+                {!isLoggedIn && <LoadingWrapper />}
+            </main>
+        )
+    } 
+
+    return useMemo(Main, [children, isLoggedIn, isLoading])
 }
+
+

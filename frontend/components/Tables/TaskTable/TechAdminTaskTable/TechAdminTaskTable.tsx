@@ -7,8 +7,7 @@ export default function TechAdminTaskTable({tasks}:{tasks:ITask[]}){
     const [tableTasks, setTableTasks] = useState<ITask[]>(tasks)
 
     const deleteTask = (id:string) =>{
-        const newTable = (prev:ITask[]) => prev.filter(task => task._id !== id)
-        setTableTasks(newTable(tableTasks))
+        setTableTasks(tableTasks.filter(task => task._id !== id))
     }
     return(
         <div className='bg-white sm:rounded-none shadow-gray-100'>

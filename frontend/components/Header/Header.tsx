@@ -29,7 +29,7 @@ export default function Header(): JSX.Element{
     }
 
     useEffect(()=>{
-        if(!isLoggedIn()) loginUser()
+        if(!isLoggedIn) loginUser()
     },[])
 
     function navigate(){
@@ -55,10 +55,10 @@ export default function Header(): JSX.Element{
                         />  
                 </button>
                 </div>
-                {isLoggedIn() && <h2 className='flex items-center text-lg'>Hola {user.firstName}!</h2>}
+                {isLoggedIn && <h2 className='flex items-center text-lg'>Hola {user.firstName}!</h2>}
                 <div className='flex justify-end'>
                     {
-                    isLoggedIn() && 
+                    isLoggedIn && 
                     <div className='flex gap-2'>
                         <Dropdown 
                         label={<FaUserCircle size={18} />}

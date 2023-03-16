@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { Badge, Table } from 'flowbite-react'
 import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Modal from 'frontend/components/Modal'
+import useAlert from 'frontend/hooks/useAlert'
 
 interface props{
     task: ITask,
@@ -19,7 +20,7 @@ export default function Item({task, deleteTask}:props){
     const closedAt = task.closedAt? dmyDateString(new Date(task.closedAt)): task.closedAt
 
     const [modal, setModal] = useState(false);
-
+    const {triggerAlert} = useAlert()
     const {startLoading, stopLoading} = useLoading()
     const router = useRouter()
     
@@ -46,8 +47,10 @@ export default function Item({task, deleteTask}:props){
         try {
             await fetcher.delete({_id:task._id}, api.techAdmin.tasks)
             deleteTask(task._id as string)
+            triggerAlert({type:'Success', message:`La tarea de ${task.business.name} en la sucursal ${task.branch.number} de ${task.branch.client.name} fue eliminada correctamente`})
         } catch (error) {
             console.log(error)
+            triggerAlert({type:'Failure', message:`No se pudo eliminar la tarea de ${task.business.name} para la sucursal ${task.branch.number} de ${task.branch.client.name}`})
         }
     }
     return (

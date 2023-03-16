@@ -9,6 +9,7 @@ import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
 import Modal from 'frontend/components/Modal'
 import { useRouter } from 'next/router'
 import Business from 'backend/models/Business'
+import useAlert from 'frontend/hooks/useAlert'
 
 interface props{
     branch:IBranch,
@@ -26,15 +27,19 @@ export default function Item({branch, deleteBranch}:props){
     };
     const {startLoading, stopLoading} = useLoading()
     const router = useRouter()
+    const {triggerAlert} = useAlert()
 
     const deleteData = async () => {
         try {
             await fetcher.delete({_id:branch._id}, apiEndpoints.techAdmin.branches)
             deleteBranch(branch._id as string)
+            triggerAlert({type:'Success', message:`La sucursal de numero ${branch.number} para el cliente ${branch.client.name} fue eliminada correctamente`})
 
         } 
         catch (error) {
             console.log(error)
+            triggerAlert({type:'Failure', message:`No se pudo eliminar la sucursal ${branch.number} para el cliente ${branch.client.name}`})
+
         }
     }
 
@@ -59,7 +64,7 @@ export default function Item({branch, deleteBranch}:props){
                         <BsFillTrashFill color="gray" size="15"/>
                     </button> 
                     
-            <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={openModal}/>
+            <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={deleteData}/>
                 </div>
             </Table.Cell>
         </Table.Row>

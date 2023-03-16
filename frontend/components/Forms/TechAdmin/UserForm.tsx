@@ -6,6 +6,7 @@ import { useState, ChangeEvent, useEffect } from "react";
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from "frontend/hooks/useLoading";
+import useAlert from "frontend/hooks/useAlert";
 
 export interface IUserForm{
     _id:string,
@@ -45,18 +46,19 @@ export default function UserForm({userForm, newUser=true, cities}:props){
     const[errors, setErrors] = useState<IUserFormErrors>({} as IUserFormErrors)
     const [submitted, setSubmitted] = useState<boolean>(false)
     const {stopLoading, startLoading} = useLoading()
-
+    const {triggerAlert} = useAlert()
     const postData = async (form:IUserForm) => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.users)
             await router.push('/tech-admin/users')
             stopLoading()
+            triggerAlert({type:'Success', message:`El usuario ${form.firstName} ${form.lastName} fue creado correctamente`})
         } 
         catch (error) {
             console.log(error)
-            stopLoading()
-            alert('No se pudo crear el usuario')
+            stopLoading()            
+            triggerAlert({type:'Failure', message:`No se pudo crear el usuario ${form.firstName} ${form.lastName}`})
         }
     }
 
@@ -66,11 +68,13 @@ export default function UserForm({userForm, newUser=true, cities}:props){
             await fetcher.put(form, api.techAdmin.users)
             await router.push('/tech-admin/users')
             stopLoading()
+            triggerAlert({type:'Success', message:`El usuario ${form.firstName} ${form.lastName} fue actualizado correctamente`})
         } 
         catch (error) {
             console.log(error)
-            stopLoading()
-            alert('No se pudo actualizar el usuario')
+            stopLoading()            
+            triggerAlert({type:'Failure', message:`No se pudo actualizar el usuario ${form.firstName} ${form.lastName}`})
+
         }
     }
 

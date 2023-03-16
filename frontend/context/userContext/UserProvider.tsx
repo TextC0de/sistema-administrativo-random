@@ -21,6 +21,7 @@ const UserProvider = ({children}:ProviderProps) => {
 
     const [user, setUser] = useState<IUser>(INITIAL_STATE)
     const {startLoading, stopLoading} = useLoading()
+    const [ isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
 
     async function getUser():Promise<IUser>{
         try {
@@ -29,9 +30,11 @@ const UserProvider = ({children}:ProviderProps) => {
                 console.log('no user found');
                 return INITIAL_STATE   
             }
+            setIsLoggedIn(true)
             return json.data.user
         } catch (error) {
             console.log(error)
+            setIsLoggedIn(false)
             return INITIAL_STATE
         }
     }
@@ -43,16 +46,13 @@ const UserProvider = ({children}:ProviderProps) => {
         stopLoading()
     }
 
-    function isLoggedIn(){
-        return user.email!=''
-    }
-
     function logoutUser(){
         setUser(INITIAL_STATE)
+        setIsLoggedIn(false)
     }
 
     const memoValue = useMemo(() => {
-        return {user, loginUser, logoutUser, isLoggedIn}
+        return {user, loginUser, logoutUser,isLoggedIn}
     }, [user])
 
     return(

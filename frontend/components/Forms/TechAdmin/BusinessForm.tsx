@@ -4,6 +4,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading';
+import useAlert from 'frontend/hooks/useAlert';
 
 export interface IBusinessForm{
     _id:string,
@@ -26,6 +27,7 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
         _id:businessForm._id,
         name:businessForm.name
     })
+    const {triggerAlert} = useAlert()
     const [submitted, setSubmitted] = useState<boolean>(false)
     const[errors, setErrors] = useState<IBusinessFormErrors>({} as IBusinessFormErrors)
 
@@ -34,12 +36,13 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
             startLoading()
             await fetcher.post(form, api.techAdmin.businesses)
             await router.push('/tech-admin/businesses')
+            triggerAlert({type:'Success', message:`Se creo la empresa "${form.name}" correctamente`})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo crear la empresa')
+            triggerAlert({type:'Failure', message:`No se pudo crear la empresa "${form.name}"`})
         }
     }
 
@@ -48,12 +51,13 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
             startLoading()
             await fetcher.put(form, api.techAdmin.businesses)
             await router.push('/tech-admin/businesses')
+            triggerAlert({type:'Success', message:`Se actualizo la empresa "${form.name}" correctamente`})
             stopLoading()
         } 
         catch (error) {
             console.log(error)
+            triggerAlert({type:'Failure', message:`No se pudo actualizar la empresa "${form.name}"`})
             stopLoading()
-            alert('No se pudo actualizar la empresa')
         }
     }
 
@@ -86,9 +90,7 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
     const handleSubmit = (e:any) => {
         setSubmitted(true)
         e.preventDefault()
-        
         const errs = formValidate()
-        
         if (errs.name === '' ) {
             newBusiness ? postData(form) : putData(form)
         }

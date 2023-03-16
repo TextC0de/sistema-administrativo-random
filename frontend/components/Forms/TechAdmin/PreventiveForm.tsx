@@ -8,6 +8,7 @@ import * as types from 'backend/models/types'
 
 import { BsFillXCircleFill } from 'react-icons/bs';
 import useLoading from 'frontend/hooks/useLoading';
+import useAlert from 'frontend/hooks/useAlert';
 export interface IPreventiveForm{
         _id:string
         branch:IBranch,
@@ -63,6 +64,7 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
     }, [form])
 
     const {stopLoading, startLoading} = useLoading()
+    const {triggerAlert} = useAlert()
 
     /* The POST method adds a new entry in the mongodb database. */
     const postData = async (form:IPreventiveForm) => {
@@ -72,11 +74,12 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
             await fetcher.post(form, api.techAdmin.preventives)
             await router.push('/tech-admin/preventives')
             stopLoading()
+            triggerAlert({type:'Success', message:`El preventivo de ${form.business.name} para la sucursal ${form.branch.number} del cliente ${client} fue creado correctamente`})
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo crear el preventivo')
+            triggerAlert({type:'Failure', message:`No se pudo crear el preventivo de ${form.business.name} para la sucursal ${form.branch.number} del cliente ${client}`})
         }
     }
 
@@ -86,16 +89,19 @@ const PreventiveForm = ({preventiveForm, newPreventive = true, businesses, branc
             await fetcher.put(form, api.techAdmin.preventives)
             await router.push('/tech-admin/preventives')
             stopLoading()
+            triggerAlert({type:'Success', message:`El preventivo de ${form.business.name} para la sucursal ${form.branch.number} del cliente ${client} fue actualizadp correctamente`})
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo actualizar el preventivo')
+            triggerAlert({type:'Failure', message:`No se pudo actualizar el preventivo de ${form.business.name} para la sucursal ${form.branch.number} del cliente ${client}`})
+
         }
     }
 
     const selectClient = (event:ChangeEvent<HTMLSelectElement>) =>{
         const {value} = event.target
+        setClient(value)
         setFilteredBranches(branches.filter(branch => branch.client.name === value))
     }
 

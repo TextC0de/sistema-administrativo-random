@@ -4,6 +4,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import fetcher from 'lib/fetcher';
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading';
+import useAlert from 'frontend/hooks/useAlert';
 export interface IProvinceForm{
     _id:string,
     name:string
@@ -27,17 +28,19 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
     const[errors, setErrors] = useState<IProvinceFormErrors>({} as IProvinceFormErrors)
     const [submitted, setSubmitted] = useState<boolean>(false)
     const {stopLoading, startLoading} = useLoading()
+    const {triggerAlert} = useAlert()
     const postData = async (form:IProvinceForm) => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.provinces)
-            router.push('/tech-admin/provinces')
+            await router.push('/tech-admin/provinces')
             stopLoading()
+            triggerAlert({type:'Success', message:`La provincia ${form.name} fue creada correctamente`})
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo crear la provincia')
+            triggerAlert({type:'Failure', message:`No se pudo crear la provincia ${form.name}`})
         }
     }
 
@@ -47,11 +50,12 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
             await fetcher.put(form, api.techAdmin.provinces)
             await router.push('/tech-admin/provinces')
             stopLoading()
+            triggerAlert({type:'Success', message:`La provincia ${form.name} fue actualizada correctamente`})
         } 
         catch (error) {
             console.log(error)
             stopLoading()
-            alert('No se pudo actualizar la provincia')
+            triggerAlert({type:'Failure', message:`No se pudo actualizar la provincia ${form.name}`})
         }
     }
 
@@ -97,7 +101,7 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
 
     return(
         <>
-            <form className='flex flex-col gap-4 w-1/2 mx-auto my-4 bg-gray-50 rounded-3xl p-4' onSubmit={handleSubmit}>
+            <form className='flex flex-col gap-4 w-1/2 mx-auto bg-gray-50 rounded-3xl p-4' onSubmit={handleSubmit}>
                 <h2 className="text-lg">{newProvince?'Agregar Provincia':'Editar Provincia'}</h2>
                 <hr className="mb-2"/>
                 <div>

@@ -6,6 +6,7 @@ import { ProviderProps } from '../interfaces'
 import { useMemo } from 'react'
 import fetcher from 'lib/fetcher'
 import { nanoid } from 'nanoid'
+import Alert from 'frontend/components/Alert'
 
 export type AlertType = 'Success' | 'Failure' | 'Info'
 
@@ -25,13 +26,20 @@ const AlertProvider = ({children}:ProviderProps) => {
         newAlert.key = nanoid()
         setAlerts([...alerts, newAlert])
         setTimeout(()=>{
-            setAlerts(alerts.filter(alert=> alert.key != newAlert.key))
+            removeAlert(newAlert.key as string)
         }, 5000)
     }
 
+    function removeAlert(key:string){
+        setAlerts(alerts.filter(alert=> alert.key != key))
+    }
+
     return(
-        <AlertContext.Provider value={{alerts, triggerAlert}}>
+        <AlertContext.Provider value={{triggerAlert, removeAlert}}>
             {children}
+            <>
+                {alerts.map((alert)=> <Alert id={alert.key as string} {...alert} />)}
+            </>
         </AlertContext.Provider>
     )
 }
