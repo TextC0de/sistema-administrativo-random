@@ -4,6 +4,9 @@ export const authUrl = baseApiUrl + 'auth/'
 export const logoutUrl = authUrl + 'logout/'
 export const registerUrl = authUrl + 'register/'
 export const loggedInUser = authUrl + 'user/'
+export const checkPassword = authUrl + 'check-password/'
+export const changePassword = authUrl + 'change-password/'
+
 const accAdminBase = baseApiUrl + 'acc-admin/'
 
 export const accAdmin:any ={

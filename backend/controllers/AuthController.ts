@@ -70,7 +70,26 @@ const AuthController = {
       console.log(error);
       res.status(500).json({error:'failed to create user', statusCode:500})
     }
-  }
+  },
+  checkPassword:async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
+    const {body:{currentPassword}, userId} = req
+    console.log(currentPassword);
+    
+    const user = await User.findById(userId).select('+password')
+    if(!user) return res.status(403).json({error:'no user found', statusCode:403})
+    const passwordMatch = user.comparePassword(currentPassword)
+    if(!passwordMatch) return res.status(403).json({statusCode:403, error:'Wrong password'})
+    return res.status(200).json({statusCode:200, data:{message:'Correct password'}})
+  },
+  changePassword:async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>) =>{
+    const {body:{currentPassword, newPassword}, userId} = req
+    const user = await User.findById(userId).select('+password')
+    if(!user) return res.status(403).json({error:'no user found', statusCode:403})
+    if(!user.comparePassword(currentPassword)) return res.status(403).json({statusCode:403, error:'Wrong password'})
+    user.password = newPassword
+    await user.save()
+    return res.status(200).json({statusCode:200, data:{message:'Correct password'}})
+  },
 }
 
 export default AuthController
