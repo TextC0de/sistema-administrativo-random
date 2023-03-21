@@ -52,11 +52,13 @@ export default function Item({user, deleteUser}:props){
         try {
             startLoading()
             await fetcher.put({_id:user._id}, apiEndpoints.techAdmin.users + 'new-password')
+            triggerAlert({type:'Success', message:`Se generó una nueva contraseña para ${user.fullName} correctamente` })
             stopLoading()
         } 
         catch (error) {
             console.log(error)
             stopLoading()
+            triggerAlert({type:'Failure', message: `No se pudo generar una nueva contraseña para ${user.fullName}`})
         }
     }
 
@@ -64,6 +66,7 @@ export default function Item({user, deleteUser}:props){
         <Table.Row className='border-b '>
             <Table.Cell>{user.fullName}</Table.Cell>
             <Table.Cell>{user.city?`${user.city?.name}, ${user.city?.province.name}`:''}</Table.Cell>
+            <Table.Cell>{user.email}</Table.Cell>
             <Table.Cell>{(user.roles?.length as number) > 1 ? user.roles?.map(role=> `${role}, `) : user.roles?.[0]}</Table.Cell>
             <Table.Cell>
             <div className='flex justify-center gap-2 items-center'>

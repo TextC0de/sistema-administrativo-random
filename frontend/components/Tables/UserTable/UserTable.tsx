@@ -20,6 +20,7 @@ export default function UserTable({users}:props){
                 <Table.Head className='bg-white border-b'>
                     <Table.HeadCell>Nombre</Table.HeadCell>
                     <Table.HeadCell>Ciudad</Table.HeadCell>
+                    <Table.HeadCell>Email</Table.HeadCell>
                     <Table.HeadCell>Roles</Table.HeadCell>
                     <Table.HeadCell className='w-40 text-center'>Acciones</Table.HeadCell>
                 </Table.Head>

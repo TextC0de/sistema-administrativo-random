@@ -46,11 +46,12 @@ const UserController = {
   
         const {body:{firstName, lastName, city, roles, email}} = req
         const password = nanoid(10)
+        console.log(password);
+        
         const fullName = `${firstName} ${lastName}`
         const newUser = {firstName, lastName, fullName, city, roles, email, password}
         await dbConnect()
         const deletedUser = await UserModel.findOne({email})
-        console.log("creando usuario")
         if(deletedUser){
             deletedUser.firstName = firstName
             deletedUser.lastName = lastName
@@ -58,6 +59,7 @@ const UserController = {
             deletedUser.city = city._id
             deletedUser.roles = roles
             deletedUser.password = password
+            await Mailer.sendNewUserPassword(formatIds(deletedUser))
             await deletedUser.restore()
             return res.status(200).json({data:{user:formatIds(deletedUser)}, statusCode:200})
         }
@@ -83,17 +85,21 @@ const UserController = {
         //console.log('generateNewPassword endpoint')
         const {body:{_id}} = req
         await dbConnect()
-        const docUser = await UserModel.findById(_id)
-        const {firstName, lastName, fullName, city, roles, email} = formatIds(docUser)
-        const password = nanoid(10)
-        const newUser = {firstName, lastName, fullName, city, roles, email, password}
-        const newDocUser = await UserModel.findByIdAndUpdate(_id, newUser, {
-            new: true,
-            runValidators: true,
-          })
-        if(!newDocUser) return res.status(400).json({ error:'failed to delete user', statusCode:400 })
-        await Mailer.sendResetPassword(newUser)
-        res.status(200).json({data:{user:formatIds(newDocUser)}, statusCode:200})
+        const user = await UserModel.findById(_id)
+        if(!user) return res.json({ error:'no user found', statusCode:400 })
+        const newPassword = nanoid(10)
+        console.log(newPassword);
+        user.password = newPassword
+        const {firstName, lastName, fullName, email, password} = user
+        const newUser = {firstName, lastName, fullName, email, password}
+        try {
+            user.save()
+            await Mailer.sendResetPassword(newUser)
+            res.status(200).json({data:{user:formatIds(user)}, statusCode:200})
+        } catch (error) {
+            console.log(error);
+            res.json({ error:'could not generate new password', statusCode:400 })
+        }
     }
 }
 

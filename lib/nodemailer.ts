@@ -32,8 +32,8 @@ export interface NewUser{
     firstName:string, 
     lastName:string, 
     fullName:string,
-    city:ICity, 
-    roles:Role[], 
+    city?:ICity, 
+    roles?:Role[], 
     email:string, 
     password:string
 }
