@@ -28,7 +28,8 @@ export function toMonth(num:number){
 export function trimProvince(province:IProvince){
     return{
         _id:province._id,
-        name:province.name
+        name:province.name,
+        deleted:province.deleted
     }
 }
 
@@ -36,21 +37,24 @@ export function trimCity(city:ICity){
     return{
         _id:city._id,
         name:city.name,
-        province:city.province.name
+        province:city.province.name,
+        deleted:city.deleted
     }
 }
 
 export function trimClient(client:IClient){
     return{
         _id:client._id,
-        name:client.name
+        name:client.name,
+        deleted:client.deleted
     }
 }
 
 export function trimBusiness(business:IBusiness){
     return{
         _id:business._id,
-        name:business.name
+        name:business.name,
+        deleted:business.deleted
     }
 }
 
@@ -61,6 +65,7 @@ export function trimBranch(branch:IBranch){
         city:trimCity(branch.city),
         client:trimClient(branch.client),
         businesses:branch.businesses.map(business => trimBusiness(business)),
+        deleted:branch.deleted
     }
 }
 
@@ -73,5 +78,6 @@ export function trimTask(task:ITask){
         taskType:task.taskType,
         status:task.status,
         description:task.description,
+        deleted:task.deleted
     }
 }

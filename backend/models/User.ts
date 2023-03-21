@@ -8,6 +8,7 @@ import { IUserActivities } from "./interfaces";
 import ActivityModel, {Activity} from "./Activity";
 import mongoose from "mongoose";
 import {City} from "./City";
+import { formatIds } from "lib/utils";
 
 
 
@@ -88,8 +89,14 @@ export class User{
         }
     };
 
-    async getTasks(this:User):Promise<Task[]> {
-        return await TaskModel.findUndeleted({assigned:this})
+    async getTasks(this:User):Promise<Task[]> {        
+        console.log('user tasks');
+        
+        const allTasks = await TaskModel.find().populate(Task.getPopulateParameters())
+        const tasks = allTasks.filter((task:Task) => task.assigned.some((task:Task)=> task._id === this._id))
+        console.log(tasks);
+        
+        return tasks
     }
     
     async getTasksByStatus (this:User, status:TaskStatus):Promise<Task[]>{

@@ -43,7 +43,8 @@ export interface ImageModel extends mongoose.Model<IImage,IImageMethods>{
 
 export interface IClient {
   _id:mongoose.Types.ObjectId | string,
-  name:string
+  name:string,
+  deleted:boolean
 }
 
 export interface IClientMethods{
@@ -56,6 +57,8 @@ export interface ClientModel extends mongoose.Model<IClient, {}, IClientMethods>
 export interface IBusiness{
   _id:mongoose.Types.ObjectId | string,
   name:string
+  
+  deleted:boolean
 }
 
 export interface IBusinessMethods{
@@ -68,6 +71,7 @@ export interface BusinessModel extends mongoose.Model<IBusiness, {}, IBusinessMe
 export interface IProvince{
   _id:mongoose.Types.ObjectId | string,
   name:string
+  deleted:boolean
 }
 
 export interface ProvinceModel extends mongoose.Model<IProvince, {}, IProvinceMethods>{
@@ -81,6 +85,7 @@ export interface ICity{
   _id:mongoose.Types.ObjectId | string,
   name:string,
   province:IProvince
+  deleted:boolean
 }
 
 export interface ICityMethods{
@@ -98,6 +103,7 @@ export interface IBranch{
   city:ICity,
   client:IClient,
   businesses:IBusiness[],
+  deleted:boolean
 }
 
 export interface IBranchMethods{
@@ -121,6 +127,7 @@ export interface IPreventive {
   lastDoneAt?:Date,
   batteryChangedAt?:Date
   observations?:string
+  deleted:boolean
 }
 
 export interface IPreventiveMethods{
@@ -149,6 +156,7 @@ export interface ITask {
   image?:IImage,
   workOrderNumber?:number,
   closedAt?:Date,
+  deleted:boolean
 }
 
 export interface ITaskMethods{
@@ -177,6 +185,7 @@ export interface IExpense {
   task?:ITask,
   auditor?:IUser,
   activity?:IActivity
+  deleted:boolean
 }
 
 export interface IExpenseMethods{
@@ -199,6 +208,7 @@ export interface IActivity{
   openedBy:IUser,
   participants?:IUser[],
   finishDate?:Date,
+  deleted:boolean
 }
 
 export interface IActivityMethods{

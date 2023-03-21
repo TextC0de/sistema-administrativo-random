@@ -17,7 +17,7 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 // e.g. only an Auditor should be able to change the status of a Task or Expense from Sent to Approved
 
 const accessControl = async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>, next:any) => {   
-    console.log(req.method, req.url);
+    console.log(req.method, req.url, new Date());
 
     const {headers} = req
     const {cookies} = req
