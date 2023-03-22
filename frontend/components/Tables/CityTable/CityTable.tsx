@@ -1,14 +1,52 @@
-import { ICity } from 'backend/models/interfaces'
-import { useState } from 'react'
+import { ICity, IProvince } from 'backend/models/interfaces'
+import { ChangeEvent, useState } from 'react'
 import { Table } from 'flowbite-react'
 import Item from './Item'
+import Filter from 'frontend/components/Filter'
 
 interface props{
     cities:ICity[]
+    provinces:IProvince[]
 }
-export default function CityTable({cities}:props){
+export default function CityTable({cities, provinces}:props){
     const [tableCities, setTableCities] = useState<ICity[]>(cities)
+    const [type, setType] = useState<string>('')
+    const [entities, setEntities] = useState<any[]>([] as any[])
+    const filterTypes = ['Provincia']
+        
 
+    function selectEntity(e:ChangeEvent<HTMLSelectElement>){
+        const {value} = e.target
+        //+console.log(value);
+        
+        switch(type){
+            case 'Provincia':
+                setTableCities(cities.filter(city => city.province.name === value))
+                break
+            default:
+                setTableCities(cities)
+                break;
+        }
+    }
+
+    function selectType(e:ChangeEvent<HTMLSelectElement>){
+        const {value} = e.target
+
+        setType(value)
+        switch (value) {
+            case 'Provincia':
+                setEntities(provinces)
+                break
+            default:
+                break;
+        }
+    }
+
+    function clearFilter(){
+        setType('')
+        setEntities([] as any[])
+        setTableCities(cities)
+    }
     const deleteCity = (id:string ) =>{
         const newTable = (prev:ICity[]) => prev.filter(city => city._id !== id)
         setTableCities(newTable(cities))
@@ -16,6 +54,7 @@ export default function CityTable({cities}:props){
     
     return(
         <div className='mb-6'>
+            <Filter types={filterTypes} entities={entities} selectType={selectType} selectEntity={selectEntity} clearFilter={clearFilter} />
             <Table hoverable={true} className='bg-white'>
                 <Table.Head className='bg-white border-b'>
                     <Table.HeadCell>Nombre</Table.HeadCell>
