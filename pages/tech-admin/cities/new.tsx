@@ -6,26 +6,26 @@ import { type GetServerSidePropsContext } from 'next'
 import { formatIds } from 'lib/utils'
 
 interface props {
-    provinces: IProvince[]
+	provinces: IProvince[]
 }
 
 export default function NewCity({ provinces }: props): JSX.Element {
-    const cityForm: ICityForm = {
-        _id: '',
-        name: '',
-        province: {} as IProvince
-    }
+	const cityForm: ICityForm = {
+		_id: '',
+		name: '',
+		province: {} as IProvince
+	}
 
-    return (
-        <>
-           <CityForm cityForm={cityForm} provinces={provinces}/>
-        </>
-    )
+	return (
+		<>
+			<CityForm cityForm={cityForm} provinces={provinces} />
+		</>
+	)
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
-    await dbConnect()
-    const docProvinces = await Province.findUndeleted({})
-    const provinces = formatIds(docProvinces)
-    return { props: { provinces } }
+	await dbConnect()
+	const docProvinces = await Province.findUndeleted({})
+	const provinces = formatIds(docProvinces)
+	return { props: { provinces } }
 }

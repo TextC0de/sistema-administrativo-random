@@ -28,21 +28,21 @@ export const userIdFromJWT = (jwtToken: string): string | undefined => {
 // function for getting the user on GetServerSideProps
 
 export async function getUserServer(req: NextApiRequest): Promise<IUser | undefined> {
-    await dbConnect()
-    const { cookies } = req
-    if (cookies.access_token === undefined) {
-        return undefined
-    }
-    const jwt = cookies.access_token
-    const result = <UserIdJwtPayload>verify(jwt, secret)
-    if (result === undefined) {
-        return undefined
-    }
-    const _id = result._id
-    const docUser = await User.findById(_id)
-    if (docUser === null) {
-        return undefined
-    }
-    const user = formatIds(docUser)
-    return user
+	await dbConnect()
+	const { cookies } = req
+	if (cookies.access_token === undefined) {
+		return undefined
+	}
+	const jwt = cookies.access_token
+	const result = <UserIdJwtPayload>verify(jwt, secret)
+	if (result === undefined) {
+		return undefined
+	}
+	const _id = result._id
+	const docUser = await User.findById(_id)
+	if (docUser === null) {
+		return undefined
+	}
+	const user = formatIds(docUser)
+	return user
 }

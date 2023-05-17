@@ -8,35 +8,35 @@ import ClientBranchForm, { type IClientBranchForm } from 'frontend/components/Fo
 import Business from 'backend/models/Business'
 
 interface props {
-    cities: ICity[]
-    client: IClient
-    businesses: IBusiness[]
+	cities: ICity[]
+	client: IClient
+	businesses: IBusiness[]
 }
 
 export default function NewClientBranch({ cities, client, businesses }: props): JSX.Element {
-    const branchForm: IClientBranchForm = {
-        _id: '',
-        number: 0,
-        client,
-        city: {} as ICity,
-        businesses: []
-    }
+	const branchForm: IClientBranchForm = {
+		_id: '',
+		number: 0,
+		client,
+		city: {} as ICity,
+		businesses: []
+	}
 
-    return (
-        <>
-           <ClientBranchForm branchForm={branchForm} cities={cities} businesses={businesses}/>
-        </>
-    )
+	return (
+		<>
+			<ClientBranchForm branchForm={branchForm} cities={cities} businesses={businesses} />
+		</>
+	)
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
-    const { params } = ctx
-    if (params == null) return { props: {} }
-    await dbConnect()
-    const cities = await CityModel.findUndeleted({})
-    const client = await Client.findOne({ name: deSlugify(params.name as string) })
-    const businesses = await Business.findUndeleted({})
-    // console.log(client)
+	const { params } = ctx
+	if (params == null) return { props: {} as props }
+	await dbConnect()
+	const cities = await CityModel.findUndeleted({})
+	const client = await Client.findOne({ name: deSlugify(params.name as string) })
+	const businesses = await Business.findUndeleted({})
+	// console.log(client)
 
-    return { props: formatIds({ cities, client, businesses }) }
+	return { props: formatIds({ cities, client, businesses }) }
 }

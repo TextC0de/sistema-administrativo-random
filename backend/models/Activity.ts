@@ -1,4 +1,11 @@
-import { prop, type Ref, getModelForClass, type ReturnModelType, modelOptions, type DocumentType } from '@typegoose/typegoose'
+import {
+	prop,
+	type Ref,
+	getModelForClass,
+	type ReturnModelType,
+	modelOptions,
+	type DocumentType
+} from '@typegoose/typegoose'
 import { type IPopulateParameter } from './interfaces'
 import { User } from './User'
 import TaskModel, { type Task } from './Task'
@@ -7,67 +14,73 @@ import mongoose, { type FilterQuery } from 'mongoose'
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Activity {
-    _id: mongoose.Types.ObjectId | string
+	_id: mongoose.Types.ObjectId | string
 
-    @prop({ type: String, required: true })
-    name: string
+	@prop({ type: String, required: true })
+	name: string
 
-    @prop({ type: String, required: true })
-    description: string
+	@prop({ type: String, required: true })
+	description: string
 
-    @prop({ type: Date, required: true })
-    startDate: Date
+	@prop({ type: Date, required: true })
+	startDate: Date
 
-    @prop({ ref: 'User', required: true })
-    openedBy: Ref<User>
+	@prop({ ref: 'User', required: true })
+	openedBy: Ref<User>
 
-    @prop({ type: mongoose.SchemaTypes.Array, ref: 'User', required: true })
-    participants: Array<Ref<User>>
+	@prop({ type: mongoose.SchemaTypes.Array, ref: 'User', required: true })
+	participants: Array<Ref<User>>
 
-    @prop({ type: Date, required: false })
-    finishDate: Date
+	@prop({ type: Date, required: false })
+	finishDate: Date
 
-    @prop({ type: Boolean, default: false })
-    deleted: boolean
+	@prop({ type: Boolean, default: false })
+	deleted: boolean
 
-    static getPopulateParameters(): IPopulateParameter[] {
-        getModelForClass(User)
+	static getPopulateParameters(): IPopulateParameter[] {
+		getModelForClass(User)
 
-        return [
-            {
-                path: 'openedBy'
-            },
-            {
-                path: 'participants'
-            }
-        ]
-    }
+		return [
+			{
+				path: 'openedBy'
+			},
+			{
+				path: 'participants'
+			}
+		]
+	}
 
-    static async findUndeleted(this: ReturnModelType<typeof Activity>, filter: FilterQuery<Activity> = {}): Promise<Activity[]> {
-        return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
-    }
+	static async findUndeleted(
+		this: ReturnModelType<typeof Activity>,
+		filter: FilterQuery<Activity> = {}
+	): Promise<Activity[]> {
+		return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
+	}
 
-    static async findOneUndeleted(this: ReturnModelType<typeof Activity>, filter: FilterQuery<Activity> = {}): Promise<Activity | null> {
-        return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
-    }
+	static async findOneUndeleted(
+		this: ReturnModelType<typeof Activity>,
+		filter: FilterQuery<Activity> = {}
+	): Promise<Activity | null> {
+		return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
+	}
 
-    async softDelete(this: DocumentType<Activity>): Promise<void> {
-        this.deleted = true
-        await this.save()
-    }
+	async softDelete(this: DocumentType<Activity>): Promise<void> {
+		this.deleted = true
+		await this.save()
+	}
 
-    async restore(this: DocumentType<Activity>): Promise<void> {
-        this.deleted = false
-        await this.save()
-    }
+	async restore(this: DocumentType<Activity>): Promise<void> {
+		this.deleted = false
+		await this.save()
+	}
 
-    async getTasks(this: Activity): Promise<Task[]> {
-        return await TaskModel.findUndeleted({ activity: this })
-    }
+	async getTasks(this: Activity): Promise<Task[]> {
+		return await TaskModel.findUndeleted({ activity: this })
+	}
 
-    async getExpenses(this: Activity): Promise<Expense[]> {
-        return await ExpenseModel.findUndeleted({ activity: this })
-    }
+	async getExpenses(this: Activity): Promise<Expense[]> {
+		return await ExpenseModel.findUndeleted({ activity: this })
+	}
 }
 
 export default getModelForClass(Activity)

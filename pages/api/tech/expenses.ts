@@ -1,4 +1,3 @@
-
 import ExpenseController from 'backend/controllers/ExpenseController'
 import protectedHandler from 'backend/handlers/protectedHandler'
 

@@ -7,28 +7,28 @@ import { formatIds } from 'lib/utils'
 import { type GetServerSidePropsContext } from 'next'
 
 interface props {
-    cities: ICity[]
+	cities: ICity[]
 }
 
 export default function NewUser({ cities }: props): JSX.Element {
-    const userForm: IUserForm = {
-        _id: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        roles: [] as Role[],
-        city: {} as ICity,
-        password: ''
-    }
-    return (
-        <>
-            <UserForm userForm={userForm} newUser={true} cities={cities} />
-        </>
-    )
+	const userForm: IUserForm = {
+		_id: '',
+		firstName: '',
+		lastName: '',
+		email: '',
+		roles: [] as Role[],
+		city: {} as ICity,
+		password: ''
+	}
+	return (
+		<>
+			<UserForm userForm={userForm} newUser={true} cities={cities} />
+		</>
+	)
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
-    await dbConnect()
-    const docCities = await City.findUndeleted({})
-    return { props: { cities: formatIds(docCities) } }
+	await dbConnect()
+	const docCities = await City.findUndeleted({})
+	return { props: { cities: formatIds(docCities) } }
 }

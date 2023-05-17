@@ -9,40 +9,40 @@ import { formatIds } from 'lib/utils'
 import { type GetServerSidePropsContext } from 'next'
 
 interface props {
-    branches: IBranch[]
-    clients: IClient[]
-    businesses: IBusiness[]
-    technicians: IUser[]
+	branches: IBranch[]
+	clients: IClient[]
+	businesses: IBusiness[]
+	technicians: IUser[]
 }
 
 export default function NewTask(props: props): JSX.Element {
-    const taskForm: ITaskForm = {
-        _id: '',
-        branch: {} as IBranch,
-        business: {} as IBusiness,
-        assigned: [] as IUser[],
-        taskType: '',
-        openedAt: {} as Date,
-        status: '',
-        description: ''
-    }
+	const taskForm: ITaskForm = {
+		_id: '',
+		branch: {} as IBranch,
+		business: {} as IBusiness,
+		assigned: [] as IUser[],
+		taskType: '',
+		openedAt: {} as Date,
+		status: '',
+		description: ''
+	}
 
-    return (
-        <>
-            <TechAdminTaskForm newTask={true} taskForm={taskForm} {...props}/>
-        </>
-    )
+	return (
+		<>
+			<TechAdminTaskForm newTask={true} taskForm={taskForm} {...props} />
+		</>
+	)
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
-    await dbConnect()
-    const docBranches = await Branch.findUndeleted({})
-    const docClients = await Client.findUndeleted({})
-    const docBusinesses = await Business.findUndeleted({})
-    const docTechnicians = await User.findUndeleted({ roles: 'Tecnico' })
-    const branches = formatIds(docBranches)
-    const clients = formatIds(docClients)
-    const businesses = formatIds(docBusinesses)
-    const technicians = formatIds(docTechnicians)
-    return { props: { branches, clients, businesses, technicians } }
+	await dbConnect()
+	const docBranches = await Branch.findUndeleted({})
+	const docClients = await Client.findUndeleted({})
+	const docBusinesses = await Business.findUndeleted({})
+	const docTechnicians = await User.findUndeleted({ roles: 'Tecnico' })
+	const branches = formatIds(docBranches)
+	const clients = formatIds(docClients)
+	const businesses = formatIds(docBusinesses)
+	const technicians = formatIds(docTechnicians)
+	return { props: { branches, clients, businesses, technicians } }
 }

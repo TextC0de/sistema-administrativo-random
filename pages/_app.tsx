@@ -8,25 +8,25 @@ import Header from 'frontend/components/Header'
 import Main from 'frontend/components/Main'
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
-  return (
-    <>
-      <Head>
-          <title>Sistema Administrativo Random S.R.L</title>
-      </Head>
-      <LoadingProvider>
-        <AlertProvider>
-          <UserProvider>
-            <div className='flex flex-col'>
-              <Header />
-              <Main>
-                <Component {...pageProps} />
-              </Main>
-            </div>
-          </UserProvider>
-        </AlertProvider>
-      </LoadingProvider>
-    </>
-  )
+	return (
+		<>
+			<Head>
+				<title>Sistema Administrativo Random S.R.L</title>
+			</Head>
+			<LoadingProvider>
+				<AlertProvider>
+					<UserProvider>
+						<div className="flex flex-col">
+							<Header />
+							<Main>
+								<Component {...pageProps} />
+							</Main>
+						</div>
+					</UserProvider>
+				</AlertProvider>
+			</LoadingProvider>
+		</>
+	)
 }
 
 export default MyApp

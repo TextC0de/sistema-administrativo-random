@@ -1,4 +1,3 @@
-
 import protectedHandler from 'backend/handlers/protectedHandler'
 import UserController from 'backend/controllers/UserController'
 

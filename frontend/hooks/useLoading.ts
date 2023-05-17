@@ -2,6 +2,6 @@ import LoadingContext, { type LoadingContextProps } from 'frontend/context/loadi
 import { useContext } from 'react'
 
 export default function useLoading(): LoadingContextProps {
-    const context = useContext(LoadingContext)
-    return context
+	const context = useContext(LoadingContext)
+	return context
 }

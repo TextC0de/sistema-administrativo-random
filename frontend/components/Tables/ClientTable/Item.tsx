@@ -12,75 +12,75 @@ import Modal from 'frontend/components/Modal'
 import useAlert from 'frontend/hooks/useAlert'
 
 interface props {
-    client: IClient
-    deleteClient: (id: string) => void
+	client: IClient
+	deleteClient: (id: string) => void
 }
 
 export default function Item({ client, deleteClient }: props): JSX.Element {
-    const { startLoading, stopLoading } = useLoading()
-    const [modal, setModal] = useState(false)
-    const { triggerAlert } = useAlert()
-    const openModal = (): void => {
-        setModal(true)
-    }
-    const closeModal = (): void => {
-        setModal(false)
-    }
+	const { startLoading, stopLoading } = useLoading()
+	const [modal, setModal] = useState(false)
+	const { triggerAlert } = useAlert()
+	const openModal = (): void => {
+		setModal(true)
+	}
+	const closeModal = (): void => {
+		setModal(false)
+	}
 
-    const router = useRouter()
+	const router = useRouter()
 
-    async function navigateClient(): Promise<void> {
-        startLoading()
-        await router.push(`/tech-admin/clients/${slugify(client.name)}/branches`)
-        stopLoading()
-    }
+	async function navigateClient(): Promise<void> {
+		startLoading()
+		await router.push(`/tech-admin/clients/${slugify(client.name)}/branches`)
+		stopLoading()
+	}
 
-    const handleNavigateClient = (): void => {
-        void navigateClient()
-    }
+	const handleNavigateClient = (): void => {
+		void navigateClient()
+	}
 
-    async function navigateEdit(): Promise<void> {
-        startLoading()
-        await router.push(`/tech-admin/clients/${slugify(client.name)}/edit`)
-        stopLoading()
-    }
+	async function navigateEdit(): Promise<void> {
+		startLoading()
+		await router.push(`/tech-admin/clients/${slugify(client.name)}/edit`)
+		stopLoading()
+	}
 
-    const handleNavigateEdit = (): void => {
-        void navigateEdit()
-    }
+	const handleNavigateEdit = (): void => {
+		void navigateEdit()
+	}
 
-    const deleteData = async (): Promise<void> => {
-        try {
-            await fetcher.delete({ _id: client._id }, apiEndpoints.techAdmin.clients)
-            deleteClient(client._id as string)
-            triggerAlert({ type: 'Success', message: `Se elimino el cliente ${client.name}` })
-        } catch (error) {
-            console.log(error)
-            triggerAlert({ type: 'Failure', message: `No se pudo eliminar el cliente ${client.name}` })
-        }
-    }
+	const deleteData = async (): Promise<void> => {
+		try {
+			await fetcher.delete({ _id: client._id }, apiEndpoints.techAdmin.clients)
+			deleteClient(client._id as string)
+			triggerAlert({ type: 'Success', message: `Se elimino el cliente ${client.name}` })
+		} catch (error) {
+			console.log(error)
+			triggerAlert({ type: 'Failure', message: `No se pudo eliminar el cliente ${client.name}` })
+		}
+	}
 
-    const handleDelete = (): void => {
-        void deleteData
-    }
+	const handleDelete = (): void => {
+		void deleteData
+	}
 
-    return (
-        <Table.Row className='border-b'>
-            <Table.Cell>{client.name}</Table.Cell>
-            <Table.Cell>
-                <div className='flex justify-center gap-2 items-center'>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={handleNavigateClient}>
-                        <HiMagnifyingGlassPlus color="gray" size="15"/>
-                    </button>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={handleNavigateEdit}>
-                        <BsFillPencilFill color="gray" size="15"/>
-                    </button>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
-                        <BsFillTrashFill color="gray" size="15"/>
-                    </button>
-                    <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete}/>
-                </div>
-            </Table.Cell>
-        </Table.Row>
-    )
+	return (
+		<Table.Row className="border-b">
+			<Table.Cell>{client.name}</Table.Cell>
+			<Table.Cell>
+				<div className="flex justify-center gap-2 items-center">
+					<button className="p-0.5 hover:bg-gray-200 rounder-lg" onClick={handleNavigateClient}>
+						<HiMagnifyingGlassPlus color="gray" size="15" />
+					</button>
+					<button className="p-0.5 hover:bg-gray-200 rounder-lg" onClick={handleNavigateEdit}>
+						<BsFillPencilFill color="gray" size="15" />
+					</button>
+					<button className="p-0.5 hover:bg-gray-200 rounder-lg" onClick={openModal}>
+						<BsFillTrashFill color="gray" size="15" />
+					</button>
+					<Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete} />
+				</div>
+			</Table.Cell>
+		</Table.Row>
+	)
 }

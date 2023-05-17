@@ -1,3 +1,3 @@
 export interface ProviderProps {
-    children: JSX.Element | JSX.Element[]
+	children: JSX.Element | JSX.Element[]
 }

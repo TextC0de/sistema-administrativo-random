@@ -6,28 +6,28 @@ import { deSlugify, formatIds } from 'lib/utils'
 import { type GetServerSidePropsContext } from 'next'
 
 interface props {
-    business: IBusiness
+	business: IBusiness
 }
 
 export default function EditBusiness({ business }: props): JSX.Element {
-    const businessForm: IBusinessForm = {
-        _id: business._id as string,
-        name: business.name
-    }
-    return (
-        <>
-            <BusinessForm newBusiness={false} businessForm={businessForm}/>
-        </>
-    )
+	const businessForm: IBusinessForm = {
+		_id: business._id as string,
+		name: business.name
+	}
+	return (
+		<>
+			<BusinessForm newBusiness={false} businessForm={businessForm} />
+		</>
+	)
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
-    const { params } = ctx
-    if (params == null) return { props: {} as props }
+	const { params } = ctx
+	if (params == null) return { props: {} as props }
 
-    await dbConnect()
-    const docBusiness = await Business.findOneUndeleted({ name: deSlugify(params.name as string) })
-    const props = { business: formatIds(docBusiness) }
+	await dbConnect()
+	const docBusiness = await Business.findOneUndeleted({ name: deSlugify(params.name as string) })
+	const props = { business: formatIds(docBusiness) }
 
-    return { props }
+	return { props }
 }
