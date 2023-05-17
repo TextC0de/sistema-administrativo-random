@@ -1,17 +1,17 @@
-import { ChangeEvent, FormEvent, useState } from 'react'
+import { type ChangeEvent, type FormEvent, useState } from 'react'
 import { useRouter } from 'next/router'
-import useUser from 'frontend/hooks/useUser';
-import Link from 'next/link';
-import { Button, TextInput } from 'flowbite-react';
-import fetcher from 'lib/fetcher';
+import useUser from 'frontend/hooks/useUser'
+import Link from 'next/link'
+import { Button, TextInput } from 'flowbite-react'
+import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
-interface IUserRegisterForm{
-  firstName:string;
-  lastName:string;
-  email:string;
-  password:string;
-  confirmPassword:string;
-  roles:Role[]
+interface IUserRegisterForm {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  confirmPassword: string
+  roles: Role[]
 }
 
 type Role = 'Tecnico' | 'Administrativo Tecnico' | 'Administrativo Contable' | 'Auditor'
@@ -21,22 +21,21 @@ const RegisterForm = ({}) => {
 
   const [errors, setErrors] = useState({})
   const [message, setMessage] = useState('')
-  const {loginUser} = useUser()
+  const { loginUser } = useUser()
   const [form, setForm] = useState<IUserRegisterForm>({
-    firstName:'',
-    lastName:'',
-    email:'',
-    password:'',
-    confirmPassword:'',
-    roles:[]
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    roles: []
   })
 
-
   /* The POST method adds a new entry in the mongodb database. */
-  const postData = async (form:IUserRegisterForm) => {
+  const postData = async (form: IUserRegisterForm) => {
     try {
       await fetcher.post(form, api.registerUrl)
-      await fetcher.post({email:form.email, password:form.password}, api.authUrl)
+      await fetcher.post({ email: form.email, password: form.password }, api.authUrl)
       loginUser()
       router.push('/')
     } catch (error) {
@@ -45,33 +44,33 @@ const RegisterForm = ({}) => {
     }
   }
 
-  const handleChange = (e:ChangeEvent<HTMLInputElement>) => {
-    const {name, value} = e.target
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
 
     setForm({
       ...form,
-      [name]: value,
+      [name]: value
     })
   }
 
-  /* Makes sure pet info is filled for pet name, owner name, species, and image url*/
+  /* Makes sure pet info is filled for pet name, owner name, species, and image url */
   const formValidate = () => {
-    let err:IUserRegisterForm = {password:'', confirmPassword:'', firstName:'', lastName:'', email:'', roles:[]}
+    const err: IUserRegisterForm = { password: '', confirmPassword: '', firstName: '', lastName: '', email: '', roles: [] }
     if (!form.password) err.password = 'password is required'
     if (!form.email) err.email = 'email is required'
     if (!form.firstName) err.firstName = 'first name is required'
     if (!form.lastName) err.lastName = 'last name is required'
     if (!form.confirmPassword) err.confirmPassword = 'Please confirm your password'
     if (form.password !== form.confirmPassword) err.confirmPassword = 'passwords dont match'
-    
+
     return err
   }
 
-  const isValidForm = (errors:IUserRegisterForm) =>{
+  const isValidForm = (errors: IUserRegisterForm) => {
     return errors.confirmPassword == '' && errors.email == '' && errors.firstName == '' && errors.lastName == '' && errors.password == ''
   }
 
-  const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const errs = formValidate()
     if (isValidForm(errs)) {
@@ -132,8 +131,6 @@ const RegisterForm = ({}) => {
           required
         />
 
-
-        
           <Button type='submit' >
             Registrarse
           </Button>

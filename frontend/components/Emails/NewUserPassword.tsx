@@ -1,7 +1,7 @@
-import { NewUser } from "lib/nodemailer";
+import { type NewUser } from 'lib/nodemailer'
 
-export default function NewUserPassword ({user}:{user:NewUser}){
-    return(
+export default function NewUserPassword ({ user }: { user: NewUser }) {
+    return (
         <>
             <div>
                 <h3>Hola {user.fullName}!</h3>

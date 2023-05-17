@@ -1,75 +1,73 @@
-import { prop, Ref, getModelForClass, ReturnModelType, modelOptions, DocumentType  } from "@typegoose/typegoose";
-import dbConnect from "lib/dbConnect";
-import { IPopulateParameter } from "./interfaces";
-import UserModel, {User} from './User'
-import TaskModel,{Task} from './Task'
-import ExpenseModel, { Expense } from './Expense'
-import mongoose from "mongoose";
+import { prop, type Ref, getModelForClass, type ReturnModelType, modelOptions, type DocumentType } from '@typegoose/typegoose'
+import dbConnect from 'lib/dbConnect'
+import { type IPopulateParameter } from './interfaces'
+import UserModel, { User } from './User'
+import TaskModel, { type Task } from './Task'
+import ExpenseModel, { type Expense } from './Expense'
+import mongoose from 'mongoose'
 
-@modelOptions({schemaOptions:{timestamps:true}})
-export class Activity{
-    
-    _id:mongoose.Types.ObjectId | string
-    
-    @prop({type:String, required:true})
-    name:string
-    
-    @prop({type:String, required:true})
-    description:string
+@modelOptions({ schemaOptions: { timestamps: true } })
+export class Activity {
+    _id: mongoose.Types.ObjectId | string
 
-    @prop({type:Date, required:true})
-    startDate:Date
-    
-    @prop({ref:'User', required:true})
-    openedBy:Ref<User>
+    @prop({ type: String, required: true })
+    name: string
 
-    @prop({type:mongoose.SchemaTypes.Array, ref:'User', required:true})
-    participants:Ref<User>[]
+    @prop({ type: String, required: true })
+    description: string
 
-    @prop({type:Date, required:false})
-    finishDate:Date
+    @prop({ type: Date, required: true })
+    startDate: Date
 
-    @prop({type:Boolean, default:false})
-    deleted:boolean
+    @prop({ ref: 'User', required: true })
+    openedBy: Ref<User>
 
+    @prop({ type: mongoose.SchemaTypes.Array, ref: 'User', required: true })
+    participants: Array<Ref<User>>
 
-    static getPopulateParameters():IPopulateParameter[]{
+    @prop({ type: Date, required: false })
+    finishDate: Date
+
+    @prop({ type: Boolean, default: false })
+    deleted: boolean
+
+    static getPopulateParameters(): IPopulateParameter[] {
         getModelForClass(User)
 
         return [
             {
-                path:'openedBy',
+                path: 'openedBy'
             },
             {
-                path:'participants',
+                path: 'participants'
             }
         ]
     }
 
-    static async findUndeleted(this:ReturnModelType<typeof Activity>, filter:Object = {}){
-        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
+    static async findUndeleted(this: ReturnModelType<typeof Activity>, filter: Object = {}) {
+        return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    static async findOneUndeleted(this:ReturnModelType<typeof Activity>, filter:Object = {}){
-        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
+    static async findOneUndeleted(this: ReturnModelType<typeof Activity>, filter: Object = {}) {
+        return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
-    
-    async softDelete(this:DocumentType<Activity>){
+
+    async softDelete(this: DocumentType<Activity>) {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this:DocumentType<Activity>){
+    async restore(this: DocumentType<Activity>) {
         this.deleted = false
         await this.save()
     }
 
-    async getTasks(this:Activity):Promise<Task[]>{
-        return TaskModel.findUndeleted({activity:this})
+    async getTasks(this: Activity): Promise<Task[]> {
+        return await TaskModel.findUndeleted({ activity: this })
     }
 
-    async getExpenses(this:Activity):Promise<Expense[]>{
-        return ExpenseModel.findUndeleted({activity:this})
+    async getExpenses(this: Activity): Promise<Expense[]> {
+        return await ExpenseModel.findUndeleted({ activity: this })
     }
 }
 

@@ -1,21 +1,21 @@
-import { IProvince } from 'backend/models/interfaces'
+import { type IProvince } from 'backend/models/interfaces'
 import { memo, useEffect, useState } from 'react'
 import { Table } from 'flowbite-react'
 import Item from './Item'
 import useAlert from 'frontend/hooks/useAlert'
 
-interface props{
-    provinces:IProvince[]
+interface props {
+    provinces: IProvince[]
 }
 
-export default function ProvinceTable({provinces}:props){
+export default function ProvinceTable({ provinces }: props) {
     const [tableProvinces, setTableProvinces] = useState<IProvince[]>(provinces)
-    
-    const deleteProvince = (id:string) =>{
-        setTableProvinces(tableProvinces.filter(province => province._id !== id))      
+
+    const deleteProvince = (id: string) => {
+        setTableProvinces(tableProvinces.filter(province => province._id !== id))
     }
 
-    return(
+    return (
         <>
             <Table hoverable={true} className='bg-white'>
                 <Table.Head className='bg-white border-b'>
@@ -23,12 +23,12 @@ export default function ProvinceTable({provinces}:props){
                     <Table.HeadCell className='w-40 text-center'>Acciones</Table.HeadCell>
                 </Table.Head>
                 <Table.Body>
-                    {tableProvinces.map((province, index)=><Item key={index} province={province} deleteProvince={deleteProvince}/>)}
+                    {tableProvinces.map((province, index) => <Item key={index} province={province} deleteProvince={deleteProvince}/>)}
                 </Table.Body>
             </Table>
         </>
     )
 }
 
-//const MemoizedProvinceTable = memo(ProvinceTable);
-//export default MemoizedProvinceTable
+// const MemoizedProvinceTable = memo(ProvinceTable);
+// export default MemoizedProvinceTable

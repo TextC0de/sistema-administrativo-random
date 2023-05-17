@@ -1,13 +1,12 @@
-import ClientForm, { IClientForm } from 'frontend/components/Forms/TechAdmin/ClientForm'
+import ClientForm, { type IClientForm } from 'frontend/components/Forms/TechAdmin/ClientForm'
 
-
-export default function NewClient(){
-    const clientForm:IClientForm = {
-        _id:'',
-        name:''
+export default function NewClient(): JSX.Element {
+    const clientForm: IClientForm = {
+        _id: '',
+        name: ''
     }
 
-    return(
+    return (
         <>
            <ClientForm clientForm={clientForm}/>
         </>

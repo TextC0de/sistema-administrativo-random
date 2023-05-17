@@ -1,44 +1,39 @@
-import {useState} from 'react'
+import { useState } from 'react'
 import AlertContext from './AlertContext'
-import * as apiEndpoints from 'lib/apiEndpoints'
-import { ResponseData } from 'backend/controllers/types'
-import { ProviderProps } from '../interfaces'
-import { useMemo } from 'react'
-import fetcher from 'lib/fetcher'
+import { type ProviderProps } from '../interfaces'
 import { nanoid } from 'nanoid'
 import Alert from 'frontend/components/Alert'
 
 export type AlertType = 'Success' | 'Failure' | 'Info'
 
-export interface IAlert{
-    key?:string
-    message:string,
-    type:AlertType
+export interface IAlert {
+    key?: string
+    message: string
+    type: AlertType
 }
 
 const INITIAL_STATE = [] as IAlert[]
 
-const AlertProvider = ({children}:ProviderProps) => {
-
+const AlertProvider = ({ children }: ProviderProps): JSX.Element => {
     const [alerts, setAlerts] = useState<IAlert[]>(INITIAL_STATE)
-    
-    function triggerAlert(newAlert:IAlert){
+
+    function triggerAlert(newAlert: IAlert): void {
         newAlert.key = nanoid()
         setAlerts([...alerts, newAlert])
-        setTimeout(()=>{
+        setTimeout(() => {
             removeAlert(newAlert.key as string)
         }, 5000)
     }
 
-    function removeAlert(key:string){
-        setAlerts(alerts.filter(alert=> alert.key != key))
+    function removeAlert(key: string): void {
+        setAlerts(alerts.filter(alert => alert.key !== key))
     }
 
-    return(
-        <AlertContext.Provider value={{triggerAlert, removeAlert}}>
+    return (
+        <AlertContext.Provider value={{ triggerAlert, removeAlert }}>
             {children}
             <>
-                {alerts.map((alert)=> <Alert id={alert.key as string} {...alert} />)}
+                {alerts.map((alert) => <Alert key={alert.key} id={alert.key as string} {...alert} />)}
             </>
         </AlertContext.Provider>
     )

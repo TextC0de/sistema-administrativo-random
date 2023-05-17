@@ -1,83 +1,82 @@
-import { Ref, prop, index, getModelForClass, modelOptions, ReturnModelType, DocumentType } from "@typegoose/typegoose"
-import { Branch } from "./Branch"
-import { PreventiveStatus, Frequency, Month } from "./types"
-import {User} from "./User"
-import { Business } from "./Business"
-import { IPopulateParameter } from "./interfaces"
-import mongoose from "mongoose"
+import { type Ref, prop, index, getModelForClass, modelOptions, type ReturnModelType, type DocumentType } from '@typegoose/typegoose'
+import { Branch } from './Branch'
+import { type PreventiveStatus, type Frequency, Month } from './types'
+import { User } from './User'
+import { Business } from './Business'
+import { type IPopulateParameter } from './interfaces'
+import mongoose from 'mongoose'
 
-@index({business:1, branch:1}, {unique:true})
-@modelOptions({schemaOptions:{timestamps:true}})
+@index({ business: 1, branch: 1 }, { unique: true })
+@modelOptions({ schemaOptions: { timestamps: true } })
 export class Preventive {
-    _id:mongoose.Types.ObjectId | string
+    _id: mongoose.Types.ObjectId | string
 
-    @prop({type:mongoose.SchemaTypes.Array, ref:'User', required:true})
-    assigned:Ref<User>[]
-    
-    @prop({ref:'Business', required:true})
-    business:Ref<Business>
-    
-    @prop({ref:'Branch', required:true})
-    branch:Ref<Branch>
-    
-    @prop({type:String, required:true})
-    status:PreventiveStatus
-    
-    @prop({type:Number, required:false})
-    frequency?:Frequency
-   
-    @prop({type:mongoose.SchemaTypes.Array, required:false})
-    months?:string[]
-    
-    @prop({type:Date, required:false})
-    lastDoneAt?:Date
-    
-    @prop({type:Date, required:false})
-    batteryChangedAt?:Date
-    
-    @prop({type:String, required:false})
-    observations?:string
+    @prop({ type: mongoose.SchemaTypes.Array, ref: 'User', required: true })
+    assigned: Array<Ref<User>>
 
-    @prop({type:Boolean, default:false})
-    deleted:boolean
+    @prop({ ref: 'Business', required: true })
+    business: Ref<Business>
 
-    static getPopulateParameters():IPopulateParameter[]{
+    @prop({ ref: 'Branch', required: true })
+    branch: Ref<Branch>
+
+    @prop({ type: String, required: true })
+    status: PreventiveStatus
+
+    @prop({ type: Number, required: false })
+    frequency?: Frequency
+
+    @prop({ type: mongoose.SchemaTypes.Array, required: false })
+    months?: string[]
+
+    @prop({ type: Date, required: false })
+    lastDoneAt?: Date
+
+    @prop({ type: Date, required: false })
+    batteryChangedAt?: Date
+
+    @prop({ type: String, required: false })
+    observations?: string
+
+    @prop({ type: Boolean, default: false })
+    deleted: boolean
+
+    static getPopulateParameters(): IPopulateParameter[] {
         getModelForClass(User)
         getModelForClass(Business)
         getModelForClass(Branch)
-        return[
+        return [
             {
-                path:'assigned',
-                populate:User.getPopulateParameters()
+                path: 'assigned',
+                populate: User.getPopulateParameters()
             },
             {
-                path:'business'
+                path: 'business'
             },
             {
-                path:'branch',
-                populate:Branch.getPopulateParameters()
+                path: 'branch',
+                populate: Branch.getPopulateParameters()
             }
         ]
     }
 
-    static async findUndeleted(this:ReturnModelType<typeof Preventive>, filter:Object = {}){
-        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
+    static async findUndeleted(this: ReturnModelType<typeof Preventive>, filter: Object = {}) {
+        return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    static async findOneUndeleted(this:ReturnModelType<typeof Preventive>, filter:Object = {}){
-        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
+    static async findOneUndeleted(this: ReturnModelType<typeof Preventive>, filter: Object = {}) {
+        return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
-    
-    async softDelete(this:DocumentType<Preventive>){
+
+    async softDelete(this: DocumentType<Preventive>) {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this:DocumentType<Preventive>){
+    async restore(this: DocumentType<Preventive>) {
         this.deleted = false
         await this.save()
     }
-
 }
 
 export default getModelForClass(Preventive)

@@ -1,113 +1,110 @@
-import { Button, Label, Select, TextInput } from 'flowbite-react';
-import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, useState } from 'react';
-import { IProvince } from 'backend/models/interfaces';
-import fetcher from 'lib/fetcher';
+import { Button, Label, Select, TextInput } from 'flowbite-react'
+import { useRouter } from 'next/router'
+import { type ChangeEvent, FormEvent, useState } from 'react'
+import { type IProvince } from 'backend/models/interfaces'
+import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
-import useLoading from 'frontend/hooks/useLoading';
-import useAlert from 'frontend/hooks/useAlert';
-export interface ICityForm{
-    _id:string
-    name:string
-    province:IProvince
+import useLoading from 'frontend/hooks/useLoading'
+import useAlert from 'frontend/hooks/useAlert'
+export interface ICityForm {
+    _id: string
+    name: string
+    province: IProvince
 }
 
-export interface ICityFormErrors{
-    name:string
-    province:string
+export interface ICityFormErrors {
+    name: string
+    province: string
 }
 
-interface props{
-    cityForm:ICityForm,
-    newCity?:boolean
-    provinces:IProvince[]
+interface props {
+    cityForm: ICityForm
+    newCity?: boolean
+    provinces: IProvince[]
 }
 
-export default function cityForm({cityForm, newCity=true, provinces}:props){
+export default function cityForm({ cityForm, newCity = true, provinces }: props) {
     const router = useRouter()
-    const {stopLoading, startLoading} = useLoading()
+    const { stopLoading, startLoading } = useLoading()
     const [form, setForm] = useState<ICityForm>({
-        _id:cityForm._id,
-        name:cityForm.name,
+        _id: cityForm._id,
+        name: cityForm.name,
         province: cityForm.province
     })
-    const[errors, setErrors] = useState<ICityFormErrors>({} as ICityFormErrors)
-    const {triggerAlert} = useAlert()
+    const [errors, setErrors] = useState<ICityFormErrors>({} as ICityFormErrors)
+    const { triggerAlert } = useAlert()
 
-    const postData = async (form:ICityForm) => {
+    const postData = async (form: ICityForm) => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.cities)
             await router.push('/tech-admin/cities')
-            triggerAlert({type:'Success', message:`La localidad "${form.name}" fue creada correctamente`})
+            triggerAlert({ type: 'Success', message: `La localidad "${form.name}" fue creada correctamente` })
             stopLoading()
-        } 
-        catch (error) {
+        } catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Failure', message:`No se pudo crear la localidad "${form.name}"`})
+            triggerAlert({ type: 'Failure', message: `No se pudo crear la localidad "${form.name}"` })
         }
     }
 
-    const putData = async (form:ICityForm) => {
+    const putData = async (form: ICityForm) => {
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.cities)
             await router.push('/tech-admin/cities')
-            triggerAlert({type:'Success', message:`La localidad "${form.name}" fue actualizada correctamente`})
+            triggerAlert({ type: 'Success', message: `La localidad "${form.name}" fue actualizada correctamente` })
             stopLoading()
-        } 
-        catch (error) {
+        } catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Failure', message:`No se pudo actualizar la localidad "${form.name}"`})
+            triggerAlert({ type: 'Failure', message: `No se pudo actualizar la localidad "${form.name}"` })
         }
     }
 
-    function selectProvince(e:ChangeEvent<HTMLSelectElement>){
-        const {value} = e.target
+    function selectProvince(e: ChangeEvent<HTMLSelectElement>) {
+        const { value } = e.target
         const province = provinces.find(province => province.name === value)
-        if(province)setForm({...form, province})
-
+        if (province != null)setForm({ ...form, province })
     }
 
-    function handleChange(e:ChangeEvent<HTMLInputElement>){
-        const{value} = e.target
-        setForm({...form, name:value})        
+    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+        const { value } = e.target
+        setForm({ ...form, name: value })
     }
 
-    async function goBack(){
+    async function goBack() {
         startLoading()
         await router.push('/tech-admin/cities')
         stopLoading()
     }
 
     const formValidate = () => {
-        let err : ICityFormErrors = { 
-           name:'',
-           province:''
+        const err: ICityFormErrors = {
+           name: '',
+           province: ''
         }
         if (!form.name) err.name = 'Se debe especificar un nombre'
         if (Object.keys(form.province).length < 1) err.province = 'Se debe especificar la provincia'
-        
+
         return err
     }
 
-    const handleSubmit = (e:any) => {
+    const handleSubmit = (e: any) => {
         e.preventDefault()
         const errors = formValidate()
-        
-        if (errors.name === '' ) {
+
+        if (errors.name === '') {
             newCity ? postData(form) : putData(form)
         } else {
             setErrors(errors)
         }
     }
 
-    return(
+    return (
         <>
             <form className='flex flex-col gap-4 w-1/2 p-4 rounded-3xl mx-auto my-4 bg-gray-50' onSubmit={handleSubmit}>
-                <h2 className="text-lg">{newCity?'Agregar Localidad':'Editar Localidad'}</h2>
+                <h2 className="text-lg">{newCity ? 'Agregar Localidad' : 'Editar Localidad'}</h2>
                 <hr className="mb-2"/>
                 <div>
                     <div className='mb-2 block'>
@@ -124,7 +121,7 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
                     placeholder={cityForm.name}
                     onChange={handleChange}
                     value={form.name}
-                    color={errors.name?'failure':''}
+                    color={errors.name ? 'failure' : ''}
                     />
                     <div className='mb-2 block'>
                         <Label
@@ -149,10 +146,10 @@ export default function cityForm({cityForm, newCity=true, provinces}:props){
                         onChange={selectProvince}
                         name='province'
                         defaultValue='default'
-                        color={errors.province?'failure':''}
+                        color={errors.province ? 'failure' : ''}
                     >
-                        <option value='default' disabled hidden>{newCity?'Seleccione una provincia':cityForm.province.name}</option>
-                        {provinces.map((province, index)=> <option key={index}>{province.name}</option>)}
+                        <option value='default' disabled hidden>{newCity ? 'Seleccione una provincia' : cityForm.province.name}</option>
+                        {provinces.map((province, index) => <option key={index}>{province.name}</option>)}
                     </Select>
                     <div className='mb-2 block'>
                         <Label

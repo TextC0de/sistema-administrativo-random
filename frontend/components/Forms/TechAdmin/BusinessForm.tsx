@@ -1,104 +1,101 @@
-import { Button, Label, TextInput } from 'flowbite-react';
-import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import fetcher from 'lib/fetcher';
+import { Button, Label, TextInput } from 'flowbite-react'
+import { useRouter } from 'next/router'
+import { type ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
-import useLoading from 'frontend/hooks/useLoading';
-import useAlert from 'frontend/hooks/useAlert';
+import useLoading from 'frontend/hooks/useLoading'
+import useAlert from 'frontend/hooks/useAlert'
 
-export interface IBusinessForm{
-    _id:string,
-    name:string
+export interface IBusinessForm {
+    _id: string
+    name: string
 }
 
-export interface IBusinessFormErrors{
-    name:string
+export interface IBusinessFormErrors {
+    name: string
 }
 
-interface props{
-    businessForm:IBusinessForm,
-    newBusiness?:boolean
+interface props {
+    businessForm: IBusinessForm
+    newBusiness?: boolean
 }
 
-export default function BusinessForm({businessForm, newBusiness=true }:props){
+export default function BusinessForm({ businessForm, newBusiness = true }: props) {
     const router = useRouter()
-    const {stopLoading, startLoading} = useLoading()
-    const [form,setForm] = useState<IBusinessForm>({
-        _id:businessForm._id,
-        name:businessForm.name
+    const { stopLoading, startLoading } = useLoading()
+    const [form, setForm] = useState<IBusinessForm>({
+        _id: businessForm._id,
+        name: businessForm.name
     })
-    const {triggerAlert} = useAlert()
+    const { triggerAlert } = useAlert()
     const [submitted, setSubmitted] = useState<boolean>(false)
-    const[errors, setErrors] = useState<IBusinessFormErrors>({} as IBusinessFormErrors)
+    const [errors, setErrors] = useState<IBusinessFormErrors>({} as IBusinessFormErrors)
 
-    const postData = async (form:IBusinessForm) => {
+    const postData = async (form: IBusinessForm) => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.businesses)
             await router.push('/tech-admin/businesses')
-            triggerAlert({type:'Success', message:`Se creo la empresa "${form.name}" correctamente`})
+            triggerAlert({ type: 'Success', message: `Se creo la empresa "${form.name}" correctamente` })
             stopLoading()
-        } 
-        catch (error) {
+        } catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Failure', message:`No se pudo crear la empresa "${form.name}"`})
+            triggerAlert({ type: 'Failure', message: `No se pudo crear la empresa "${form.name}"` })
         }
     }
 
-    const putData = async (form:IBusinessForm) => {
+    const putData = async (form: IBusinessForm) => {
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.businesses)
             await router.push('/tech-admin/businesses')
-            triggerAlert({type:'Success', message:`Se actualizo la empresa "${form.name}" correctamente`})
+            triggerAlert({ type: 'Success', message: `Se actualizo la empresa "${form.name}" correctamente` })
             stopLoading()
-        } 
-        catch (error) {
+        } catch (error) {
             console.log(error)
-            triggerAlert({type:'Failure', message:`No se pudo actualizar la empresa "${form.name}"`})
+            triggerAlert({ type: 'Failure', message: `No se pudo actualizar la empresa "${form.name}"` })
             stopLoading()
         }
     }
 
-    function handleChange(e:ChangeEvent<HTMLInputElement>){
-        const{value} = e.target
+    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+        const { value } = e.target
 
-        setForm({...businessForm, name:value})
-        //console.log(form);
-        
+        setForm({ ...businessForm, name: value })
+        // console.log(form);
     }
 
-    useEffect(()=>{
-        if(submitted) formValidate()
+    useEffect(() => {
+        if (submitted) formValidate()
     }, [form])
 
     const formValidate = () => {
-        let err : IBusinessFormErrors = { 
-           name:''
+        const err: IBusinessFormErrors = {
+           name: ''
         }
         if (!form.name) err.name = 'Se debe especificar un nombre'
         setErrors(err)
         return err
     }
 
-    async function goBack(){
+    async function goBack() {
         startLoading()
         await router.push('/tech-admin/businesses')
         stopLoading()
     }
-    const handleSubmit = (e:any) => {
+    const handleSubmit = (e: any) => {
         setSubmitted(true)
         e.preventDefault()
         const errs = formValidate()
-        if (errs.name === '' ) {
+        if (errs.name === '') {
             newBusiness ? postData(form) : putData(form)
         }
-    }    
-    return(
+    }
+    return (
         <>
             <form className='flex flex-col gap-4 w-1/2 mx-auto pt-4 bg-gray-50 rounded-3xl p-4 my-4' onSubmit={handleSubmit}>
-                <h2 className="text-lg">{newBusiness?'Agregar Empresa':'Editar Empresa'}</h2>
+                <h2 className="text-lg">{newBusiness ? 'Agregar Empresa' : 'Editar Empresa'}</h2>
                 <hr className="mb-2"/>
                 <div>
                     <div className='mb-2 block'>
@@ -112,7 +109,7 @@ export default function BusinessForm({businessForm, newBusiness=true }:props){
                     id='name'
                     type='text'
                     sizing='md'
-                    color={errors.name?'failure':''}
+                    color={errors.name ? 'failure' : ''}
                     placeholder={businessForm.name}
                     onChange={handleChange}
                     />

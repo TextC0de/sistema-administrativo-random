@@ -1,38 +1,38 @@
-import { GetServerSidePropsContext } from 'next'
+import { type GetServerSidePropsContext } from 'next'
 import dbConnect from 'lib/dbConnect'
 import { deSlugify, formatIds } from 'lib/utils'
-import { ICity, IProvince } from 'backend/models/interfaces'
+import { type ICity, type IProvince } from 'backend/models/interfaces'
 import Province from 'backend/models/Province'
 import City from 'backend/models/City'
-import CityForm, { ICityForm } from 'frontend/components/Forms/TechAdmin/CityForm'
+import CityForm, { type ICityForm } from 'frontend/components/Forms/TechAdmin/CityForm'
 
-interface props{
-    city:ICity
-    provinces:IProvince[]
-} 
+interface props {
+    city: ICity
+    provinces: IProvince[]
+}
 
-export default function CityView({city, provinces}:props){
-    const cityForm:ICityForm = {
-        _id:city._id as string,
-        name:city.name,
-        province:city.province
+export default function CityView({ city, provinces }: props): JSX.Element {
+    const cityForm: ICityForm = {
+        _id: city._id as string,
+        name: city.name,
+        province: city.province
     }
 
-    return(
+    return (
         <>
            <CityForm newCity={false} cityForm={cityForm} provinces={provinces}/>
         </>
     )
 }
 
-export async function getServerSideProps(ctx:GetServerSidePropsContext){
-    const {params} = ctx
+export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
+    const { params } = ctx
     await dbConnect()
-    if(!params) return {props:{}}
-    const docCity = await City.findOneUndeleted({name:deSlugify(params.name as string)})
+    if (params == null) return { props: {} }
+    const docCity = await City.findOneUndeleted({ name: deSlugify(params.name as string) })
     const docProvinces = await Province.findUndeleted({})
     const city = formatIds(docCity)
-    //console.log(docCity)
+    // console.log(docCity)
     const provinces = formatIds(docProvinces)
-    return {props:{city, provinces}}
+    return { props: { city, provinces } }
 }

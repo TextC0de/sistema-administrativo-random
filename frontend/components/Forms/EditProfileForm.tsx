@@ -1,88 +1,87 @@
-import { Button, Label, TextInput } from "flowbite-react";
-import useLoading from "frontend/hooks/useLoading";
-import fetcher from "lib/fetcher";
-import router from "next/router";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { Button, Label, TextInput } from 'flowbite-react'
+import useLoading from 'frontend/hooks/useLoading'
+import fetcher from 'lib/fetcher'
+import router from 'next/router'
+import { type ChangeEvent, type FormEvent, useState } from 'react'
 import * as api from 'lib/apiEndpoints'
-import useAlert from "frontend/hooks/useAlert";
+import useAlert from 'frontend/hooks/useAlert'
 
-interface IEditProfileForm{
-    currentPassword:string,
-    newPassword:string,
-    confirmNewPassword:string
+interface IEditProfileForm {
+    currentPassword: string
+    newPassword: string
+    confirmNewPassword: string
 }
 
 const emptyForm = {
-    currentPassword:'',
-    newPassword:'',
-    confirmNewPassword:''
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: ''
 }
 
-export default function EditProfileForm (){
-    
+export default function EditProfileForm () {
     const [form, setForm] = useState<IEditProfileForm>(emptyForm)
     const [errors, setErrors] = useState<IEditProfileForm>(emptyForm)
-    
-    const {triggerAlert} = useAlert()
-    const {stopLoading, startLoading} = useLoading()
-    
-    async function validateForm(){
+
+    const { triggerAlert } = useAlert()
+    const { stopLoading, startLoading } = useLoading()
+
+    async function validateForm() {
         let errs = emptyForm
-        if(form.currentPassword === '') errs = {...errs, currentPassword:'Introduzca su contraseña actual'} 
-        try{
-            if(form.currentPassword !== '') {
-                const res = await fetcher.post({currentPassword:form.currentPassword}, api.checkPassword)
-                console.log(res);
+        if (form.currentPassword === '') errs = { ...errs, currentPassword: 'Introduzca su contraseña actual' }
+        try {
+            if (form.currentPassword !== '') {
+                const res = await fetcher.post({ currentPassword: form.currentPassword }, api.checkPassword)
+                console.log(res)
             }
-        }catch(e){
-            console.log(e);
-            
-           errs = {...errs, currentPassword:'Contraseña incorrecta'}
+        } catch (e) {
+            console.log(e)
+
+           errs = { ...errs, currentPassword: 'Contraseña incorrecta' }
         }
-        if(form.newPassword === '') errs = {...errs, newPassword:'Introduzca una nueva contraseña'}
-        if(form.confirmNewPassword === '') errs = {...errs, confirmNewPassword:'Confirme su nueva contraseña'}
-        if(form.newPassword !== form.confirmNewPassword) errs = {...errs, newPassword:'Las contraseñas no coinciden', confirmNewPassword:'Las contraseñas no coinciden'}
+        if (form.newPassword === '') errs = { ...errs, newPassword: 'Introduzca una nueva contraseña' }
+        if (form.confirmNewPassword === '') errs = { ...errs, confirmNewPassword: 'Confirme su nueva contraseña' }
+        if (form.newPassword !== form.confirmNewPassword) errs = { ...errs, newPassword: 'Las contraseñas no coinciden', confirmNewPassword: 'Las contraseñas no coinciden' }
         setErrors(errs)
         return errs
     }
-    
-    function handleChange(e:ChangeEvent<HTMLInputElement>){
-        const {value, name} = e.target
+
+    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+        const { value, name } = e.target
         setForm(
             {
                 ...form,
-                [name]:value
+                [name]: value
             }
         )
     }
 
-    async function goBack(){
+    async function goBack() {
         startLoading()
-        await router.push(`/`)
+        await router.push('/')
         stopLoading()
     }
 
-    async function handleSubmit(e:FormEvent<HTMLFormElement>){
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         const errs = await validateForm()
-        console.log(errs);
-        
-        if(errs.currentPassword === '' && errs.newPassword === '' && errs.confirmNewPassword === ''){
+        console.log(errs)
+
+        if (errs.currentPassword === '' && errs.newPassword === '' && errs.confirmNewPassword === '') {
             try {
                 startLoading()
                 await fetcher.post(form, api.changePassword)
                 await router.push('/')
-                triggerAlert({type:'Success', message:`Su contraseña fue actualizada correctamente`})
+                triggerAlert({ type: 'Success', message: 'Su contraseña fue actualizada correctamente' })
                 stopLoading()
             } catch (error) {
-                console.log(error);
-                triggerAlert({type:'Failure', message:'Ocurrió un error al intentar actualizar su contraseña'})
+                console.log(error)
+                triggerAlert({ type: 'Failure', message: 'Ocurrió un error al intentar actualizar su contraseña' })
                 stopLoading()
             }
         }
     }
-    
-    return(
+
+    return (
         <>
         <form className='flex flex-col gap-4 bg-white rounded-xl border border-gray-150 p-4 mx-auto w-1/2 my-4' onSubmit={handleSubmit}>
         <h2 className="text-lg">Ajustes</h2>
@@ -103,7 +102,7 @@ export default function EditProfileForm (){
                     onChange={handleChange}
                     placeholder=''
                     value={form.currentPassword}
-                    color={errors.currentPassword?'failure':''}
+                    color={errors.currentPassword ? 'failure' : ''}
                 />
                 <div className='mb-2 block'>
                     <Label
@@ -130,7 +129,7 @@ export default function EditProfileForm (){
                     onChange={handleChange}
                     placeholder=''
                     value={form.newPassword}
-                    color={errors.newPassword?'failure':''}
+                    color={errors.newPassword ? 'failure' : ''}
                 />
                 <div className='mb-2 block'>
                     <Label
@@ -157,7 +156,7 @@ export default function EditProfileForm (){
                     sizing='md'
                     placeholder=''
                     value={form.confirmNewPassword}
-                    color={errors.confirmNewPassword?'failure':''}
+                    color={errors.confirmNewPassword ? 'failure' : ''}
                 />
                 <div className='mb-2 block'>
                     <Label

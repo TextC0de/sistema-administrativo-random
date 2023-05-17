@@ -1,10 +1,10 @@
 
-import { NextConnectApiRequest } from '../controllers/interfaces'
-import { NextApiResponse } from 'next'
-import { ResponseData } from '../controllers/types'
-import { UserIdJwtPayload } from 'jsonwebtoken'
+import { type NextConnectApiRequest } from '../controllers/interfaces'
+import { type NextApiResponse } from 'next'
+import { type ResponseData } from '../controllers/types'
+import { type UserIdJwtPayload } from 'jsonwebtoken'
 import { getPayload } from 'lib/jwt'
-import { Role } from '../models/types'
+import { type Role } from '../models/types'
 import * as apiEndpoints from 'lib/apiEndpoints'
 
 // with this middleware I want to check authorization, since authentication is achieved on login
@@ -16,33 +16,31 @@ import * as apiEndpoints from 'lib/apiEndpoints'
 // e.g. only a Tech Admin should be able to create a city, province, client, branch or business
 // e.g. only an Auditor should be able to change the status of a Task or Expense from Sent to Approved
 
-const accessControl = async (req:NextConnectApiRequest, res:NextApiResponse<ResponseData>, next:any) => {   
-    console.log(req.method, req.url, new Date());
+const accessControl = async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>, next: any) => {
+    console.log(req.method, req.url, new Date())
 
-    const {headers} = req
-    const {cookies} = req
-    //console.log(headers.authorization);
-    
-    const jwt = headers.authorization? headers.authorization:cookies.access_token
-    
-    if(!jwt) return res.status(401).json({error:`You're not logged in`, statusCode:403})
-    const result = <UserIdJwtPayload>(getPayload(jwt))//it's verified with the secret key
-    
-    
-    if (!result) return res.status(401).json({error:'No user found', statusCode:403})
-    
-    if (!isAuthorized(req.url as string, result.userRoles as Role[], req.method as string)) return res.status(401).json({error:`You're not authorized to access this resource`, statusCode:403})
+    const { headers } = req
+    const { cookies } = req
+    // console.log(headers.authorization);
+
+    const jwt = headers.authorization ? headers.authorization : cookies.access_token
+
+    if (!jwt) return res.status(401).json({ error: 'You\'re not logged in', statusCode: 403 })
+    const result = <UserIdJwtPayload>(getPayload(jwt))// it's verified with the secret key
+
+    if (!result) return res.status(401).json({ error: 'No user found', statusCode: 403 })
+
+    if (!isAuthorized(req.url as string, result.userRoles as Role[], req.method as string)) return res.status(401).json({ error: 'You\'re not authorized to access this resource', statusCode: 403 })
     req.userId = result.userId
 
     next()
 }
 
-
-//takes a pathname and the user's list of roles, it checks that the user has the role the pathname is accessing 
+// takes a pathname and the user's list of roles, it checks that the user has the role the pathname is accessing
 /*
 switch for the role part of the pathname, it checks that the role is included in the roles of the user
 */
-const isAuthorized = (pathname:string, roles:Role[], method:string)=>{
+const isAuthorized = (pathname: string, roles: Role[], method: string) => {
     const rolePath = pathname.slice(5, pathname.indexOf('/', 5))
     if (rolePath === 'auth') return true
     switch (rolePath) {

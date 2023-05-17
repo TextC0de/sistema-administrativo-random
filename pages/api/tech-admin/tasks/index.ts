@@ -1,6 +1,5 @@
-import TaskController from 'backend/controllers/TaskController';
-import protectedHandler from 'backend/handlers/protectedHandler';
-
+import TaskController from 'backend/controllers/TaskController'
+import protectedHandler from 'backend/handlers/protectedHandler'
 
 protectedHandler.post(TaskController.postTask)
 protectedHandler.put(TaskController.putTask)

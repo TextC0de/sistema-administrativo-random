@@ -1,19 +1,18 @@
-import { Button} from "flowbite-react";
-import { BsExclamationCircle } from "react-icons/bs";
+import { Button } from 'flowbite-react'
+import { BsExclamationCircle } from 'react-icons/bs'
 
 interface props {
-    openModal:boolean,
-    handleToggleModal: () => void,
-    handleDelete: () => void,
+    openModal: boolean
+    handleToggleModal: () => void
+    handleDelete: () => void
 }
 
-
-export default function Modal({openModal,handleToggleModal, handleDelete}:props){
-    const handleDeleteOK = () =>{
+export default function Modal({ openModal, handleToggleModal, handleDelete }: props) {
+    const handleDeleteOK = () => {
         handleDelete()
         handleToggleModal()
     }
-return(
+return (
     <>
     { openModal &&
     <div className="fixed left-0 top-0 flex items-center justify-center bg-gray-600/50 w-screen h-screen z-10">
@@ -41,5 +40,4 @@ return(
 }</>
 
 )
-
 }

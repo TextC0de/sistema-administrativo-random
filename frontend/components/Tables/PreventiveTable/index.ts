@@ -1,1 +1,1 @@
-export {default} from './PreventiveTable'
+export { default } from './PreventiveTable'

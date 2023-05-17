@@ -1,52 +1,51 @@
-import { ICity } from 'backend/models/interfaces'
+import { type ICity } from 'backend/models/interfaces'
 import Link from 'next/link'
 import * as apiEndpoints from 'lib/apiEndpoints'
 import { slugify } from 'lib/utils'
 import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
 import { useState } from 'react'
-import {BsFillPencilFill, BsFillTrashFill} from 'react-icons/bs'
+import { BsFillPencilFill, BsFillTrashFill } from 'react-icons/bs'
 import { Table } from 'flowbite-react'
 import Modal from 'frontend/components/Modal'
 import { useRouter } from 'next/router'
 import useAlert from 'frontend/hooks/useAlert'
 
-interface props{
-    city:ICity,
-    deleteCity: (id:string ) => void
+interface props {
+    city: ICity
+    deleteCity: (id: string) => void
 }
 
-export default function Item({city, deleteCity}:props){
+export default function Item({ city, deleteCity }: props) {
     const router = useRouter()
-    const [modal, setModal] = useState(false);
+    const [modal, setModal] = useState(false)
     const openModal = () => {
-        setModal(true);
-    };
+        setModal(true)
+    }
     const closeModal = () => {
-        setModal(false);
-    };
-    const {startLoading, stopLoading} = useLoading()
-    const {triggerAlert} = useAlert()
+        setModal(false)
+    }
+    const { startLoading, stopLoading } = useLoading()
+    const { triggerAlert } = useAlert()
 
     const deleteData = async () => {
         try {
-            await fetcher.delete({_id:city._id}, apiEndpoints.techAdmin.cities)
-            deleteCity(city._id as  string)
-            triggerAlert({type:'Success', message:`La empresa ${city.name} fue eliminada correctamente`})
-        } 
-        catch (error) {
+            await fetcher.delete({ _id: city._id }, apiEndpoints.techAdmin.cities)
+            deleteCity(city._id as string)
+            triggerAlert({ type: 'Success', message: `La empresa ${city.name} fue eliminada correctamente` })
+        } catch (error) {
             console.log(error)
-            triggerAlert({type:'Failure', message:`No se pudo eliminar la empresa ${city.name}, compruebe la conexión a internet`})
+            triggerAlert({ type: 'Failure', message: `No se pudo eliminar la empresa ${city.name}, compruebe la conexión a internet` })
         }
     }
 
-    async function navigateEdit(){
+    async function navigateEdit() {
         startLoading()
         await router.push(`/tech-admin/cities/${slugify(city.name)}`)
         stopLoading()
     }
 
-    return(
+    return (
         <Table.Row className='border-b'>
             <Table.Cell>{city.name}</Table.Cell>
             <Table.Cell>{city.province.name}</Table.Cell>
@@ -57,7 +56,7 @@ export default function Item({city, deleteCity}:props){
                     </button>
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
                         <BsFillTrashFill color="gray" size="15"/>
-                    </button>       
+                    </button>
                     <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={deleteData}/>
                 </div>
             </Table.Cell>

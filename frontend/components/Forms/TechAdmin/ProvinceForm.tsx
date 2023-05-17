@@ -1,108 +1,106 @@
-import { Button, Label, TextInput } from 'flowbite-react';
-import { useRouter } from 'next/router';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import fetcher from 'lib/fetcher';
+import { Button, Label, TextInput } from 'flowbite-react'
+import { useRouter } from 'next/router'
+import { type ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
-import useLoading from 'frontend/hooks/useLoading';
-import useAlert from 'frontend/hooks/useAlert';
-export interface IProvinceForm{
-    _id:string,
-    name:string
+import useLoading from 'frontend/hooks/useLoading'
+import useAlert from 'frontend/hooks/useAlert'
+export interface IProvinceForm {
+    _id: string
+    name: string
 }
 
-export interface IProvinceFormErrors{
-    name:string
+export interface IProvinceFormErrors {
+    name: string
 }
 
-interface props{
-    provinceForm:IProvinceForm,
-    newProvince?:boolean
+interface props {
+    provinceForm: IProvinceForm
+    newProvince?: boolean
 }
 
-export default function ProvinceForm({provinceForm, newProvince=true }:props){
+export default function ProvinceForm({ provinceForm, newProvince = true }: props) {
     const router = useRouter()
-    const [form,setForm] = useState<IProvinceForm>({
-        _id:provinceForm._id,
-        name:provinceForm.name
+    const [form, setForm] = useState<IProvinceForm>({
+        _id: provinceForm._id,
+        name: provinceForm.name
     })
-    const[errors, setErrors] = useState<IProvinceFormErrors>({} as IProvinceFormErrors)
+    const [errors, setErrors] = useState<IProvinceFormErrors>({} as IProvinceFormErrors)
     const [submitted, setSubmitted] = useState<boolean>(false)
-    const {stopLoading, startLoading} = useLoading()
-    const {triggerAlert} = useAlert()
-    const postData = async (form:IProvinceForm) => {
+    const { stopLoading, startLoading } = useLoading()
+    const { triggerAlert } = useAlert()
+    const postData = async (form: IProvinceForm) => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.provinces)
             await router.push('/tech-admin/provinces')
             stopLoading()
-            triggerAlert({type:'Success', message:`La provincia ${form.name} fue creada correctamente`})
-        } 
-        catch (error) {
+            triggerAlert({ type: 'Success', message: `La provincia ${form.name} fue creada correctamente` })
+        } catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Failure', message:`No se pudo crear la provincia ${form.name}`})
+            triggerAlert({ type: 'Failure', message: `No se pudo crear la provincia ${form.name}` })
         }
     }
 
-    const putData = async (form:IProvinceForm) => {
+    const putData = async (form: IProvinceForm) => {
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.provinces)
             await router.push('/tech-admin/provinces')
             stopLoading()
-            triggerAlert({type:'Success', message:`La provincia ${form.name} fue actualizada correctamente`})
-        } 
-        catch (error) {
+            triggerAlert({ type: 'Success', message: `La provincia ${form.name} fue actualizada correctamente` })
+        } catch (error) {
             console.log(error)
             stopLoading()
-            triggerAlert({type:'Failure', message:`No se pudo actualizar la provincia ${form.name}`})
+            triggerAlert({ type: 'Failure', message: `No se pudo actualizar la provincia ${form.name}` })
         }
     }
 
-    function handleChange(e:ChangeEvent<HTMLInputElement>){
-        const{value} = e.target
-        setForm({...provinceForm, name:value})
+    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+        const { value } = e.target
+        setForm({ ...provinceForm, name: value })
     }
 
-    useEffect(()=>{
-        if(submitted)formValidate()
-    },[form])
+    useEffect(() => {
+        if (submitted)formValidate()
+    }, [form])
 
     const formValidate = () => {
-        let err : IProvinceFormErrors = { 
-           name:''
+        const err: IProvinceFormErrors = {
+           name: ''
         }
-        //console.log(form.name);
-        
+        // console.log(form.name);
+
         if (!form.name) err.name = 'Se debe especificar un nombre'
         setErrors(err)
         return err
     }
 
-    const handleSubmit = (e:any) => {
+    const handleSubmit = (e: any) => {
         e.preventDefault()
         setSubmitted(true)
-        //console.log('estoy submiteando');
-        
+        // console.log('estoy submiteando');
+
         const errors = formValidate()
-        
-        if (errors.name === '' ) {
+
+        if (errors.name === '') {
             newProvince ? postData(form) : putData(form)
         } else {
             setErrors(errors)
         }
     }
 
-    async function goBack(){
+    async function goBack() {
         startLoading()
         await router.push('/tech-admin/provinces')
         stopLoading()
     }
 
-    return(
+    return (
         <>
             <form className='flex flex-col gap-4 w-1/2 mx-auto bg-gray-50 rounded-3xl p-4' onSubmit={handleSubmit}>
-                <h2 className="text-lg">{newProvince?'Agregar Provincia':'Editar Provincia'}</h2>
+                <h2 className="text-lg">{newProvince ? 'Agregar Provincia' : 'Editar Provincia'}</h2>
                 <hr className="mb-2"/>
                 <div>
                     <div className='mb-2 block'>
@@ -118,7 +116,7 @@ export default function ProvinceForm({provinceForm, newProvince=true }:props){
                     sizing='md'
                     placeholder={provinceForm.name}
                     onChange={handleChange}
-                    color={errors.name?'failure':''}
+                    color={errors.name ? 'failure' : ''}
                     />
                     <div className='mb-2 block'>
                         <Label

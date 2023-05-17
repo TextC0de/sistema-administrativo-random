@@ -1,7 +1,7 @@
 import LoginForm from 'frontend/components/Forms/LoginForm'
 
-const Login = () =>{
-    return(
+const Login = (): JSX.Element => {
+    return (
         <>
             <LoginForm/>
         </>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export interface IProps {
   /**
@@ -8,7 +8,7 @@ export interface IProps {
    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#accept
    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#Unique_file_type_specifiers
    */
-  acceptedFileTypes?: string;
+  acceptedFileTypes?: string
   /**
    * When allowMultipleFiles is true, the file input allows the user to select more than one file.
    *
@@ -16,45 +16,44 @@ export interface IProps {
    *
    * @default false
    */
-  allowMultipleFiles?: boolean;
+  allowMultipleFiles?: boolean
   /**
    * Text to display as the button text
    */
-  label: string;
+  label: string
   /**
    * Handler passed from parent
    *
    * When the file input changes a FormData object will be send on the first parameter
    */
-  onChange: (formData: FormData, name:string) => void;
+  onChange: (formData: FormData, name: string) => void
   /**
    * The name of the file input that the backend is expecting
    */
-  uploadFileName: string;
+  uploadFileName: string
 }
 
 const UiFileInputButton: React.FC<IProps> = (props) => {
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-  //const formRef = React.useRef<HTMLFormElement | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null)
+  // const formRef = React.useRef<HTMLFormElement | null>(null);
 
-  const onClickHandler = () => {
-    fileInputRef.current?.click();
-  };
+  const onClickHandler = (): void => {
+    fileInputRef.current?.click()
+  }
 
-  const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files?.length) {
-      return;
+  const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    if (event.target.files?.length === undefined) {
+      return
     }
 
-    const formData = new FormData();
+    const formData = new FormData()
 
-    formData.append(event.target.name, event.target.files[0]);
+    formData.append(event.target.name, event.target.files[0])
 
+    props.onChange(formData, event.target.files[0].name)
 
-    props.onChange(formData, event.target.files[0].name);
-
-    //formRef.current?.reset();
-  };
+    // formRef.current?.reset();
+  }
 
   return (
     <>
@@ -72,12 +71,12 @@ const UiFileInputButton: React.FC<IProps> = (props) => {
         />
     </>
 
-  );
-};
+  )
+}
 
 UiFileInputButton.defaultProps = {
   acceptedFileTypes: '',
-  allowMultipleFiles: false,
-};
+  allowMultipleFiles: false
+}
 
 export default UiFileInputButton

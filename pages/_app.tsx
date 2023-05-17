@@ -7,8 +7,7 @@ import Head from 'next/head'
 import Header from 'frontend/components/Header'
 import Main from 'frontend/components/Main'
 
-function MyApp({ Component, pageProps }: AppProps) {
-  
+function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
       <Head>
@@ -31,4 +30,3 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default MyApp
-

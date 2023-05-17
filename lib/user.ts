@@ -1,13 +1,11 @@
-import { UserIdJwtPayload, verify } from 'jsonwebtoken'
-import { NextApiRequest } from 'next'
-import { IUser } from 'backend/models/interfaces'
+import { type UserIdJwtPayload, verify } from 'jsonwebtoken'
+import { type NextApiRequest } from 'next'
+import { type IUser } from 'backend/models/interfaces'
 import User from 'backend/models/User'
 import dbConnect from './dbConnect'
-import {formatIds} from './utils'
+import { formatIds } from './utils'
 
-const secret = process.env.SECRET || ''
-
-
+const secret = process.env.SECRET ?? ''
 
 /* import * as jwt from 'jsonwebtoken'
 
@@ -27,22 +25,22 @@ export const userIdFromJWT = (jwtToken: string): string | undefined => {
     }
 } */
 
-//function for getting the user on GetServerSideProps
+// function for getting the user on GetServerSideProps
 
-export async function getUserServer(req:NextApiRequest): Promise<IUser|undefined> {
+export async function getUserServer(req: NextApiRequest): Promise<IUser | undefined> {
     await dbConnect()
-    const {cookies} = req
-    if(!cookies.access_token){
+    const { cookies } = req
+    if (cookies.access_token === undefined) {
         return undefined
     }
     const jwt = cookies.access_token
     const result = <UserIdJwtPayload>verify(jwt, secret)
-    if(!result){
+    if (result === undefined) {
         return undefined
     }
     const _id = result._id
     const docUser = await User.findById(_id)
-    if (!docUser) {
+    if (docUser === null) {
         return undefined
     }
     const user = formatIds(docUser)

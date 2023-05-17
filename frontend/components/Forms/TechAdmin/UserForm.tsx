@@ -1,119 +1,111 @@
-import { IUser, ICity } from "backend/models/interfaces";
-import { Role, roles } from "backend/models/types";
-import { Label, TextInput, Select, Button, Checkbox } from "flowbite-react";
-import { useRouter } from "next/router";
-import { useState, ChangeEvent, useEffect } from "react";
-import fetcher from 'lib/fetcher';
+import { IUser, type ICity } from 'backend/models/interfaces'
+import { type Role, roles } from 'backend/models/types'
+import { Label, TextInput, Select, Button, Checkbox } from 'flowbite-react'
+import { useRouter } from 'next/router'
+import { useState, type ChangeEvent, useEffect } from 'react'
+import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
-import useLoading from "frontend/hooks/useLoading";
-import useAlert from "frontend/hooks/useAlert";
+import useLoading from 'frontend/hooks/useLoading'
+import useAlert from 'frontend/hooks/useAlert'
 
-export interface IUserForm{
-    _id:string,
-    firstName:string,
-    lastName:string,
-    city:ICity,
-    roles:Role[],
-    email:string,
-    password:string,
+export interface IUserForm {
+    _id: string
+    firstName: string
+    lastName: string
+    city: ICity
+    roles: Role[]
+    email: string
+    password: string
 }
 
-interface IUserFormErrors{
-    firstName:string,
-    lastName:string,
-    roles:string
-    email:string
+interface IUserFormErrors {
+    firstName: string
+    lastName: string
+    roles: string
+    email: string
 }
 
-interface props{
-    userForm:IUserForm,
-    cities:ICity[],
-    newUser:boolean
+interface props {
+    userForm: IUserForm
+    cities: ICity[]
+    newUser: boolean
 }
 
-export default function UserForm({userForm, newUser=true, cities}:props){
+export default function UserForm({ userForm, newUser = true, cities }: props) {
     const router = useRouter()
     const contentType = 'application/json'
     const [form, setForm] = useState<IUserForm>({
-        _id:userForm._id,
-        firstName:userForm.firstName,
-        lastName:userForm.lastName,
+        _id: userForm._id,
+        firstName: userForm.firstName,
+        lastName: userForm.lastName,
         city: userForm.city,
-        roles:userForm.roles,
-        email:userForm.email,
-        password:''
+        roles: userForm.roles,
+        email: userForm.email,
+        password: ''
     })
-    const[errors, setErrors] = useState<IUserFormErrors>({} as IUserFormErrors)
+    const [errors, setErrors] = useState<IUserFormErrors>({} as IUserFormErrors)
     const [submitted, setSubmitted] = useState<boolean>(false)
-    const {stopLoading, startLoading} = useLoading()
-    const {triggerAlert} = useAlert()
-    const postData = async (form:IUserForm) => {
+    const { stopLoading, startLoading } = useLoading()
+    const { triggerAlert } = useAlert()
+    const postData = async (form: IUserForm) => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.users)
             await router.push('/tech-admin/users')
             stopLoading()
-            triggerAlert({type:'Success', message:`El usuario ${form.firstName} ${form.lastName} fue creado correctamente`})
-        } 
-        catch (error) {
+            triggerAlert({ type: 'Success', message: `El usuario ${form.firstName} ${form.lastName} fue creado correctamente` })
+        } catch (error) {
             console.log(error)
-            stopLoading()            
-            triggerAlert({type:'Failure', message:`No se pudo crear el usuario ${form.firstName} ${form.lastName}`})
+            stopLoading()
+            triggerAlert({ type: 'Failure', message: `No se pudo crear el usuario ${form.firstName} ${form.lastName}` })
         }
     }
 
-    const putData = async (form:IUserForm) => {
+    const putData = async (form: IUserForm) => {
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.users)
             await router.push('/tech-admin/users')
             stopLoading()
-            triggerAlert({type:'Success', message:`El usuario ${form.firstName} ${form.lastName} fue actualizado correctamente`})
-        } 
-        catch (error) {
+            triggerAlert({ type: 'Success', message: `El usuario ${form.firstName} ${form.lastName} fue actualizado correctamente` })
+        } catch (error) {
             console.log(error)
-            stopLoading()            
-            triggerAlert({type:'Failure', message:`No se pudo actualizar el usuario ${form.firstName} ${form.lastName}`})
-
+            stopLoading()
+            triggerAlert({ type: 'Failure', message: `No se pudo actualizar el usuario ${form.firstName} ${form.lastName}` })
         }
     }
 
-    function selectCity(e:ChangeEvent<HTMLSelectElement>){
-        const {value} = e.target
+    function selectCity(e: ChangeEvent<HTMLSelectElement>) {
+        const { value } = e.target
         const city = cities.filter(city => city.name === value.slice(0, value.indexOf(',')))
-        setForm({...form, city:city[0]})
-
+        setForm({ ...form, city: city[0] })
     }
 
-    function checkboxChange(e:ChangeEvent<HTMLInputElement>){
-        const {id} = e.target
-        
-        if(form.roles.includes(id as Role)){
-            
+    function checkboxChange(e: ChangeEvent<HTMLInputElement>) {
+        const { id } = e.target
+
+        if (form.roles.includes(id as Role)) {
             const newForm = form
-            newForm.roles = form.roles.filter(role => role!=id)            
+            newForm.roles = form.roles.filter(role => role != id)
             setForm(newForm)
-        }
-        else{
+        } else {
             const newForm = form
             newForm.roles.push(id as Role)
-            setForm(newForm)   
+            setForm(newForm)
         }
-        
-        
     }
 
-    function handleChange(e:ChangeEvent<HTMLInputElement>){
-        const{value, name} = e.target
-        setForm({...form, [name]:value})        
+    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+        const { value, name } = e.target
+        setForm({ ...form, [name]: value })
     }
 
     const formValidate = () => {
-        let err : IUserFormErrors = { 
-           firstName:'',
-           lastName:'',
-           email:'',
-           roles:''
+        const err: IUserFormErrors = {
+           firstName: '',
+           lastName: '',
+           email: '',
+           roles: ''
         }
         if (!form.firstName) err.firstName = 'El nombre es requerido'
         if (!form.lastName) err.lastName = 'El apellido es requerido'
@@ -123,31 +115,31 @@ export default function UserForm({userForm, newUser=true, cities}:props){
         return err
     }
 
-    useEffect(()=>{
-        if(submitted) formValidate()
-    },[form])
+    useEffect(() => {
+        if (submitted) formValidate()
+    }, [form])
 
-    const handleSubmit = (e:any) => {
+    const handleSubmit = (e: any) => {
         setSubmitted(true)
         e.preventDefault()
         const errors = formValidate()
-        
+
         if (errors.firstName === '' && errors.lastName === '' && errors.email === '' && errors.roles === '') {
-            //setForm({...form, password:'webada2020'})
+            // setForm({...form, password:'webada2020'})
             newUser ? postData(form) : putData(form)
-        } 
+        }
     }
 
-    async function goBack(){
+    async function goBack() {
         startLoading()
         await router.push('/tech-admin/users')
         stopLoading()
     }
 
-    return(
+    return (
         <>
             <form className='flex flex-col gap-4 bg-gray-50 rounded-3xl p-4 mx-auto w-1/2 mt-4' onSubmit={handleSubmit}>
-                <h2 className="text-lg">{newUser?'Crear usuario':'Editar usuario'}</h2>
+                <h2 className="text-lg">{newUser ? 'Crear usuario' : 'Editar usuario'}</h2>
                 <hr className="mb-2"/>
                 <div>
                     <div className='mb-2 block'>
@@ -165,7 +157,7 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                     placeholder={userForm.firstName}
                     onChange={handleChange}
                     value={form.firstName}
-                    color={errors.firstName?'failure':''}
+                    color={errors.firstName ? 'failure' : ''}
 
                     />
                     <div className='mb-2 block'>
@@ -193,7 +185,7 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                     placeholder={userForm.lastName}
                     onChange={handleChange}
                     value={form.lastName}
-                    color={errors.lastName?'failure':''}
+                    color={errors.lastName ? 'failure' : ''}
                     />
                     <div className='mb-2 block'>
                         <Label
@@ -220,7 +212,7 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                     placeholder={userForm.email}
                     onChange={handleChange}
                     value={form.email}
-                    color={errors.email?'failure':''}
+                    color={errors.email ? 'failure' : ''}
                     />
                     <div className='mb-2 block'>
                         <Label
@@ -241,12 +233,12 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                     className="flex flex-col gap-4"
                     id="checkbox"
                     >
-                    {roles.map((role, index)=> <div key={index} className="flex items-center gap-2">
+                    {roles.map((role, index) => <div key={index} className="flex items-center gap-2">
                         <Checkbox
                         id={`${role}`}
                         defaultChecked={userForm.roles.includes(role)}
                         onChange={checkboxChange}
-                        color={errors.roles?'failure':''}
+                        color={errors.roles ? 'failure' : ''}
                         />
                         <Label htmlFor={`${role}`}>
                             {role}
@@ -275,8 +267,8 @@ export default function UserForm({userForm, newUser=true, cities}:props){
                         name='city'
                         defaultValue='default'
                     >
-                        <option value='default' disabled hidden>{newUser?'Seleccione una ciudad': userForm.city && `${userForm.city.name}, ${userForm.city.province.name}`}</option>
-                        {cities.map((city, index)=> <option key={index}>{`${city.name}, ${city.province.name}`}</option>)}
+                        <option value='default' disabled hidden>{newUser ? 'Seleccione una ciudad' : userForm.city && `${userForm.city.name}, ${userForm.city.province.name}`}</option>
+                        {cities.map((city, index) => <option key={index}>{`${city.name}, ${city.province.name}`}</option>)}
                     </Select>
                 </div>
                 <div className="flex flex-row justify-between">

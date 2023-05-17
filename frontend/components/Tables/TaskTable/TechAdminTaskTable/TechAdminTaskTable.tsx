@@ -1,36 +1,35 @@
-import { IBusiness, ICity, IClient, IProvince, ITask, IUser } from 'backend/models/interfaces'
+import { type IBusiness, type ICity, type IClient, type IProvince, type ITask, type IUser } from 'backend/models/interfaces'
 import Item from './Item'
-import {Table} from 'flowbite-react'
-import { ChangeEvent, useState } from 'react'
+import { Table } from 'flowbite-react'
+import { type ChangeEvent, useState } from 'react'
 import Filter from 'frontend/components/Filter'
 
-interface props{
-    tasks:ITask[]
-    cities:ICity[]
-    provinces:IProvince[]
-    clients:IClient[]
-    businesses:IBusiness[]
-    techs:IUser[]
+interface props {
+    tasks: ITask[]
+    cities: ICity[]
+    provinces: IProvince[]
+    clients: IClient[]
+    businesses: IBusiness[]
+    techs: IUser[]
 }
 
-export default function TechAdminTaskTable({tasks, cities, provinces, clients, businesses, techs}:props){
+export default function TechAdminTaskTable({ tasks, cities, provinces, clients, businesses, techs }: props) {
     const [tableTasks, setTableTasks] = useState<ITask[]>(tasks)
     const [type, setType] = useState<string>('')
     const [entities, setEntities] = useState<any[]>([] as any[])
     const filterTypes = ['Localidad', 'Provincia', 'Tecnico', 'Empresa', 'Cliente']
-        
 
-    function selectEntity(e:ChangeEvent<HTMLSelectElement>){
-        const {value} = e.target
-        switch(type){
+    function selectEntity(e: ChangeEvent<HTMLSelectElement>) {
+        const { value } = e.target
+        switch (type) {
             case 'Localidad':
                 setTableTasks(tasks.filter(task => task.branch.city.name === value))
-                break;
+                break
             case 'Provincia':
                 setTableTasks(tasks.filter(task => task.branch.city.province.name === value))
                 break
             case 'Tecnico':
-                setTableTasks(tasks.filter(task => task.assigned.some(tech=>tech.fullName===value)))
+                setTableTasks(tasks.filter(task => task.assigned.some(tech => tech.fullName === value)))
                 break
             case 'Empresa':
                 setTableTasks(tasks.filter(task => task.business.name === value))
@@ -40,18 +39,18 @@ export default function TechAdminTaskTable({tasks, cities, provinces, clients, b
                 break
             default:
                 setTableTasks(tasks)
-                break;
+                break
         }
     }
 
-    function selectType(e:ChangeEvent<HTMLSelectElement>){
-        const {value} = e.target
+    function selectType(e: ChangeEvent<HTMLSelectElement>) {
+        const { value } = e.target
 
         setType(value)
         switch (value) {
             case 'Localidad':
                 setEntities(cities)
-                break;
+                break
             case 'Provincia':
                 setEntities(provinces)
                 break
@@ -64,20 +63,20 @@ export default function TechAdminTaskTable({tasks, cities, provinces, clients, b
             case 'Cliente':
                 setEntities(clients)
             default:
-                break;
+                break
         }
     }
 
-    function clearFilter(){
+    function clearFilter() {
         setType('')
         setEntities([] as any[])
         setTableTasks(tasks)
     }
 
-    const deleteTask = (id:string) =>{
+    const deleteTask = (id: string) => {
         setTableTasks(tableTasks.filter(task => task._id !== id))
     }
-    return(
+    return (
         <div className='bg-white sm:rounded-none shadow-gray-100'>
             <Filter types={filterTypes} entities={entities} selectType={selectType} selectEntity={selectEntity} clearFilter={clearFilter}/>
             <Table hoverable={true} className='bg-white'>
@@ -99,4 +98,3 @@ export default function TechAdminTaskTable({tasks, cities, provinces, clients, b
         </div>
     )
 }
-

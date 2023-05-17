@@ -1,21 +1,17 @@
-import Business from "backend/models/Business";
-import { IBusiness } from "backend/models/interfaces";
-import BusinessTable from "frontend/components/Tables/BusinessTable";
-import TitleButton from "frontend/components/TitleButton";
-import dbConnect from "lib/dbConnect";
-import { formatIds } from "lib/utils";
-import { GetServerSidePropsContext } from "next";
-import Link from "next/link";
-import { useState } from "react";
-import { BsPlus } from "react-icons/bs";
+import Business from 'backend/models/Business'
+import { type IBusiness } from 'backend/models/interfaces'
+import BusinessTable from 'frontend/components/Tables/BusinessTable'
+import TitleButton from 'frontend/components/TitleButton'
+import dbConnect from 'lib/dbConnect'
+import { formatIds } from 'lib/utils'
+import { type GetServerSidePropsContext } from 'next'
 
-interface props{
-    businesses:IBusiness[]
+interface props {
+    businesses: IBusiness[]
 }
 
-export default function Businesses({businesses}:props){
-
-    return(
+export default function Businesses({ businesses }: props): JSX.Element {
+    return (
         <>
             <TitleButton title='Empresas' path='/tech-admin/businesses/new' nameButton='Agregar una empresa'/>
             <BusinessTable businesses={businesses}/>
@@ -23,9 +19,8 @@ export default function Businesses({businesses}:props){
     )
 }
 
-export async function getServerSideProps(ctx:GetServerSidePropsContext){
+export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
     await dbConnect()
     const docBusinesses = await Business.findUndeleted({})
-    return {props:{businesses:formatIds(docBusinesses)}} 
+    return { props: { businesses: formatIds(docBusinesses) } }
 }
-

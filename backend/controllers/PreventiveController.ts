@@ -1,43 +1,41 @@
-import { NextApiResponse } from 'next';
-import dbConnect from 'lib/dbConnect';
-import { formatIds } from 'lib/utils';
-import Preventive from '../models/Preventive';
-import { NextConnectApiRequest } from './interfaces';
-import { ResponseData } from './types';
-import { IPreventive } from 'backend/models/interfaces';
-import { User } from 'backend/models/User';
-
+import { type NextApiResponse } from 'next'
+import dbConnect from 'lib/dbConnect'
+import { formatIds } from 'lib/utils'
+import Preventive from '../models/Preventive'
+import { type NextConnectApiRequest } from './interfaces'
+import { type ResponseData } from './types'
+import { IPreventive } from 'backend/models/interfaces'
+import { type User } from 'backend/models/User'
 
 const PreventiveController = {
-    putPreventive: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
-        const {body} = req    
+    putPreventive: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+        const { body } = req
         await dbConnect()
-        const {_id, branch, business, assigned, status, frequency, months, lastDoneAt, batteryChangedAt, observations} = body
-        const assignedIds = assigned.map((user:User)=> user._id)
-        const preventiveForm = {_id, branch, business, assigned:assignedIds, status, frequency, months, lastDoneAt, batteryChangedAt, observations}
+        const { _id, branch, business, assigned, status, frequency, months, lastDoneAt, batteryChangedAt, observations } = body
+        const assignedIds = assigned.map((user: User) => user._id)
+        const preventiveForm = { _id, branch, business, assigned: assignedIds, status, frequency, months, lastDoneAt, batteryChangedAt, observations }
         try {
             const newPreventive = await Preventive.findByIdAndUpdate(_id, preventiveForm, {
                 new: true,
-                runValidators: true,
+                runValidators: true
                 })
-            if(!newPreventive) res.json({statusCode:500, error:'could not update Preventive'})
-            
-            res.json({statusCode:200, data:{Preventive:formatIds(newPreventive), message:'updated Preventive succesfully'}})
-        }
-        catch (error) {
-            console.log(error);
-            return res.json({statusCode:500, error:'could not update Preventive'})
+            if (newPreventive == null) res.json({ statusCode: 500, error: 'could not update Preventive' })
+
+            res.json({ statusCode: 200, data: { Preventive: formatIds(newPreventive), message: 'updated Preventive succesfully' } })
+        } catch (error) {
+            console.log(error)
+            return res.json({ statusCode: 500, error: 'could not update Preventive' })
         }
     },
-    postPreventive: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
-        const {body} = req    
+    postPreventive: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+        const { body } = req
         await dbConnect()
-        const {branch, business, assigned, status, frequency, months, lastDoneAt, batteryChangedAt, observations} = body
-        const assignedIds = assigned.map((user:User) => user._id)
-        const preventiveForm = {branch, business, assigned:assignedIds, status, frequency, months, lastDoneAt, batteryChangedAt, observations}
+        const { branch, business, assigned, status, frequency, months, lastDoneAt, batteryChangedAt, observations } = body
+        const assignedIds = assigned.map((user: User) => user._id)
+        const preventiveForm = { branch, business, assigned: assignedIds, status, frequency, months, lastDoneAt, batteryChangedAt, observations }
         try {
-            const deletedPreventive = await Preventive.findOne({branch, business})
-            if(deletedPreventive){
+            const deletedPreventive = await Preventive.findOne({ branch, business })
+            if (deletedPreventive != null) {
                 deletedPreventive.assigned = assignedIds
                 deletedPreventive.status = status
                 deletedPreventive.frequency = frequency
@@ -46,25 +44,24 @@ const PreventiveController = {
                 deletedPreventive.batteryChangedAt = batteryChangedAt
                 deletedPreventive.observations = observations
                 await deletedPreventive.restore()
-                return res.json({statusCode:200, data:{preventive:formatIds(deletedPreventive), message:'created Preventive succesfully'}})
-
+                return res.json({ statusCode: 200, data: { preventive: formatIds(deletedPreventive), message: 'created Preventive succesfully' } })
             }
             const newPreventive = await Preventive.create(preventiveForm)
-            if(!newPreventive) return res.json({statusCode:500, error:'could not create Preventive'})
-            
-            return res.json({statusCode:200, data:{preventive:formatIds(newPreventive), message:'created Preventive succesfully'}})
+            if (!newPreventive) return res.json({ statusCode: 500, error: 'could not create Preventive' })
+
+            return res.json({ statusCode: 200, data: { preventive: formatIds(newPreventive), message: 'created Preventive succesfully' } })
         } catch (error) {
-            console.log(error);
-            return res.json({statusCode:500, error:'could not create Preventive'})
+            console.log(error)
+            return res.json({ statusCode: 500, error: 'could not create Preventive' })
         }
     },
-    deletePreventive: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>)=>{
-        const {body} = req
+    deletePreventive: async(req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+        const { body } = req
         await dbConnect()
         const deletedPreventive = await Preventive.findById(body._id)
-        if(!deletedPreventive) return res.json({statusCode:500, error:'could not delete Preventive'})
+        if (deletedPreventive == null) return res.json({ statusCode: 500, error: 'could not delete Preventive' })
         await deletedPreventive.softDelete()
-        res.json({statusCode:200, data:{message:'deleted Preventive succesfully'}})
+        res.json({ statusCode: 200, data: { message: 'deleted Preventive succesfully' } })
     }
 }
 

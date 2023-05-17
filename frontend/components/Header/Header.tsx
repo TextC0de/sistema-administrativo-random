@@ -7,17 +7,16 @@ import { useEffect } from 'react'
 import { Button, Dropdown } from 'flowbite-react'
 import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
-import {GrLogout } from 'react-icons/gr'
-import {FaUserCircle } from 'react-icons/fa'
-export default function Header(): JSX.Element{
+import { GrLogout } from 'react-icons/gr'
+import { FaUserCircle } from 'react-icons/fa'
+export default function Header(): JSX.Element {
     const router = useRouter()
-    const {user, loginUser, logoutUser, isLoggedIn} = useUser()
-    const {startLoading, stopLoading} = useLoading()
+    const { user, loginUser, logoutUser, isLoggedIn } = useUser()
+    const { startLoading, stopLoading } = useLoading()
     const logout = async() => {
         try {
             startLoading()
             await fetcher.get(apiEndpoints.logoutUrl)
-            
         } catch (error) {
             console.log(error)
             stopLoading()
@@ -28,11 +27,11 @@ export default function Header(): JSX.Element{
         stopLoading()
     }
 
-    useEffect(()=>{
-        if(!isLoggedIn) loginUser()
-    },[])
+    useEffect(() => {
+        if (!isLoggedIn) loginUser()
+    }, [])
 
-    function navigate(){
+    function navigate() {
         startLoading()
         router.push('/')
         stopLoading()
@@ -43,24 +42,24 @@ export default function Header(): JSX.Element{
         await router.push('/edit-profile')
         stopLoading()
     }
-    return(
+    return (
         <header className='fixed bg-white w-full shadow-md flex items-center justify-between px-6 z-50' >
             <div className='flex-shrink-0 flex items-center justify-center'>
                 <button onClick={navigate} >
-                        <Image     
+                        <Image
                             height={'60px'}
-                            width={'155px'}                       
+                            width={'155px'}
                             src={logo}
                             alt='pet care logo'
-                        />  
+                        />
                 </button>
                 </div>
                 {isLoggedIn && <h2 className='flex items-center text-lg'>Hola {user.firstName}!</h2>}
                 <div className='flex justify-end'>
                     {
-                    isLoggedIn && 
+                    isLoggedIn &&
                     <div className='flex gap-2'>
-                        <Dropdown 
+                        <Dropdown
                         label={<FaUserCircle size={18} />}
                         color="black"
                         >
@@ -86,4 +85,3 @@ export default function Header(): JSX.Element{
         </header>
     )
 }
-

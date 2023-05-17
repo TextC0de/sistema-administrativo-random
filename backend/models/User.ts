@@ -1,86 +1,82 @@
-import { prop, Ref, getModelForClass, pre, modelOptions, ReturnModelType, DocumentType } from "@typegoose/typegoose";
+import { prop, type Ref, getModelForClass, pre, modelOptions, type ReturnModelType, type DocumentType } from '@typegoose/typegoose'
 import bcryptjs from 'bcryptjs'
-import dbConnect from "lib/dbConnect";
-import TaskModel, {Task} from "./Task";
-import { ExpenseStatus, Role, TaskStatus } from "./types";
-import ExpenseModel, {Expense} from './Expense'
-import { IUserActivities } from "./interfaces";
-import ActivityModel, {Activity} from "./Activity";
-import mongoose from "mongoose";
-import {City} from "./City";
-import { formatIds } from "lib/utils";
+import dbConnect from 'lib/dbConnect'
+import TaskModel, { Task } from './Task'
+import { type ExpenseStatus, type Role, type TaskStatus } from './types'
+import ExpenseModel, { type Expense } from './Expense'
+import { IUser, type IUserActivities } from './interfaces'
+import ActivityModel, { type Activity } from './Activity'
+import mongoose from 'mongoose'
+import { City } from './City'
+import { formatIds } from 'lib/utils'
 
-
-
-@pre<User>('save', function(next:any){
-    
-    if(this.isModified('firstName') || this.isModified('lastName')){
+@pre<User>('save', function(next: any) {
+    if (this.isModified('firstName') || this.isModified('lastName')) {
       this.fullName = `${this.firstName} ${this.lastName}`
     }
-    if(this.isModified('password') && this.password) {
-      this.password = bcryptjs.hashSync(this.password, 10);
+    if (this.isModified('password') && this.password) {
+      this.password = bcryptjs.hashSync(this.password, 10)
     }
     next()
 })
-@modelOptions({schemaOptions:{timestamps:true}})
-export class User{
-    
-    _id:mongoose.Types.ObjectId | string
+@modelOptions({ schemaOptions: { timestamps: true } })
+export class User {
+    _id: mongoose.Types.ObjectId | string
 
-    @prop({type:String, required:true})
-    firstName:string
+    @prop({ type: String, required: true })
+    firstName: string
 
-    @prop({type:String, required:true})
-    lastName:string
+    @prop({ type: String, required: true })
+    lastName: string
 
-    @prop({type:String, required:true})
-    fullName:string
+    @prop({ type: String, required: true })
+    fullName: string
 
-    @prop({type:String, required:true, select:false})
-    password:string
+    @prop({ type: String, required: true, select: false })
+    password: string
 
-    @prop({type:String, required:true, unique:true})
-    email:string
+    @prop({ type: String, required: true, unique: true })
+    email: string
 
-    @prop({ref:'City', required:false})
-    city:Ref<City>
+    @prop({ ref: 'City', required: false })
+    city: Ref<City>
 
-    @prop({type:mongoose.SchemaTypes.Array, required:true})
-    roles:Role[]
+    @prop({ type: mongoose.SchemaTypes.Array, required: true })
+    roles: Role[]
 
-    @prop({type:Boolean, default:false})
-    deleted:boolean
+    @prop({ type: Boolean, default: false })
+    deleted: boolean
 
-    static getPopulateParameters(){
+    static getPopulateParameters() {
         getModelForClass(City)
         return [
             {
-              path:'city',
-              populate:City.getPopulateParameters()
+              path: 'city',
+              populate: City.getPopulateParameters()
             }
           ]
     }
 
-    static async findUndeleted(this:ReturnModelType<typeof User>, filter:Object = {}){
-        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
+    static async findUndeleted(this: ReturnModelType<typeof User>, filter: Object = {}) {
+        return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    static async findOneUndeleted(this:ReturnModelType<typeof User>, filter:Object = {}){
-        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
+    static async findOneUndeleted(this: ReturnModelType<typeof User>, filter: Object = {}) {
+        return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
-    
-    async softDelete(this:DocumentType<User>){
+
+    async softDelete(this: DocumentType<User>) {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this:DocumentType<User>){
+    async restore(this: DocumentType<User>) {
         this.deleted = false
         await this.save()
     }
 
-    comparePassword(this:User,plaintext:string):boolean {
-        //console.log('trying to compare passwords');
+    comparePassword(this: User, plaintext: string): boolean {
+        // console.log('trying to compare passwords');
         try {
           return bcryptjs.compareSync(plaintext, this.password)
         } catch (error) {
@@ -89,40 +85,40 @@ export class User{
         }
     };
 
-    async getTasks(this:User):Promise<Task[]> {        
-        console.log('user tasks');
-        
+    async getTasks(this: User): Promise<Task[]> {
+        console.log('user tasks')
+
         const allTasks = await TaskModel.find().populate(Task.getPopulateParameters())
-        const tasks = allTasks.filter((task:Task) => task.assigned.some((task:Task)=> task._id === this._id))
-        console.log(tasks);
-        
+
+        const tasks = allTasks.filter(task => task.assigned.some((user) => (user as User).fullName === this.fullName))
+
+        console.log(tasks)
+
         return tasks
     }
-    
-    async getTasksByStatus (this:User, status:TaskStatus):Promise<Task[]>{
-        return await TaskModel.findUndeleted({assigned:this, status})
+
+    async getTasksByStatus (this: User, status: TaskStatus): Promise<Task[]> {
+        return await TaskModel.findUndeleted({ assigned: this, status })
     }
-    
-    async getExpenses (this:User):Promise<Expense[]>{
-        return await ExpenseModel.findUndeleted({doneBy:this})
+
+    async getExpenses (this: User): Promise<Expense[]> {
+        return await ExpenseModel.findUndeleted({ doneBy: this })
     }
-    
-    async getExpensesByStatus (this:User, status:ExpenseStatus):Promise<Expense[]>{
-        return await ExpenseModel.findUndeleted({doneBy:this, status})
+
+    async getExpensesByStatus (this: User, status: ExpenseStatus): Promise<Expense[]> {
+        return await ExpenseModel.findUndeleted({ doneBy: this, status })
     }
-    
-    async getActivities (this:User):Promise<IUserActivities> {
-        const activities:Activity[] = await ActivityModel.findUndeleted()
+
+    async getActivities (this: User): Promise<IUserActivities> {
+        const activities: Activity[] = await ActivityModel.findUndeleted()
         const userActivities = activities.filter(activity => activity.openedBy === this)
         const participantActivities = activities.filter(activity => activity.participants?.includes(this._id))
-        return {userActivities, participantActivities}
+        return { userActivities, participantActivities }
     }
 }
 
-
-
 const UserModel = getModelForClass(User)
 
-//UserModel.schema.path('roles', mongoose.SchemaTypes.Array)
+// UserModel.schema.path('roles', mongoose.SchemaTypes.Array)
 
 export default UserModel

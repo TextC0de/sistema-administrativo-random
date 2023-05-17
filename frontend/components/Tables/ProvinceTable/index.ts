@@ -1,1 +1,1 @@
-export {default} from './ProvinceTable'
+export { default } from './ProvinceTable'

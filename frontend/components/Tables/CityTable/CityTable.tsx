@@ -1,36 +1,35 @@
-import { ICity, IProvince } from 'backend/models/interfaces'
-import { ChangeEvent, useState } from 'react'
+import { type ICity, type IProvince } from 'backend/models/interfaces'
+import { type ChangeEvent, useState } from 'react'
 import { Table } from 'flowbite-react'
 import Item from './Item'
 import Filter from 'frontend/components/Filter'
 
-interface props{
-    cities:ICity[]
-    provinces:IProvince[]
+interface props {
+    cities: ICity[]
+    provinces: IProvince[]
 }
-export default function CityTable({cities, provinces}:props){
+export default function CityTable({ cities, provinces }: props) {
     const [tableCities, setTableCities] = useState<ICity[]>(cities)
     const [type, setType] = useState<string>('')
     const [entities, setEntities] = useState<any[]>([] as any[])
     const filterTypes = ['Provincia']
-        
 
-    function selectEntity(e:ChangeEvent<HTMLSelectElement>){
-        const {value} = e.target
-        //+console.log(value);
-        
-        switch(type){
+    function selectEntity(e: ChangeEvent<HTMLSelectElement>) {
+        const { value } = e.target
+        // +console.log(value);
+
+        switch (type) {
             case 'Provincia':
                 setTableCities(cities.filter(city => city.province.name === value))
                 break
             default:
                 setTableCities(cities)
-                break;
+                break
         }
     }
 
-    function selectType(e:ChangeEvent<HTMLSelectElement>){
-        const {value} = e.target
+    function selectType(e: ChangeEvent<HTMLSelectElement>) {
+        const { value } = e.target
 
         setType(value)
         switch (value) {
@@ -38,21 +37,21 @@ export default function CityTable({cities, provinces}:props){
                 setEntities(provinces)
                 break
             default:
-                break;
+                break
         }
     }
 
-    function clearFilter(){
+    function clearFilter() {
         setType('')
         setEntities([] as any[])
         setTableCities(cities)
     }
-    const deleteCity = (id:string ) =>{
-        const newTable = (prev:ICity[]) => prev.filter(city => city._id !== id)
+    const deleteCity = (id: string) => {
+        const newTable = (prev: ICity[]) => prev.filter(city => city._id !== id)
         setTableCities(newTable(cities))
     }
-    
-    return(
+
+    return (
         <div className='mb-6'>
             <Filter types={filterTypes} entities={entities} selectType={selectType} selectEntity={selectEntity} clearFilter={clearFilter} />
             <Table hoverable={true} className='bg-white'>
@@ -62,7 +61,7 @@ export default function CityTable({cities, provinces}:props){
                     <Table.HeadCell className='w-40 text-center'>Acciones</Table.HeadCell>
                 </Table.Head>
                 <Table.Body>
-                    {tableCities.map((city, index)=><Item key={index} city={city} deleteCity={deleteCity}/>)}
+                    {tableCities.map((city, index) => <Item key={index} city={city} deleteCity={deleteCity}/>)}
                 </Table.Body>
             </Table>
         </div>

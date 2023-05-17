@@ -1,14 +1,12 @@
 
 import RegisterForm from 'frontend/components/Forms/RegisterForm'
 
-const Register = () =>{
-    return(
+const Register = (): JSX.Element => {
+    return (
         <>
             <RegisterForm/>
         </>
     )
 }
-
-
 
 export default Register

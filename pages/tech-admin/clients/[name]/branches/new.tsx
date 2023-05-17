@@ -1,44 +1,42 @@
-import { IBusiness, ICity, IClient, IProvince } from 'backend/models/interfaces'
+import { type IBusiness, type ICity, type IClient } from 'backend/models/interfaces'
 import dbConnect from 'lib/dbConnect'
-import { GetServerSidePropsContext } from 'next'
-import {deSlugify, formatIds} from 'lib/utils'
-import CityModel, {City} from 'backend/models/City'
+import { type GetServerSidePropsContext } from 'next'
+import { deSlugify, formatIds } from 'lib/utils'
+import CityModel from 'backend/models/City'
 import Client from 'backend/models/Client'
-import ClientBranchForm, { IClientBranchForm } from 'frontend/components/Forms/TechAdmin/ClientBranchForm'
+import ClientBranchForm, { type IClientBranchForm } from 'frontend/components/Forms/TechAdmin/ClientBranchForm'
 import Business from 'backend/models/Business'
 
-interface props{
-    cities:ICity[]
-    client:IClient
-    businesses:IBusiness[]
+interface props {
+    cities: ICity[]
+    client: IClient
+    businesses: IBusiness[]
 }
 
-
-export default function NewClientBranch({cities, client, businesses}:props){
-    const branchForm:IClientBranchForm = {
-        _id:'',
-        number:0,
+export default function NewClientBranch({ cities, client, businesses }: props): JSX.Element {
+    const branchForm: IClientBranchForm = {
+        _id: '',
+        number: 0,
         client,
-        city:{} as ICity,
-        businesses:[]
+        city: {} as ICity,
+        businesses: []
     }
 
-    return(
+    return (
         <>
            <ClientBranchForm branchForm={branchForm} cities={cities} businesses={businesses}/>
         </>
     )
 }
 
-export async function getServerSideProps(ctx:GetServerSidePropsContext){
-    const{params} = ctx
-    if(!params) return{props:{}}
+export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
+    const { params } = ctx
+    if (params == null) return { props: {} }
     await dbConnect()
     const cities = await CityModel.findUndeleted({})
-    const client = await Client.findOne({name:deSlugify(params.name as string)})
+    const client = await Client.findOne({ name: deSlugify(params.name as string) })
     const businesses = await Business.findUndeleted({})
-    //console.log(client)
+    // console.log(client)
 
-    
-    return {props:formatIds({cities, client, businesses})}
+    return { props: formatIds({ cities, client, businesses }) }
 }

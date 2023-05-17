@@ -1,14 +1,12 @@
 
 import EditProfileForm from 'frontend/components/Forms/EditProfileForm'
 
-const EditProfile = () =>{
-    return(
+const EditProfile = (): JSX.Element => {
+    return (
         <>
             <EditProfileForm/>
         </>
     )
 }
-
-
 
 export default EditProfile

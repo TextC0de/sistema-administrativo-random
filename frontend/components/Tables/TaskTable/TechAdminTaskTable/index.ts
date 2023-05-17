@@ -1,1 +1,1 @@
-export {default} from './TechAdminTaskTable'
+export { default } from './TechAdminTaskTable'

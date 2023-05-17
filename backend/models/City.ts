@@ -1,48 +1,48 @@
-import { modelOptions, getModelForClass, index, prop, Ref, DocumentType, ReturnModelType } from "@typegoose/typegoose"
-import { Province } from "./Province"
+import { modelOptions, getModelForClass, index, prop, type Ref, type DocumentType, type ReturnModelType } from '@typegoose/typegoose'
+import { Province } from './Province'
 import BranchModel from './Branch'
-import dbConnect from "lib/dbConnect"
-import mongoose from "mongoose"
+import dbConnect from 'lib/dbConnect'
+import type mongoose from 'mongoose'
 
-@index({name:1, province:1}, {unique:true})
-@modelOptions({schemaOptions:{timestamps:true}})
-export class City{
-    _id:mongoose.Types.ObjectId | string
-    
-    @prop({type:Boolean, default:false})
-    deleted:boolean
+@index({ name: 1, province: 1 }, { unique: true })
+@modelOptions({ schemaOptions: { timestamps: true } })
+export class City {
+    _id: mongoose.Types.ObjectId | string
 
-    @prop({type:String, required:true})
-    name:string
-    
-    @prop({ref:'Province', required:true})
-    province:Ref<Province>
+    @prop({ type: Boolean, default: false })
+    deleted: boolean
 
-    static getPopulateParameters(){
+    @prop({ type: String, required: true })
+    name: string
+
+    @prop({ ref: 'Province', required: true })
+    province: Ref<Province>
+
+    static getPopulateParameters() {
         getModelForClass(Province)
-        return[{path:'province', model:'Province'}]
+        return [{ path: 'province', model: 'Province' }]
     }
 
-    static async findUndeleted(this:ReturnModelType<typeof City>, filter:Object = {}){
-        return await this.find({...filter, deleted:false}).populate(this.getPopulateParameters())
+    static async findUndeleted(this: ReturnModelType<typeof City>, filter: Object = {}) {
+        return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    static async findOneUndeleted(this:ReturnModelType<typeof City>, filter:Object = {}){
-        return this.findOne({...filter, deleted:false}).populate(this.getPopulateParameters())
+    static async findOneUndeleted(this: ReturnModelType<typeof City>, filter: Object = {}) {
+        return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
-    
-    async softDelete(this:DocumentType<City>){
+
+    async softDelete(this: DocumentType<City>) {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this:DocumentType<City>){
+    async restore(this: DocumentType<City>) {
         this.deleted = false
         await this.save()
     }
 
-    async getBranches(this:City){
-        return await BranchModel.findUndeleted({city:this})
+    async getBranches(this: City) {
+        return await BranchModel.findUndeleted({ city: this })
     }
 }
 
