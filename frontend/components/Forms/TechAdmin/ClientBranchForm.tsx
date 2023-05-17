@@ -1,7 +1,7 @@
 import { Button, Label, Select, TextInput } from 'flowbite-react'
 import { useRouter } from 'next/router'
 import { type ChangeEvent, useEffect, useState } from 'react'
-import { type IBusiness, type ICity, type IClient } from 'backend/models/interfaces'
+import { type IProvince, type IBusiness, type ICity, type IClient } from 'backend/models/interfaces'
 import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading'
@@ -29,7 +29,7 @@ interface props {
     businesses: IBusiness[]
 }
 
-export default function ClientBranchForm({ branchForm, newBranch = true, cities, businesses }: props) {
+export default function ClientBranchForm({ branchForm, newBranch = true, cities, businesses }: props): JSX.Element {
     const router = useRouter()
     const { stopLoading, startLoading } = useLoading()
     const [form, setForm] = useState<IClientBranchForm>({
@@ -42,7 +42,7 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
     const [errors, setErrors] = useState<IClientBranchFormErrors>({} as IClientBranchFormErrors)
     const [submitted, setSubmitted] = useState<boolean>(false)
     const { triggerAlert } = useAlert()
-    const postData = async (form: IClientBranchForm) => {
+    const postData = async (form: IClientBranchForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.branches)
@@ -56,7 +56,7 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
         }
     }
 
-    const putData = async (form: IClientBranchForm) => {
+    const putData = async (form: IClientBranchForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.branches)
@@ -71,14 +71,14 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
         }
     }
 
-    function selectCity(e: ChangeEvent<HTMLSelectElement>) {
+    function selectCity(e: ChangeEvent<HTMLSelectElement>): void {
         const { value } = e.target
         const cityName = value.slice(0, value.indexOf(','))
         const city = cities.find(city => city.name === cityName)
         if (city != null)setForm({ ...form, city })
     }
 
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    function handleChange(e: ChangeEvent<HTMLInputElement>): void {
         const { value } = e.target
         setForm({ ...form, number: parseInt(value) })
     }
@@ -87,46 +87,51 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
         if (submitted) formValidate()
     }, [form])
 
-    const formValidate = () => {
+    const formValidate = (): IClientBranchFormErrors => {
         const err: IClientBranchFormErrors = {
             number: '',
             city: '',
             businesses: ''
         }
-        if (!form.number) err.number = 'Se debe proporcionar un numero'
+        if (isNaN(form.number)) err.number = 'Se debe proporcionar un numero'
         if (Object.keys(form.city).length < 1) err.city = 'Se debe especificar la ciudad'
         if (form.businesses.length < 1) err.businesses = 'Se debe seleccionar al menos una empresa'
         setErrors(err)
         return err
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (): void => {
         setSubmitted(true)
         const errors = formValidate()
         if (errors.number === '' && errors.city === '') {
-            newBranch ? postData(form) : putData(form)
+            if (newBranch) void postData(form)
+            else void putData(form)
         }
     }
 
-    const addBusiness = (e: any) => {
+    const addBusiness = (e: ChangeEvent<HTMLSelectElement>): void => {
         const { value } = e.target
         const business = businesses.find(business => business.name === value)
-        if (business != null)setForm(prev => { return { ...prev, businesses: !prev.businesses.some(x => x._id === business._id) ? [...prev.businesses, business] : prev.businesses } })
+        if (business !== undefined) setForm(prev => { return { ...prev, businesses: !prev.businesses.some(x => x._id === business._id) ? [...prev.businesses, business] : prev.businesses } })
     }
 
-    const deleteBranchBusiness = (id: string) => {
-        setForm(prev => { return { ...prev, businesses: prev.businesses.filter(business => business._id != id) } })
+    const deleteBranchBusiness = (id: string): void => {
+        setForm(prev => { return { ...prev, businesses: prev.businesses.filter(business => business._id !== id) } })
     }
 
-    async function goBack() {
+    async function goBack(): Promise<void> {
         startLoading()
         await router.push(`/tech-admin/clients/${form.client.name}/branches`)
         stopLoading()
     }
 
+    const handleNavigate = (): void => {
+        void goBack()
+    }
+
     return (
         <>
-            <div className='flex flex-col gap-4 bg-white rounded-xl border border-gray-150 p-4 mx-auto w-1/2 my-4' onSubmit={handleSubmit}>
+            <form className='flex flex-col gap-4 bg-white rounded-xl border border-gray-150 p-4 mx-auto w-1/2 my-4' onSubmit={handleSubmit}>
                 <h2 className='text-lg'>
                     {`${branchForm.client.name} : ${newBranch ? 'Agregar una sucursal' : `Editar la sucursal  ${branchForm.number}`}`}
                 </h2>
@@ -146,7 +151,7 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
                     onChange={handleChange}
                     value={form.number}
                     disabled={!newBranch}
-                    color={errors.number ? 'failure' : ''}
+                    color={errors.number !== '' ? 'failure' : ''}
                     />
                     <div className='mb-2 block'>
                         <Label
@@ -172,10 +177,10 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
                         name='city'
                         defaultValue='default'
                         disabled={!newBranch}
-                        color={errors.city ? 'failure' : ''}
+                        color={errors.city !== '' ? 'failure' : ''}
                     >
-                        <option value="default" disabled hidden>{newBranch ? 'Seleccione una localidad...' : `${form.city.name}, ${form.city.province.name}`}</option>
-                        {cities.map((city, index) => <option key={index}>{`${city.name}, ${city.province.name} `}</option>)}
+                        <option value="default" disabled hidden>{newBranch ? 'Seleccione una localidad...' : `${form.city.name}, ${(form.city.province as IProvince).name}`}</option>
+                        {cities.map((city, index) => <option key={index}>{`${city.name}, ${(city.province as IProvince).name} `}</option>)}
                     </Select>
                     <div className='mb-2 block'>
                         <Label
@@ -194,7 +199,7 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
                         onChange={addBusiness}
                         value='default'
                         className='col-span-5'
-                        color={errors.businesses ? 'failure' : ''}
+                        color={errors.businesses !== '' ? 'failure' : ''}
                     >
                         <option value="default" disabled hidden>Seleccione las empresas a agregar</option>
                         {businesses.map((business, index) => <option key={index} value={business.name}>{business.name}</option>)}
@@ -223,10 +228,10 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
                     </div>
                 </div>
                 <div className='flex flex-row justify-between'>
-                    <Button size='sm' color='gray' onClick={goBack}> Cancelar</Button>
-                    <Button size='sm' onClick={handleSubmit}>Guardar</Button>
+                    <Button size='sm' color='gray' onClick={handleNavigate} type='button' > Cancelar</Button>
+                    <Button size='sm' type='submit' >Guardar</Button>
                 </div>
-            </div>
+            </form>
         </>
     )
 }

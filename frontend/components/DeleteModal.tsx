@@ -7,9 +7,9 @@ interface props {
     handleDelete: () => void
 }
 
-export default function DeleteModal({ openModal, handleToggleModal, handleDelete }: props) {
+export default function DeleteModal({ openModal, handleToggleModal, handleDelete }: props): JSX.Element {
     // console.log(openModal)
-    const handleDeleteOK = () => {
+    const handleDeleteOK = (): void => {
         handleDelete()
         handleToggleModal()
     }

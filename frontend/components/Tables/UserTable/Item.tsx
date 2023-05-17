@@ -1,4 +1,4 @@
-import { IProvince, type IUser } from 'backend/models/interfaces'
+import { type IProvince, type IUser } from 'backend/models/interfaces'
 import * as apiEndpoints from 'lib/apiEndpoints'
 import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
@@ -58,6 +58,17 @@ export default function Item({ user, deleteUser }: props): JSX.Element {
         }
     }
 
+    const handleDelete = (): void => {
+        void deleteData()
+    }
+
+    const handleNavigate = (): void => {
+        void navigateEdit()
+    }
+
+    const handleRegeneratePassword = (): void => {
+        void reGeneratePassword()
+    }
     return (
         <Table.Row className='border-b '>
             <Table.Cell>{user.fullName}</Table.Cell>
@@ -66,16 +77,16 @@ export default function Item({ user, deleteUser }: props): JSX.Element {
             <Table.Cell>{(user.roles?.length as number) > 1 ? user.roles?.map(role => `${role}, `) : user.roles?.[0]}</Table.Cell>
             <Table.Cell>
             <div className='flex justify-center gap-2 items-center'>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={navigateEdit}>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={handleNavigate}>
                         <BsFillPencilFill color="gray" size="15"/>
                     </button>
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={reGeneratePassword}>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={handleRegeneratePassword}>
                         <CgPassword color='gray' size='15'/>
                     </button>
-                    <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={deleteData}/>
+                    <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete}/>
                 </div>
             </Table.Cell>
         </Table.Row>

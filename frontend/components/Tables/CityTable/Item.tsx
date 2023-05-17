@@ -1,5 +1,4 @@
-import { type ICity } from 'backend/models/interfaces'
-import Link from 'next/link'
+import { type IProvince, type ICity } from 'backend/models/interfaces'
 import * as apiEndpoints from 'lib/apiEndpoints'
 import { slugify } from 'lib/utils'
 import fetcher from 'lib/fetcher'
@@ -16,19 +15,19 @@ interface props {
     deleteCity: (id: string) => void
 }
 
-export default function Item({ city, deleteCity }: props) {
+export default function Item({ city, deleteCity }: props): JSX.Element {
     const router = useRouter()
     const [modal, setModal] = useState(false)
-    const openModal = () => {
+    const openModal = (): void => {
         setModal(true)
     }
-    const closeModal = () => {
+    const closeModal = (): void => {
         setModal(false)
     }
     const { startLoading, stopLoading } = useLoading()
     const { triggerAlert } = useAlert()
 
-    const deleteData = async () => {
+    const deleteData = async (): Promise<void> => {
         try {
             await fetcher.delete({ _id: city._id }, apiEndpoints.techAdmin.cities)
             deleteCity(city._id as string)
@@ -39,25 +38,33 @@ export default function Item({ city, deleteCity }: props) {
         }
     }
 
-    async function navigateEdit() {
+    async function navigateEdit(): Promise<void> {
         startLoading()
         await router.push(`/tech-admin/cities/${slugify(city.name)}`)
         stopLoading()
     }
 
+    const handleNavigateEdit = (): void => {
+        void navigateEdit()
+    }
+
+    const handleDelete = (): void => {
+        void deleteData()
+    }
+
     return (
         <Table.Row className='border-b'>
             <Table.Cell>{city.name}</Table.Cell>
-            <Table.Cell>{city.province.name}</Table.Cell>
+            <Table.Cell>{(city.province as IProvince).name}</Table.Cell>
             <Table.Cell>
                 <div className='flex justify-center gap-2 items-center'>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={navigateEdit}>
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={handleNavigateEdit}>
                         <BsFillPencilFill color="gray" size="15"/>
                     </button>
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>
-                    <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={deleteData}/>
+                    <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete}/>
                 </div>
             </Table.Cell>
         </Table.Row>

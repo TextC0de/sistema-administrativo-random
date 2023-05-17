@@ -1,6 +1,6 @@
 import { Button, Label, Select, TextInput } from 'flowbite-react'
 import { useRouter } from 'next/router'
-import { type ChangeEvent, FormEvent, useState } from 'react'
+import { type ChangeEvent, type FormEvent, useState } from 'react'
 import { type IProvince } from 'backend/models/interfaces'
 import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
@@ -23,7 +23,7 @@ interface props {
     provinces: IProvince[]
 }
 
-export default function cityForm({ cityForm, newCity = true, provinces }: props) {
+export default function CityForm({ cityForm, newCity = true, provinces }: props): JSX.Element {
     const router = useRouter()
     const { stopLoading, startLoading } = useLoading()
     const [form, setForm] = useState<ICityForm>({
@@ -34,7 +34,7 @@ export default function cityForm({ cityForm, newCity = true, provinces }: props)
     const [errors, setErrors] = useState<ICityFormErrors>({} as ICityFormErrors)
     const { triggerAlert } = useAlert()
 
-    const postData = async (form: ICityForm) => {
+    const postData = async (form: ICityForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.cities)
@@ -48,7 +48,7 @@ export default function cityForm({ cityForm, newCity = true, provinces }: props)
         }
     }
 
-    const putData = async (form: ICityForm) => {
+    const putData = async (form: ICityForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.cities)
@@ -62,43 +62,48 @@ export default function cityForm({ cityForm, newCity = true, provinces }: props)
         }
     }
 
-    function selectProvince(e: ChangeEvent<HTMLSelectElement>) {
+    function selectProvince(e: ChangeEvent<HTMLSelectElement>): void {
         const { value } = e.target
         const province = provinces.find(province => province.name === value)
         if (province != null)setForm({ ...form, province })
     }
 
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    function handleChange(e: ChangeEvent<HTMLInputElement>): void {
         const { value } = e.target
         setForm({ ...form, name: value })
     }
 
-    async function goBack() {
+    async function goBack(): Promise<void> {
         startLoading()
         await router.push('/tech-admin/cities')
         stopLoading()
     }
 
-    const formValidate = () => {
+    const formValidate = (): ICityFormErrors => {
         const err: ICityFormErrors = {
            name: '',
            province: ''
         }
-        if (!form.name) err.name = 'Se debe especificar un nombre'
+        if (form.name === '') err.name = 'Se debe especificar un nombre'
         if (Object.keys(form.province).length < 1) err.province = 'Se debe especificar la provincia'
 
         return err
     }
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
         e.preventDefault()
         const errors = formValidate()
 
         if (errors.name === '') {
-            newCity ? postData(form) : putData(form)
+            if (newCity) void postData(form)
+            else void putData(form)
         } else {
             setErrors(errors)
         }
+    }
+
+    const handleNavigate = (): void => {
+        void goBack()
     }
 
     return (
@@ -121,7 +126,7 @@ export default function cityForm({ cityForm, newCity = true, provinces }: props)
                     placeholder={cityForm.name}
                     onChange={handleChange}
                     value={form.name}
-                    color={errors.name ? 'failure' : ''}
+                    color={errors.name !== '' ? 'failure' : ''}
                     />
                     <div className='mb-2 block'>
                         <Label
@@ -146,7 +151,7 @@ export default function cityForm({ cityForm, newCity = true, provinces }: props)
                         onChange={selectProvince}
                         name='province'
                         defaultValue='default'
-                        color={errors.province ? 'failure' : ''}
+                        color={errors.province !== '' ? 'failure' : ''}
                     >
                         <option value='default' disabled hidden>{newCity ? 'Seleccione una provincia' : cityForm.province.name}</option>
                         {provinces.map((province, index) => <option key={index}>{province.name}</option>)}
@@ -161,8 +166,8 @@ export default function cityForm({ cityForm, newCity = true, provinces }: props)
                     </div>
                 </div>
                 <div className='flex flex-row justify-between'>
-                    <Button size='sm' onClick={goBack} color='gray'> Cancelar </Button>
-                    <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                    <Button size='sm' onClick={handleNavigate} color='gray' type='button'> Cancelar </Button>
+                    <Button size='sm' > Guardar </Button>
                 </div>
             </form>
         </>

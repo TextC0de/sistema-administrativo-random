@@ -1,19 +1,20 @@
-import logo from 'public/logo_placeholder.png'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import * as apiEndpoints from 'lib/apiEndpoints'
 import useUser from 'frontend/hooks/useUser'
 import { useEffect } from 'react'
-import { Button, Dropdown } from 'flowbite-react'
+import { Dropdown } from 'flowbite-react'
 import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
-import { GrLogout } from 'react-icons/gr'
 import { FaUserCircle } from 'react-icons/fa'
+
+const logo = 'logo_placeholder.png'
+
 export default function Header(): JSX.Element {
     const router = useRouter()
     const { user, loginUser, logoutUser, isLoggedIn } = useUser()
     const { startLoading, stopLoading } = useLoading()
-    const logout = async() => {
+    const logout = async(): Promise<void> => {
         try {
             startLoading()
             await fetcher.get(apiEndpoints.logoutUrl)
@@ -28,24 +29,37 @@ export default function Header(): JSX.Element {
     }
 
     useEffect(() => {
-        if (!isLoggedIn) loginUser()
+        if (!isLoggedIn) void loginUser()
     }, [])
 
-    function navigate() {
+    async function navigate(): Promise<void> {
         startLoading()
-        router.push('/')
+        await router.push('/')
         stopLoading()
     }
 
-    const edit = async() => {
+    const edit = async(): Promise<void> => {
         startLoading()
         await router.push('/edit-profile')
         stopLoading()
     }
+
+    const handleNavigate = (): void => {
+        void navigate()
+    }
+
+    const handleNavigateEdit = (): void => {
+        void edit()
+    }
+
+    const handleLogout = (): void => {
+        void logout()
+    }
+
     return (
         <header className='fixed bg-white w-full shadow-md flex items-center justify-between px-6 z-50' >
             <div className='flex-shrink-0 flex items-center justify-center'>
-                <button onClick={navigate} >
+                <button onClick={handleNavigate} >
                         <Image
                             height={'60px'}
                             width={'155px'}
@@ -71,11 +85,11 @@ export default function Header(): JSX.Element {
                                     {user.email}
                                 </span>
                             </Dropdown.Header>
-                            <Dropdown.Item onClick={edit}>
+                            <Dropdown.Item onClick={handleNavigateEdit}>
                                 Ajustes
                             </Dropdown.Item>
                             <Dropdown.Divider />
-                            <Dropdown.Item onClick={logout}>
+                            <Dropdown.Item onClick={handleLogout}>
                                 Cerrar sesion
                             </Dropdown.Item>
                         </Dropdown>

@@ -1,8 +1,7 @@
+/* eslint-disable array-callback-return */
 import { type Role, roles } from 'backend/models/types'
 import useUser from 'frontend/hooks/useUser'
-import { nanoid } from 'nanoid'
 import { useState } from 'react'
-import { IconType } from 'react-icons/lib'
 import {
  RiDashboardFill,
         RiTestTubeLine,
@@ -37,11 +36,11 @@ const items: IItem[] = [
     { id: 9, title: 'Usuarios', path: '/tech-admin/users', icon: <RiGroupLine />, toggle: false, role: 'Administrativo Tecnico' }
 ]
 
-export default function SideMenu() {
+export default function SideMenu(): JSX.Element {
     const { user } = useUser()
     const [sideMenu, setSideMenu] = useState(items)
 
-    function selectItem(id: number) {
+    function selectItem(id: number): void {
         setSideMenu(sideMenu.map(item => item.id === id ? { ...item, toggle: true } : { ...item, toggle: false }))
     }
 
@@ -49,20 +48,19 @@ export default function SideMenu() {
         <div className="flex flex-col fixed items-center w-52 h-full overflow-hidden text-gray-400 bg-gray-900">
             <div className="w-full px-1">
                 <>
-                    {
-                        sideMenu.map((item: IItem) => {
+                    {sideMenu.map((item: IItem) => {
                             if (item.role === '') return <Item key={item.id} selectItem={selectItem} {...item}/>
                         })
                     }
                     {
                         roles.map((role: Role, index: number) => {
-                            if (role === 'Tecnico') return
+                            if (role === 'Tecnico' || role === null) return
 
                             return (
-                                user?.roles?.includes(role) &&
+                                role !== null && ((user?.roles?.includes(role)) ?? false) &&
                                 <div key={index} className="flex flex-col items-center w-full mt-1 border-t border-gray-700">
                                     {sideMenu.map((item: IItem) => {
-                                        if (user.roles?.includes(item.role as Role) && item.role === role) return <Item key={item.id} selectItem={selectItem} {...item} />
+                                        if (((user.roles?.includes(item.role as Role)) ?? false) && item.role === role) return <Item key={item.id} selectItem={selectItem} {...item} />
                                     })}
                                 </div>
                             )

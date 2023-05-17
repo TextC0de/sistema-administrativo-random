@@ -6,10 +6,10 @@ import Item from './Item'
 interface props {
     clients: IClient[]
 }
-export default function ClientTable({ clients }: props) {
+export default function ClientTable({ clients }: props): JSX.Element {
     const [tableClients, setTableClients] = useState<IClient[]>(clients)
 
-    const deleteClient = (id: string) => {
+    const deleteClient = (id: string): void => {
         setTableClients(tableClients.filter(client => client._id !== id))
     }
 

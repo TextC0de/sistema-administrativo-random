@@ -1,10 +1,10 @@
 import { modelOptions, getModelForClass, index, prop, type Ref, type ReturnModelType, type DocumentType } from '@typegoose/typegoose'
-import dbConnect from 'lib/dbConnect'
 import { Business } from './Business'
 import { City } from './City'
 import { Client } from './Client'
 import TaskModel, { type Task } from './Task'
-import mongoose from 'mongoose'
+import mongoose, { type FilterQuery } from 'mongoose'
+import { type IPopulateParameter } from './interfaces'
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 @index({ number: 1, client: 1 }, { unique: true })
@@ -26,7 +26,7 @@ export class Branch {
     @prop({ type: Boolean, default: false })
     deleted: boolean
 
-    static getPopulateParameters() {
+    static getPopulateParameters(): IPopulateParameter[] {
         getModelForClass(City)
         getModelForClass(Client)
         getModelForClass(Business)
@@ -44,22 +44,20 @@ export class Branch {
         ]
     }
 
-    static async findUndeleted(this: ReturnModelType<typeof Branch>, filter: Object = {}) {
+    static async findUndeleted(this: ReturnModelType<typeof Branch>, filter: FilterQuery<Branch> = {}): Promise<Branch[]> {
         return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    static async findOneUndeleted(this: ReturnModelType<typeof Branch>, filter: Object = {}) {
+    static async findOneUndeleted(this: ReturnModelType<typeof Branch>, filter: FilterQuery<Branch> = {}): Promise<Branch | null> {
         return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    async softDelete(this: DocumentType<Branch>) {
-        console.log('softdelete')
-
+    async softDelete(this: DocumentType<Branch>): Promise<void> {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this: DocumentType<Branch>) {
+    async restore(this: DocumentType<Branch>): Promise<void> {
         this.deleted = false
         await this.save()
     }

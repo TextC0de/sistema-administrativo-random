@@ -28,7 +28,7 @@ const CityController = {
             const deletedCity = await CityModel.findOne({ name })
             if (deletedCity != null) {
                 deletedCity.province = province._id
-                deletedCity.restore()
+                await deletedCity.restore()
                 return res.json({ data: { deletedCity, message: 'created city succesfully' } })
             }
             const newCity = await CityModel.create(cityForm)

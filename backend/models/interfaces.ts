@@ -35,12 +35,6 @@ export interface IImage {
   url: string
 }
 
-export interface IImageMethods {
-}
-
-export interface ImageModel extends mongoose.Model<IImage, IImageMethods> {
-}
-
 export interface IClient {
   _id: mongoose.Types.ObjectId | string
   name: string

@@ -1,7 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import useUser from 'frontend/hooks/useUser'
-import * as GS from 'globalStyles'
 import Link from 'next/link'
 import { Button, TextInput } from 'flowbite-react'
 import fetcher from 'lib/fetcher'
@@ -13,11 +12,10 @@ interface UserLoginForm {
   password: string
 }
 
-export default function LoginForm({}) {
+export default function LoginForm(): JSX.Element {
   const router = useRouter()
   const { startLoading, stopLoading } = useLoading()
   const [errors, setErrors] = useState({})
-  const [message, setMessage] = useState('')
   const { loginUser } = useUser()
   const [form, setForm] = useState<UserLoginForm>({
     email: '',
@@ -25,11 +23,11 @@ export default function LoginForm({}) {
   })
 
   /* The POST method adds a new entry in the mongodb database. */
-  const postData = async (form: UserLoginForm) => {
+  const postData = async (form: UserLoginForm): Promise<void> => {
     try {
       startLoading()
       await fetcher.post(form, api.authUrl)
-      loginUser()
+      void loginUser()
       await router.push('/')
       stopLoading()
     } catch (error) {
@@ -39,7 +37,7 @@ export default function LoginForm({}) {
     }
   }
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target
 
     setForm({
@@ -49,19 +47,19 @@ export default function LoginForm({}) {
   }
 
   /* Makes sure pet info is filled for pet name, owner name, species, and image url */
-  const formValidate = () => {
+  const formValidate = (): UserLoginForm => {
     const err: UserLoginForm = { email: '', password: '' }
-    if (!form.email) err.email = 'email is required'
-    if (!form.password) err.password = 'password is required'
+    if (form.email === '') err.email = 'email is required'
+    if (form.password === '') err.password = 'password is required'
 
     return err
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
     const errs = formValidate()
-    if (errs.email == '' && errs.email == '') {
-      postData(form)
+    if (errs.email === '' && errs.email === '') {
+      void postData(form)
     } else {
       setErrors({ errs })
     }
@@ -99,7 +97,6 @@ export default function LoginForm({}) {
           </Link>
 
       </form>
-      <p>{message}</p>
       <div>
         {Object.keys(errors).map((err, index) => (
           <li key={index}>{err}</li>

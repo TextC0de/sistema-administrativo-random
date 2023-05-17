@@ -26,11 +26,11 @@ const BusinessController = {
         const businessForm = { name }
         const deletedBusiness = await Business.findOne({ name })
         if (deletedBusiness != null) {
-            deletedBusiness.restore()
+            await deletedBusiness.restore()
             res.json({ data: { deletedBusiness, message: 'created Business succesfully' } })
         }
         const newBusiness = await Business.create(businessForm)
-        if (!newBusiness) return res.json({ statusCode: 500, error: 'could not create Business' })
+        if (newBusiness === undefined) return res.json({ statusCode: 500, error: 'could not create Business' })
 
         const business = formatIds(newBusiness)
         res.json({ data: { business, message: 'created Business succesfully' } })

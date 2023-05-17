@@ -1,6 +1,6 @@
 import { Button, Label, TextInput } from 'flowbite-react'
 import { useRouter } from 'next/router'
-import { type ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react'
 import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading'
@@ -19,7 +19,7 @@ interface props {
     newProvince?: boolean
 }
 
-export default function ProvinceForm({ provinceForm, newProvince = true }: props) {
+export default function ProvinceForm({ provinceForm, newProvince = true }: props): JSX.Element {
     const router = useRouter()
     const [form, setForm] = useState<IProvinceForm>({
         _id: provinceForm._id,
@@ -29,7 +29,7 @@ export default function ProvinceForm({ provinceForm, newProvince = true }: props
     const [submitted, setSubmitted] = useState<boolean>(false)
     const { stopLoading, startLoading } = useLoading()
     const { triggerAlert } = useAlert()
-    const postData = async (form: IProvinceForm) => {
+    const postData = async (form: IProvinceForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.provinces)
@@ -43,7 +43,7 @@ export default function ProvinceForm({ provinceForm, newProvince = true }: props
         }
     }
 
-    const putData = async (form: IProvinceForm) => {
+    const putData = async (form: IProvinceForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.provinces)
@@ -57,7 +57,7 @@ export default function ProvinceForm({ provinceForm, newProvince = true }: props
         }
     }
 
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    function handleChange(e: ChangeEvent<HTMLInputElement>): void {
         const { value } = e.target
         setForm({ ...provinceForm, name: value })
     }
@@ -66,18 +66,18 @@ export default function ProvinceForm({ provinceForm, newProvince = true }: props
         if (submitted)formValidate()
     }, [form])
 
-    const formValidate = () => {
+    const formValidate = (): IProvinceFormErrors => {
         const err: IProvinceFormErrors = {
            name: ''
         }
         // console.log(form.name);
 
-        if (!form.name) err.name = 'Se debe especificar un nombre'
+        if (form.name === '') err.name = 'Se debe especificar un nombre'
         setErrors(err)
         return err
     }
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
         e.preventDefault()
         setSubmitted(true)
         // console.log('estoy submiteando');
@@ -85,16 +85,21 @@ export default function ProvinceForm({ provinceForm, newProvince = true }: props
         const errors = formValidate()
 
         if (errors.name === '') {
-            newProvince ? postData(form) : putData(form)
+            if (newProvince) void postData(form)
+            else void putData(form)
         } else {
             setErrors(errors)
         }
     }
 
-    async function goBack() {
+    async function goBack(): Promise<void> {
         startLoading()
         await router.push('/tech-admin/provinces')
         stopLoading()
+    }
+
+    const handleNavigate = (): void => {
+        void goBack()
     }
 
     return (
@@ -116,7 +121,7 @@ export default function ProvinceForm({ provinceForm, newProvince = true }: props
                     sizing='md'
                     placeholder={provinceForm.name}
                     onChange={handleChange}
-                    color={errors.name ? 'failure' : ''}
+                    color={errors.name !== '' ? 'failure' : ''}
                     />
                     <div className='mb-2 block'>
                         <Label
@@ -128,8 +133,8 @@ export default function ProvinceForm({ provinceForm, newProvince = true }: props
                     </div>
                 </div>
                 <div className='flex flex-row justify-between'>
-                    <Button size='sm' color='gray' onClick={goBack}> Cancelar </Button>
-                    <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                    <Button size='sm' color='gray' onClick={handleNavigate} type='button'> Cancelar </Button>
+                    <Button size='sm' type='submit'> Guardar </Button>
                 </div>
             </form>
         </>

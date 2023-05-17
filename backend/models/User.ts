@@ -1,20 +1,18 @@
 import { prop, type Ref, getModelForClass, pre, modelOptions, type ReturnModelType, type DocumentType } from '@typegoose/typegoose'
 import bcryptjs from 'bcryptjs'
-import dbConnect from 'lib/dbConnect'
 import TaskModel, { Task } from './Task'
 import { type ExpenseStatus, type Role, type TaskStatus } from './types'
 import ExpenseModel, { type Expense } from './Expense'
-import { IUser, type IUserActivities } from './interfaces'
+import { type IPopulateParameter, type IUserActivities } from './interfaces'
 import ActivityModel, { type Activity } from './Activity'
-import mongoose from 'mongoose'
+import mongoose, { type FilterQuery } from 'mongoose'
 import { City } from './City'
-import { formatIds } from 'lib/utils'
 
 @pre<User>('save', function(next: any) {
     if (this.isModified('firstName') || this.isModified('lastName')) {
       this.fullName = `${this.firstName} ${this.lastName}`
     }
-    if (this.isModified('password') && this.password) {
+    if (this.isModified('password') && this.password !== '') {
       this.password = bcryptjs.hashSync(this.password, 10)
     }
     next()
@@ -47,7 +45,7 @@ export class User {
     @prop({ type: Boolean, default: false })
     deleted: boolean
 
-    static getPopulateParameters() {
+    static getPopulateParameters(): IPopulateParameter[] {
         getModelForClass(City)
         return [
             {
@@ -57,20 +55,20 @@ export class User {
           ]
     }
 
-    static async findUndeleted(this: ReturnModelType<typeof User>, filter: Object = {}) {
+    static async findUndeleted(this: ReturnModelType<typeof User>, filter: FilterQuery<User> = {}): Promise<User[]> {
         return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    static async findOneUndeleted(this: ReturnModelType<typeof User>, filter: Object = {}) {
+    static async findOneUndeleted(this: ReturnModelType<typeof User>, filter: FilterQuery<User> = {}): Promise<User | null> {
         return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    async softDelete(this: DocumentType<User>) {
+    async softDelete(this: DocumentType<User>): Promise<void> {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this: DocumentType<User>) {
+    async restore(this: DocumentType<User>): Promise<void> {
         this.deleted = false
         await this.save()
     }

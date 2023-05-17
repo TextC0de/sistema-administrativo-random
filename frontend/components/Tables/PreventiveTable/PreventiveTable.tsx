@@ -14,13 +14,13 @@ interface IPreventiveProps {
     clients: IClient[]
 }
 
-export default function PreventiveTable({ preventives, cities, provinces, techs, businesses, clients }: IPreventiveProps) {
+export default function PreventiveTable({ preventives, cities, provinces, techs, businesses, clients }: IPreventiveProps): JSX.Element {
     const [preventivesTable, setPreventivesTable] = useState<IPreventive[]>(preventives)
     const [type, setType] = useState<string>('')
     const [entities, setEntities] = useState<any[]>([] as any[])
     const filterTypes = ['Localidad', 'Provincia', 'Tecnico', 'Empresa', 'Cliente']
 
-    function selectEntity(e: ChangeEvent<HTMLSelectElement>) {
+    function selectEntity(e: ChangeEvent<HTMLSelectElement>): void {
         const { value } = e.target
         // +console.log(value);
 
@@ -30,7 +30,7 @@ export default function PreventiveTable({ preventives, cities, provinces, techs,
                 setPreventivesTable(preventives.filter(preventive => preventive.branch.city.name === value))
                 break
             case 'Provincia':
-                setPreventivesTable(preventives.filter(preventive => preventive.branch.city.province.name === value))
+                setPreventivesTable(preventives.filter(preventive => (preventive.branch.city.province as IProvince).name === value))
                 break
             case 'Tecnico':
                 setPreventivesTable(preventives.filter(preventive => preventive.assigned.some(tech => tech.fullName === value)))
@@ -47,7 +47,7 @@ export default function PreventiveTable({ preventives, cities, provinces, techs,
         }
     }
 
-    function selectType(e: ChangeEvent<HTMLSelectElement>) {
+    function selectType(e: ChangeEvent<HTMLSelectElement>): void {
         const { value } = e.target
 
         setType(value)
@@ -66,18 +66,19 @@ export default function PreventiveTable({ preventives, cities, provinces, techs,
                 break
             case 'Cliente':
                 setEntities(clients)
+                break
             default:
                 break
         }
     }
 
-    function clearFilter() {
+    function clearFilter(): void {
         setType('')
         setEntities([] as any[])
         setPreventivesTable(preventives)
     }
 
-    const deletePreventive = (id: string) => {
+    const deletePreventive = (id: string): void => {
         setPreventivesTable(preventivesTable.filter(preventive => preventive._id !== id))
     }
 

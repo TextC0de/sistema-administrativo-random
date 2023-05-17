@@ -1,5 +1,5 @@
 import { Label, Select } from 'flowbite-react'
-import { type ChangeEvent, createRef, useRef } from 'react'
+import { type ChangeEvent, createRef } from 'react'
 
 interface props {
     types: string[]
@@ -9,17 +9,17 @@ interface props {
     clearFilter: () => void
 }
 
-export default function Filter({ types, entities, selectType, selectEntity, clearFilter }: props) {
+export default function Filter({ types, entities, selectType, selectEntity, clearFilter }: props): JSX.Element {
     const typeRef = createRef<HTMLSelectElement>()
     const entityRef = createRef<HTMLSelectElement>()
 
-    function onSelectType(e: ChangeEvent<HTMLSelectElement>) {
+    function onSelectType(e: ChangeEvent<HTMLSelectElement>): void {
         selectType(e)
         if (entityRef.current == null) return
         entityRef.current.selectedIndex = 0
     }
 
-    function onClearFilter() {
+    function onClearFilter(): void {
         clearFilter()
         if (typeRef.current == null) return
         if (entityRef.current == null) return
@@ -54,7 +54,7 @@ export default function Filter({ types, entities, selectType, selectEntity, clea
                 ref={entityRef}
                 >
                     <option value="default" hidden disabled>Seleccione la entidad...</option>
-                    {entities.map((entity: any, index: number) => <option value={entity.name ? entity.name : entity.fullName} key={index}>{entity.name ? entity.name : entity.fullName}</option>)}
+                    {entities.map((entity: any, index: number) => <option value={entity.name !== undefined ? entity.name : entity.fullName} key={index}>{entity.name !== undefined ? entity.name : entity.fullName}</option>)}
                 </Select>
                 <button onClick={onClearFilter}>
                     Borrar filtro

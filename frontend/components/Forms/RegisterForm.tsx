@@ -16,7 +16,7 @@ interface IUserRegisterForm {
 
 type Role = 'Tecnico' | 'Administrativo Tecnico' | 'Administrativo Contable' | 'Auditor'
 
-const RegisterForm = ({}) => {
+const RegisterForm = (): JSX.Element => {
   const router = useRouter()
 
   const [errors, setErrors] = useState({})
@@ -32,19 +32,19 @@ const RegisterForm = ({}) => {
   })
 
   /* The POST method adds a new entry in the mongodb database. */
-  const postData = async (form: IUserRegisterForm) => {
+  const postData = async (form: IUserRegisterForm): Promise<void> => {
     try {
       await fetcher.post(form, api.registerUrl)
       await fetcher.post({ email: form.email, password: form.password }, api.authUrl)
-      loginUser()
-      router.push('/')
+      void loginUser()
+      void router.push('/')
     } catch (error) {
       console.log(error)
       setMessage('Failed to login')
     }
   }
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target
 
     setForm({
@@ -54,27 +54,27 @@ const RegisterForm = ({}) => {
   }
 
   /* Makes sure pet info is filled for pet name, owner name, species, and image url */
-  const formValidate = () => {
+  const formValidate = (): IUserRegisterForm => {
     const err: IUserRegisterForm = { password: '', confirmPassword: '', firstName: '', lastName: '', email: '', roles: [] }
-    if (!form.password) err.password = 'password is required'
-    if (!form.email) err.email = 'email is required'
-    if (!form.firstName) err.firstName = 'first name is required'
-    if (!form.lastName) err.lastName = 'last name is required'
-    if (!form.confirmPassword) err.confirmPassword = 'Please confirm your password'
+    if (form.password === '') err.password = 'password is required'
+    if (form.email === '') err.email = 'email is required'
+    if (form.firstName === '') err.firstName = 'first name is required'
+    if (form.lastName === '') err.lastName = 'last name is required'
+    if (form.confirmPassword === '') err.confirmPassword = 'Please confirm your password'
     if (form.password !== form.confirmPassword) err.confirmPassword = 'passwords dont match'
 
     return err
   }
 
-  const isValidForm = (errors: IUserRegisterForm) => {
-    return errors.confirmPassword == '' && errors.email == '' && errors.firstName == '' && errors.lastName == '' && errors.password == ''
+  const isValidForm = (errors: IUserRegisterForm): boolean => {
+    return errors.confirmPassword === '' && errors.email === '' && errors.firstName === '' && errors.lastName === '' && errors.password === ''
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
     const errs = formValidate()
     if (isValidForm(errs)) {
-      postData(form)
+      void postData(form)
     } else {
       setErrors({ errs })
     }

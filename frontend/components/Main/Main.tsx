@@ -4,11 +4,11 @@ import useUser from 'frontend/hooks/useUser'
 import { useMemo } from 'react'
 import SideMenu from './SideMenu'
 
-export default function Main({ children }: { children: JSX.Element | JSX.Element[] }) {
+export default function Main({ children }: { children: JSX.Element | JSX.Element[] }): JSX.Element {
     const { isLoggedIn } = useUser()
     const { isLoading } = useLoading()
 
-    function LoadingWrapper() {
+    function LoadingWrapper(): JSX.Element {
         return (
             <div className='h-full mx-auto '>
                 {
@@ -22,7 +22,7 @@ export default function Main({ children }: { children: JSX.Element | JSX.Element
         )
     }
 
-    function Main() {
+    function Main(): JSX.Element {
         return (
             <main className='h-screen select-none pt-16'>
                 {isLoggedIn &&

@@ -1,4 +1,3 @@
-import Expense from 'backend/models/Expense'
 import dbConnect from 'lib/dbConnect'
 import { type NextApiResponse } from 'next'
 import { type NextConnectApiRequest } from './interfaces'

@@ -1,12 +1,12 @@
 import { prop, type Ref, getModelForClass, modelOptions, type ReturnModelType, type DocumentType } from '@typegoose/typegoose'
-import dbConnect from 'lib/dbConnect'
-import { IPopulateParameter } from './interfaces'
+import { type IPopulateParameter } from './interfaces'
 import { type ExpenseStatus, type ExpenseType, type PaySource } from './types'
-import UserModel, { User } from './User'
-import TaskModel, { Task } from './Task'
-import ActivityModel, { Activity } from './Activity'
+import { User } from './User'
+import { Task } from './Task'
+import { Activity } from './Activity'
 import { Image } from './Image'
 import type mongoose from 'mongoose'
+import { type FilterQuery } from 'mongoose'
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Expense {
@@ -42,7 +42,7 @@ export class Expense {
     @prop({ type: Boolean, default: false })
     deleted: boolean
 
-    static getPopulateParameters() {
+    static getPopulateParameters(): IPopulateParameter[] {
         getModelForClass(User)
         getModelForClass(Image)
         getModelForClass(Task)
@@ -67,20 +67,20 @@ export class Expense {
         ]
     }
 
-    static async findUndeleted(this: ReturnModelType<typeof Expense>, filter: Object = {}) {
+    static async findUndeleted(this: ReturnModelType<typeof Expense>, filter: FilterQuery<Expense> = {}): Promise<Expense[]> {
         return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    static async findOneUndeleted(this: ReturnModelType<typeof Expense>, filter: Object = {}) {
+    static async findOneUndeleted(this: ReturnModelType<typeof Expense>, filter: FilterQuery<Expense> = {}): Promise<Expense | null> {
         return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    async softDelete(this: DocumentType<Expense>) {
+    async softDelete(this: DocumentType<Expense>): Promise<void> {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this: DocumentType<Expense>) {
+    async restore(this: DocumentType<Expense>): Promise<void> {
         this.deleted = false
         await this.save()
     }

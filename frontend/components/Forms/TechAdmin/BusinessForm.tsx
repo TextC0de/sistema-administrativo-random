@@ -1,6 +1,6 @@
 import { Button, Label, TextInput } from 'flowbite-react'
 import { useRouter } from 'next/router'
-import { type ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { type ChangeEvent, useEffect, useState, type FormEvent } from 'react'
 import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading'
@@ -20,7 +20,7 @@ interface props {
     newBusiness?: boolean
 }
 
-export default function BusinessForm({ businessForm, newBusiness = true }: props) {
+export default function BusinessForm({ businessForm, newBusiness = true }: props): JSX.Element {
     const router = useRouter()
     const { stopLoading, startLoading } = useLoading()
     const [form, setForm] = useState<IBusinessForm>({
@@ -31,7 +31,7 @@ export default function BusinessForm({ businessForm, newBusiness = true }: props
     const [submitted, setSubmitted] = useState<boolean>(false)
     const [errors, setErrors] = useState<IBusinessFormErrors>({} as IBusinessFormErrors)
 
-    const postData = async (form: IBusinessForm) => {
+    const postData = async (form: IBusinessForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.businesses)
@@ -45,7 +45,7 @@ export default function BusinessForm({ businessForm, newBusiness = true }: props
         }
     }
 
-    const putData = async (form: IBusinessForm) => {
+    const putData = async (form: IBusinessForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.businesses)
@@ -59,7 +59,7 @@ export default function BusinessForm({ businessForm, newBusiness = true }: props
         }
     }
 
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    function handleChange(e: ChangeEvent<HTMLInputElement>): void {
         const { value } = e.target
 
         setForm({ ...businessForm, name: value })
@@ -70,27 +70,32 @@ export default function BusinessForm({ businessForm, newBusiness = true }: props
         if (submitted) formValidate()
     }, [form])
 
-    const formValidate = () => {
+    const formValidate = (): IBusinessFormErrors => {
         const err: IBusinessFormErrors = {
            name: ''
         }
-        if (!form.name) err.name = 'Se debe especificar un nombre'
+        if (form.name === '') err.name = 'Se debe especificar un nombre'
         setErrors(err)
         return err
     }
 
-    async function goBack() {
+    async function goBack(): Promise<void> {
         startLoading()
         await router.push('/tech-admin/businesses')
         stopLoading()
     }
-    const handleSubmit = (e: any) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
         setSubmitted(true)
         e.preventDefault()
         const errs = formValidate()
         if (errs.name === '') {
-            newBusiness ? postData(form) : putData(form)
+            if (newBusiness) void postData(form)
+            else void putData(form)
         }
+    }
+
+    const handleNavigate = (): void => {
+        void goBack()
     }
     return (
         <>
@@ -109,7 +114,7 @@ export default function BusinessForm({ businessForm, newBusiness = true }: props
                     id='name'
                     type='text'
                     sizing='md'
-                    color={errors.name ? 'failure' : ''}
+                    color={errors.name !== '' ? 'failure' : ''}
                     placeholder={businessForm.name}
                     onChange={handleChange}
                     />
@@ -123,8 +128,8 @@ export default function BusinessForm({ businessForm, newBusiness = true }: props
                     </div>
                 </div>
                 <div className='flex flex-row justify-between'>
-                    <Button size='sm' color='gray' onClick={goBack}> Cancelar </Button>
-                    <Button size='sm' onClick={handleSubmit}> Guardar </Button>
+                    <Button size='sm' color='gray' onClick={handleNavigate} type='button'> Cancelar </Button>
+                    <Button size='sm' > Guardar </Button>
                 </div>
             </form>
         </>

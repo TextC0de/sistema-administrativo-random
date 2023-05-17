@@ -1,7 +1,7 @@
 import { type NextConnectApiRequest } from './interfaces'
 import { type NextApiResponse } from 'next'
 import { type ResponseData } from './types'
-import BranchModel, { Branch } from 'backend/models/Branch'
+import BranchModel from 'backend/models/Branch'
 import dbConnect from 'lib/dbConnect'
 import { formatIds } from 'lib/utils'
 import { type Business } from 'backend/models/Business'
@@ -39,11 +39,11 @@ const BranchController = {
             if (deletedBranch != null) {
                 deletedBranch.city = city._id
                 deletedBranch.businesses = businessesIds
-                deletedBranch.restore()
+                await deletedBranch.restore()
                 return res.json({ data: { message: 'created branch succesfully' } })
             }
             const newBranch = await BranchModel.create(branchForm)
-            if (!newBranch) return res.json({ statusCode: 500, error: 'could not create branch' })
+            if (newBranch === undefined) return res.json({ statusCode: 500, error: 'could not create branch' })
             return res.json({ data: { message: 'created branch succesfully' } })
         } catch (error) {
             console.log(error)

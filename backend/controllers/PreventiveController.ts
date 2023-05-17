@@ -4,7 +4,6 @@ import { formatIds } from 'lib/utils'
 import Preventive from '../models/Preventive'
 import { type NextConnectApiRequest } from './interfaces'
 import { type ResponseData } from './types'
-import { IPreventive } from 'backend/models/interfaces'
 import { type User } from 'backend/models/User'
 
 const PreventiveController = {
@@ -47,7 +46,7 @@ const PreventiveController = {
                 return res.json({ statusCode: 200, data: { preventive: formatIds(deletedPreventive), message: 'created Preventive succesfully' } })
             }
             const newPreventive = await Preventive.create(preventiveForm)
-            if (!newPreventive) return res.json({ statusCode: 500, error: 'could not create Preventive' })
+            if (newPreventive === undefined) return res.json({ statusCode: 500, error: 'could not create Preventive' })
 
             return res.json({ statusCode: 200, data: { preventive: formatIds(newPreventive), message: 'created Preventive succesfully' } })
         } catch (error) {

@@ -1,7 +1,7 @@
-import { Button, Dropdown, Label, Select, Textarea } from 'flowbite-react'
+import { Button, Label, Select, Textarea } from 'flowbite-react'
 import { useRouter } from 'next/router'
-import { type ChangeEvent, FormEvent, MouseEventHandler, useEffect, useState } from 'react'
-import { type IBranch, type IBusiness, ICity, type IClient, ITask, type IUser } from 'backend/models/interfaces'
+import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react'
+import { type IBranch, type IBusiness, type IClient, type IUser } from 'backend/models/interfaces'
 import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
 import * as types from 'backend/models/types'
@@ -38,18 +38,17 @@ export interface props {
     technicians: IUser[]
 }
 
-const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, clients, technicians }: props) => {
+const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, clients, technicians }: props): JSX.Element => {
     const router = useRouter()
     const [errors, setErrors] = useState<ITaskFormErrors>({} as ITaskFormErrors)
-    const [message, setMessage] = useState('')
     const [submitted, setSubmitted] = useState<boolean>(false)
-    const [client, setClient] = useState(taskForm.branch.client ? taskForm.branch.client.name : '')
+    const [client, setClient] = useState(taskForm.branch.client !== undefined ? taskForm.branch.client.name : '')
     const [filteredBranches, setFilteredBranches] = useState<IBranch[]>(newTask ? [] : branches.filter(branch => branch.client.name === taskForm.branch.client.name))
     const [form, setForm] = useState<ITaskForm>({
         _id: taskForm._id,
         branch: taskForm.branch,
         business: taskForm.business,
-        assigned: taskForm.assigned || [],
+        assigned: taskForm.assigned ?? [],
         taskType: taskForm.taskType,
         description: taskForm.description,
         openedAt: taskForm.openedAt,
@@ -60,7 +59,7 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
     const { stopLoading, startLoading } = useLoading()
     const { triggerAlert } = useAlert()
     /* The POST method adds a new entry in the mongodb database. */
-    const postData = async (form: ITaskForm) => {
+    const postData = async (form: ITaskForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.tasks)
@@ -74,7 +73,7 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
         }
     }
 
-    const putData = async (form: ITaskForm) => {
+    const putData = async (form: ITaskForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.tasks)
@@ -88,13 +87,13 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
         }
     }
 
-    const selectClient = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectClient = (event: ChangeEvent<HTMLSelectElement>): void => {
         const { value } = event.target
         setClient(value)
         setFilteredBranches(branches.filter(branch => branch.client.name === value))
     }
 
-    const selectBranch = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectBranch = (event: ChangeEvent<HTMLSelectElement>): void => {
         const { name, value } = event.target
         const branch = branches.find(branch => branch.number.toString() === value.slice(0, value.indexOf(',')))
 
@@ -104,7 +103,7 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
         })
     }
 
-    const selectBusiness = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectBusiness = (event: ChangeEvent<HTMLSelectElement>): void => {
         const { name, value } = event.target
         const business = businesses.find(business => business.name === value)
 
@@ -114,20 +113,20 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
         })
     }
 
-    const addTechnician = (e: ChangeEvent<HTMLSelectElement>) => {
+    const addTechnician = (e: ChangeEvent<HTMLSelectElement>): void => {
         const { value } = e.target
         const technician = technicians.find(technician => technician.fullName === value)
         if (technician != null)setForm(prev => { return { ...prev, assigned: !prev.assigned.some(x => x._id === technician._id) ? [...prev.assigned, technician] : prev.assigned } })
     }
 
-    const deleteTechnician = (id: string) => {
+    const deleteTechnician = (id: string): void => {
         // setBranchBusinesses(prev => prev.filter(business=>business._id!=id))
         setForm(prev => {
-            return ({ ...prev, assigned: prev.assigned.filter(technician => technician._id != id) })
+            return ({ ...prev, assigned: prev.assigned.filter(technician => technician._id !== id) })
         })
     }
 
-    const changeDescription = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const changeDescription = (event: ChangeEvent<HTMLTextAreaElement>): void => {
         const { name, value } = event.target
 
         setForm({
@@ -136,12 +135,12 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
         })
     }
 
-    const selectTaskType = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectTaskType = (event: ChangeEvent<HTMLSelectElement>): void => {
         const { value } = event.target
         setForm({ ...form, taskType: value as types.TaskType })
     }
 
-    const formValidate = () => {
+    const formValidate = (): ITaskFormErrors => {
         const err: ITaskFormErrors = {
             branch: '',
             business: '',
@@ -155,9 +154,9 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
         if (Object.keys(form.branch).length < 1) err.branch = 'Se debe especificar una sucursal'
         if (Object.keys(form.branch).length < 1) err.client = 'Se debe especificar un cliente'
         if (Object.keys(form.business).length < 1) err.business = 'Se debe especificar una empresa'
-        if ((form.assigned).length < 1) err.assigned = 'Al menos un tecnico debe ser asignado'
-        if (!form.taskType) err.taskType = 'Se debe especificar el tipo de la tarea'
-        if (!form.description) err.description = 'Se debe proveer una descripcion'
+        if (form.assigned.length < 1) err.assigned = 'Al menos un tecnico debe ser asignado'
+        if (form.taskType === '') err.taskType = 'Se debe especificar el tipo de la tarea'
+        if (form.description === '') err.description = 'Se debe proveer una descripcion'
         setErrors(err)
         return err
     }
@@ -166,23 +165,28 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
         if (submitted)formValidate()
     }, [form])
 
-    const handleSubmit = () => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
         setSubmitted(true)
         const errs = formValidate()
         if (errs.branch === '' && errs.business === '' && errs.assigned === '' && errs.taskType === '' && errs.description === '') {
-            newTask ? postData(form) : putData(form)
+            if (newTask) void postData(form)
+            else void putData(form)
         }
     }
 
-    async function goBack() {
+    async function goBack(): Promise<void> {
         startLoading()
         await router.push('/tech-admin/tasks')
         stopLoading()
     }
 
+    const handleNavigate = (): void => {
+        void goBack()
+    }
+
     return (
         <>
-            <div id='task' className='flex flex-col w-1/2 bg-gray-50 p-4 mx-auto my-4 rounded-3xl' >
+            <form id='task' className='flex flex-col w-1/2 bg-gray-50 p-4 mx-auto my-4 rounded-3xl' onSubmit={handleSubmit}>
                 <h2 className="text-lg">{newTask ? 'Agregar Tarea' : 'Editar Tarea'}</h2>
                 <hr className="my-2"/>
                 <div id='select-client'>
@@ -199,7 +203,7 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
                         onChange={selectClient}
                         name='select-client'
                         defaultValue={'default'}
-                        color={errors.branch ? 'failure' : ''}
+                        color={errors.branch !== '' ? 'failure' : ''}
 
                     >
                         <option value="default" hidden disabled>{newTask ? 'Seleccione un cliente...' : `${client}`}</option>
@@ -228,10 +232,10 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
                         onChange={selectBranch}
                         name='branch'
                         defaultValue='default'
-                        color={errors.branch ? 'failure' : ''}
+                        color={errors.branch !== '' ? 'failure' : ''}
                     >
                         <option value="default" hidden disabled>{newTask ? 'Seleccione una sucursal...' : `${taskForm.branch.number.toString()}, ${taskForm.branch.city.name}`}</option>
-                        {filteredBranches && filteredBranches.map((branch, index) => <option key={index}>{`${branch.number}, ${branch.city.name}`}</option>)}
+                        {filteredBranches?.map((branch, index) => <option key={index}>{`${branch.number}, ${branch.city.name}`}</option>)}
                     </Select>
                     <div className='mb-2 block'>
                         <Label
@@ -257,10 +261,10 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
                         onChange={selectBusiness}
                         name='business'
                         defaultValue='default'
-                        color={errors.business ? 'failure' : ''}
+                        color={errors.business !== '' ? 'failure' : ''}
                     >
                         <option value="default" hidden disabled>{newTask ? 'Seleccione una empresa...' : taskForm.business.name}</option>
-                        {form.branch && form.branch.businesses && form.branch.businesses.map((business, index) => <option key={index}>{business.name}</option>)}
+                        {form.branch?.businesses !== undefined && form.branch.businesses.map((business, index) => <option key={index}>{business.name}</option>)}
                     </Select>
                     <div className='mb-2 block'>
                         <Label
@@ -285,7 +289,7 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
                             onChange={addTechnician}
                             value='default'
                             className='mb-4'
-                            color={`${errors.assigned ? 'failure' : ''}`}
+                            color={errors.assigned !== '' ? 'failure' : ''}
                         >
                             <option value="default" disabled hidden>Seleccione un tecnico para agregar</option>
                             {technicians.map((technician, index) => <option key={index} value={technician.fullName}>{technician.fullName}</option>)}
@@ -298,7 +302,7 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
                                 <li className='rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block' key={index}>
                                     <div className='flex justify-between items-center gap-2 font-semibold'>
                                         {technician.fullName}
-                                        <button className='rounded-full bg-white ' onClick={() => deleteTechnician(technician._id as string)}>
+                                        <button type='button' className='rounded-full bg-white ' onClick={() => deleteTechnician(technician._id as string)}>
                                             <BsFillXCircleFill color='gray' size={20} />
                                         </button>
                                     </div>
@@ -329,7 +333,7 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
                         onChange={selectTaskType}
                         name='taskType'
                         defaultValue='default'
-                        color={errors.taskType ? 'failure' : ''}
+                        color={errors.taskType !== '' ? 'failure' : ''}
                     >
                         <option value="default" hidden disabled>{newTask ? 'Seleccione el tipo de servicio' : taskForm.taskType}</option>
                         {types.taskTypes.map((taskType, index) => <option key={index}>{taskType}</option>)}
@@ -359,7 +363,7 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
                         required={true}
                         value={form.description}
                         rows={4}
-                        color={errors.description ? 'failure' : ''}
+                        color={errors.description !== '' ? 'failure' : ''}
                     />
                     <div className='mb-2 block'>
                         <Label
@@ -371,10 +375,10 @@ const TechAdminTaskForm = ({ taskForm, newTask = true, businesses, branches, cli
                     </div>
                 </div>
                 <div className='flex flex-row justify-between mt-4'>
-                    <Button color='gray' onClick={goBack}> Cancelar </Button>
-                    <Button onClick={handleSubmit}> Guardar </Button>
+                    <Button color='gray' onClick={handleNavigate} type='button'> Cancelar </Button>
+                    <Button type='submit'> Guardar </Button>
                 </div>
-            </div>
+            </form>
         </>
     )
 }

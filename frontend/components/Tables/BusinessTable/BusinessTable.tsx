@@ -6,11 +6,11 @@ import Item from './Item'
 interface props {
     businesses: IBusiness[]
 }
-export default function BusinessTable({ businesses }: props) {
+export default function BusinessTable({ businesses }: props): JSX.Element {
     const [tableBusinesses, setTableBusinesses] = useState<IBusiness[]>(businesses)
 
-    const deleteBusiness = (id: string) => {
-        const newTable = (prev: IBusiness[]) => prev.filter(business => business._id !== id)
+    const deleteBusiness = (id: string): void => {
+        const newTable = (prev: IBusiness[]): IBusiness[] => prev.filter(business => business._id !== id)
         setTableBusinesses(newTable(tableBusinesses))
     }
 

@@ -1,7 +1,6 @@
 import { type IPreventive, type IUser } from 'backend/models/interfaces'
-import Link from 'next/link'
 import { type Month } from 'backend/models/types'
-import { dmyDateString, toMonth } from 'lib/utils'
+import { dmyDateString } from 'lib/utils'
 import * as api from 'lib/apiEndpoints'
 import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
@@ -12,21 +11,21 @@ import { BsFillPencilFill, BsFillTrashFill } from 'react-icons/bs'
 import Modal from 'frontend/components/Modal'
 import useAlert from 'frontend/hooks/useAlert'
 
-export default function Item({ preventive, deletePreventive }: { preventive: IPreventive, deletePreventive: (id: string) => void }) {
+export default function Item({ preventive, deletePreventive }: { preventive: IPreventive, deletePreventive: (id: string) => void }): JSX.Element {
     const { startLoading, stopLoading } = useLoading()
     const router = useRouter()
     const [modal, setModal] = useState(false)
     const { triggerAlert } = useAlert()
 
-    const openModal = () => {
+    const openModal = (): void => {
         setModal(true)
     }
 
-    const closeModal = () => {
+    const closeModal = (): void => {
         setModal(false)
     }
 
-    const deleteData = async () => {
+    const deleteData = async (): Promise<void> => {
         try {
             await fetcher.delete({ _id: preventive._id }, api.techAdmin.preventives)
             deletePreventive(preventive._id as string)
@@ -37,18 +36,26 @@ export default function Item({ preventive, deletePreventive }: { preventive: IPr
         }
     }
 
-    function imposedMonths(months: Month[]) {
+    function imposedMonths(months: Month[]): string[] | Month {
         return months.length > 1 ? months.map(month => `${month}, `) : months[0]
     }
 
-    function selectedTechs(techs: IUser[]) {
-        return techs.length > 1 ? techs.map(tech => `${tech.fullName}, `) : techs[0].fullName
+    function selectedTechs(techs: IUser[]): string | string[] | undefined {
+        return techs.length > 1 ? techs.map(tech => `${tech.fullName as string}, `) : techs[0].fullName
     }
 
-    async function navigateEdit() {
+    async function navigateEdit(): Promise<void> {
         startLoading()
-        await router.push(`/tech-admin/preventives/${preventive._id}`)
+        await router.push(`/tech-admin/preventives/${preventive._id as string}`)
         stopLoading()
+    }
+
+    const handleNavigateEdit = (): void => {
+        void navigateEdit()
+    }
+
+    const handleDelete = (): void => {
+        void deleteData()
     }
 
     return (
@@ -56,7 +63,7 @@ export default function Item({ preventive, deletePreventive }: { preventive: IPr
             <Table.Cell>{preventive.business.name}</Table.Cell>
             <Table.Cell>{`${preventive.branch.number}, ${preventive.branch.client.name}, ${preventive.branch.city.name}`}</Table.Cell>
             <Table.Cell>{selectedTechs(preventive.assigned)}</Table.Cell>
-            <Table.Cell>{preventive.frequency ? `Cada ${preventive.frequency} meses` : ''}</Table.Cell>
+            <Table.Cell>{preventive.frequency !== undefined ? `Cada ${preventive.frequency} meses` : ''}</Table.Cell>
             <Table.Cell>{(preventive.months != null) ? imposedMonths(preventive.months) : ''}</Table.Cell>
             <Table.Cell>{preventive.observations}</Table.Cell>
             <Table.Cell>{(preventive.lastDoneAt != null) ? dmyDateString(new Date(preventive.lastDoneAt)) : ''}</Table.Cell>
@@ -64,14 +71,14 @@ export default function Item({ preventive, deletePreventive }: { preventive: IPr
             <Table.Cell>{(preventive.batteryChangedAt != null) ? dmyDateString(new Date(preventive.batteryChangedAt)) : ''}</Table.Cell>
             <Table.Cell>
                 <div className='flex justify-evenly items-center'>
-                    <button className='p-0.5 hover:bg-gray-200 rounder-lg ' onClick={navigateEdit} >
+                    <button className='p-0.5 hover:bg-gray-200 rounder-lg ' onClick={handleNavigateEdit} >
                         <BsFillPencilFill color="gray" size="15"/>
                     </button>
                     <button className='p-0.5 hover:bg-gray-200 rounder-lg' onClick={openModal}>
                         <BsFillTrashFill color="gray" size="15"/>
                     </button>
                 </div>
-                <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={deleteData}/>
+                <Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete}/>
             </Table.Cell>
         </Table.Row>
     )

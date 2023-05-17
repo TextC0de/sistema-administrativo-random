@@ -1,7 +1,7 @@
 import { prop, modelOptions, getModelForClass, type DocumentType, type ReturnModelType } from '@typegoose/typegoose'
-import dbConnect from 'lib/dbConnect'
 import type mongoose from 'mongoose'
-import BranchModel, { Branch } from './Branch'
+import BranchModel, { type Branch } from './Branch'
+import { type FilterQuery } from 'mongoose'
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Business {
@@ -13,25 +13,25 @@ export class Business {
     @prop({ type: Boolean, default: false })
     deleted: boolean
 
-    static async findUndeleted(this: ReturnModelType<typeof Business>, filter: Object = {}) {
+    static async findUndeleted(this: ReturnModelType<typeof Business>, filter: FilterQuery<Business> = {}): Promise<Business[]> {
         return await this.find({ ...filter, deleted: false })
     }
 
-    static async findOneUndeleted(this: ReturnModelType<typeof Business>, filter: Object = {}) {
+    static async findOneUndeleted(this: ReturnModelType<typeof Business>, filter: FilterQuery<Business> = {}): Promise<Business | null> {
         return await this.findOne({ ...filter, deleted: false })
     }
 
-    async softDelete(this: DocumentType<Business>) {
+    async softDelete(this: DocumentType<Business>): Promise<void> {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this: DocumentType<Business>) {
+    async restore(this: DocumentType<Business>): Promise<void> {
         this.deleted = false
         await this.save()
     }
 
-    async getBranches(this: Business) {
+    async getBranches(this: Business): Promise<Branch[]> {
         return await BranchModel.findUndeleted({ businesses: this })
     }
 }

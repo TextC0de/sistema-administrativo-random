@@ -30,7 +30,7 @@ const ProvinceController = {
             return res.json({ data: { deletedProvince, message: 'created province succesfully' } })
         }
         const newProvince = await Province.create(provinceForm)
-        if (!newProvince) return res.json({ statusCode: 500, error: 'could not create province' })
+        if (newProvince === undefined) return res.json({ statusCode: 500, error: 'could not create province' })
 
         const province = formatIds(newProvince)
         res.json({ data: { province, message: 'created province succesfully' } })

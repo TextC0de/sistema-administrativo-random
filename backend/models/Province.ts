@@ -1,8 +1,8 @@
 import { prop, modelOptions, getModelForClass, type ReturnModelType, type DocumentType } from '@typegoose/typegoose'
-import dbConnect from 'lib/dbConnect'
 import CityModel, { type City } from './City'
 import BranchModel, { type Branch } from './Branch'
 import type mongoose from 'mongoose'
+import { type FilterQuery } from 'mongoose'
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Province {
@@ -14,20 +14,20 @@ export class Province {
     @prop({ type: Boolean, default: false })
     deleted: boolean
 
-    static async findUndeleted(this: ReturnModelType<typeof Province>, filter: Object = {}) {
+    static async findUndeleted(this: ReturnModelType<typeof Province>, filter: FilterQuery<Province> = {}): Promise<Province[]> {
         return await this.find({ ...filter, deleted: false })
     }
 
-    static async findOneUndeleted(this: ReturnModelType<typeof Province>, filter: Object = {}) {
+    static async findOneUndeleted(this: ReturnModelType<typeof Province>, filter: FilterQuery<Province> = {}): Promise<Province | null> {
         return await this.findOne({ ...filter, deleted: false })
     }
 
-    async softDelete(this: DocumentType<Province>) {
+    async softDelete(this: DocumentType<Province>): Promise<void> {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this: DocumentType<Province>) {
+    async restore(this: DocumentType<Province>): Promise<void> {
         this.deleted = false
         await this.save()
     }

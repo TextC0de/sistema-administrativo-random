@@ -13,20 +13,20 @@ interface props {
     techs: IUser[]
 }
 
-export default function TechAdminTaskTable({ tasks, cities, provinces, clients, businesses, techs }: props) {
+export default function TechAdminTaskTable({ tasks, cities, provinces, clients, businesses, techs }: props): JSX.Element {
     const [tableTasks, setTableTasks] = useState<ITask[]>(tasks)
     const [type, setType] = useState<string>('')
     const [entities, setEntities] = useState<any[]>([] as any[])
     const filterTypes = ['Localidad', 'Provincia', 'Tecnico', 'Empresa', 'Cliente']
 
-    function selectEntity(e: ChangeEvent<HTMLSelectElement>) {
+    function selectEntity(e: ChangeEvent<HTMLSelectElement>): void {
         const { value } = e.target
         switch (type) {
             case 'Localidad':
                 setTableTasks(tasks.filter(task => task.branch.city.name === value))
                 break
             case 'Provincia':
-                setTableTasks(tasks.filter(task => task.branch.city.province.name === value))
+                setTableTasks(tasks.filter(task => (task.branch.city.province as IProvince).name === value))
                 break
             case 'Tecnico':
                 setTableTasks(tasks.filter(task => task.assigned.some(tech => tech.fullName === value)))
@@ -43,9 +43,8 @@ export default function TechAdminTaskTable({ tasks, cities, provinces, clients, 
         }
     }
 
-    function selectType(e: ChangeEvent<HTMLSelectElement>) {
+    function selectType(e: ChangeEvent<HTMLSelectElement>): void {
         const { value } = e.target
-
         setType(value)
         switch (value) {
             case 'Localidad':
@@ -62,18 +61,18 @@ export default function TechAdminTaskTable({ tasks, cities, provinces, clients, 
                 break
             case 'Cliente':
                 setEntities(clients)
-            default:
                 break
+            default:
         }
     }
 
-    function clearFilter() {
+    function clearFilter(): void {
         setType('')
         setEntities([] as any[])
         setTableTasks(tasks)
     }
 
-    const deleteTask = (id: string) => {
+    const deleteTask = (id: string): void => {
         setTableTasks(tableTasks.filter(task => task._id !== id))
     }
     return (

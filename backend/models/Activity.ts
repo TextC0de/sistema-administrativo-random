@@ -1,10 +1,9 @@
 import { prop, type Ref, getModelForClass, type ReturnModelType, modelOptions, type DocumentType } from '@typegoose/typegoose'
-import dbConnect from 'lib/dbConnect'
 import { type IPopulateParameter } from './interfaces'
-import UserModel, { User } from './User'
+import { User } from './User'
 import TaskModel, { type Task } from './Task'
 import ExpenseModel, { type Expense } from './Expense'
-import mongoose from 'mongoose'
+import mongoose, { type FilterQuery } from 'mongoose'
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Activity {
@@ -44,20 +43,20 @@ export class Activity {
         ]
     }
 
-    static async findUndeleted(this: ReturnModelType<typeof Activity>, filter: Object = {}) {
+    static async findUndeleted(this: ReturnModelType<typeof Activity>, filter: FilterQuery<Activity> = {}): Promise<Activity[]> {
         return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    static async findOneUndeleted(this: ReturnModelType<typeof Activity>, filter: Object = {}) {
+    static async findOneUndeleted(this: ReturnModelType<typeof Activity>, filter: FilterQuery<Activity> = {}): Promise<Activity | null> {
         return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    async softDelete(this: DocumentType<Activity>) {
+    async softDelete(this: DocumentType<Activity>): Promise<void> {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this: DocumentType<Activity>) {
+    async restore(this: DocumentType<Activity>): Promise<void> {
         this.deleted = false
         await this.save()
     }

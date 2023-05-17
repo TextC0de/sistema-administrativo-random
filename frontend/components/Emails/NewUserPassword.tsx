@@ -1,6 +1,6 @@
 import { type NewUser } from 'lib/nodemailer'
 
-export default function NewUserPassword ({ user }: { user: NewUser }) {
+export default function NewUserPassword ({ user }: { user: NewUser }): JSX.Element {
     return (
         <>
             <div>

@@ -1,10 +1,10 @@
 import { type Ref, prop, index, getModelForClass, modelOptions, type ReturnModelType, type DocumentType } from '@typegoose/typegoose'
 import { Branch } from './Branch'
-import { type PreventiveStatus, type Frequency, Month } from './types'
+import { type PreventiveStatus, type Frequency, type Month } from './types'
 import { User } from './User'
 import { Business } from './Business'
 import { type IPopulateParameter } from './interfaces'
-import mongoose from 'mongoose'
+import mongoose, { type FilterQuery } from 'mongoose'
 
 @index({ business: 1, branch: 1 }, { unique: true })
 @modelOptions({ schemaOptions: { timestamps: true } })
@@ -27,7 +27,7 @@ export class Preventive {
     frequency?: Frequency
 
     @prop({ type: mongoose.SchemaTypes.Array, required: false })
-    months?: string[]
+    months?: Month[]
 
     @prop({ type: Date, required: false })
     lastDoneAt?: Date
@@ -60,20 +60,20 @@ export class Preventive {
         ]
     }
 
-    static async findUndeleted(this: ReturnModelType<typeof Preventive>, filter: Object = {}) {
+    static async findUndeleted(this: ReturnModelType<typeof Preventive>, filter: FilterQuery<Preventive> = {}): Promise<Preventive[]> {
         return await this.find({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    static async findOneUndeleted(this: ReturnModelType<typeof Preventive>, filter: Object = {}) {
+    static async findOneUndeleted(this: ReturnModelType<typeof Preventive>, filter: FilterQuery<Preventive> = {}): Promise<Preventive | null> {
         return await this.findOne({ ...filter, deleted: false }).populate(this.getPopulateParameters())
     }
 
-    async softDelete(this: DocumentType<Preventive>) {
+    async softDelete(this: DocumentType<Preventive>): Promise<void> {
         this.deleted = true
         await this.save()
     }
 
-    async restore(this: DocumentType<Preventive>) {
+    async restore(this: DocumentType<Preventive>): Promise<void> {
         this.deleted = false
         await this.save()
     }

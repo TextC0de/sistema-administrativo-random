@@ -23,7 +23,7 @@ const AuthController = {
     console.log(appRequest); */
     await dbConnect()
 
-    if (req.body.appRequest) {
+    if (req.body.appRequest as boolean) {
       const { email, password } = req.body
       // console.log('mobileauth');
 
@@ -32,10 +32,10 @@ const AuthController = {
       if (docUser == null) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
       if (!docUser.comparePassword(password)) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
       // console.log('returned info');
-      const access_token = getToken(docUser)
+      const accessToken = getToken(docUser)
       const { _id, firstName, lastName, fullName, roles } = docUser
       const user = formatIds({ _id, email, firstName, lastName, fullName, roles })
-      const data = { user, access_token }
+      const data = { user, accessToken }
       res.status(201).json({ data, statusCode: 201 })
     } else {
       const { email, password } = req.body
@@ -55,7 +55,7 @@ const AuthController = {
     const { password, firstName, lastName, email } = req.body
     const userData: UserData = { password, firstName, lastName, email, role: ['Administrativo Tecnico'] }
 
-    userData.fullName = `${firstName} ${lastName}`
+    userData.fullName = `${firstName as string} ${lastName as string}`
     await dbConnect()
     /* create a new model in the database */
     try {

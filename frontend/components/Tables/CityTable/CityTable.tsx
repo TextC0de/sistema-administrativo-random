@@ -8,19 +8,19 @@ interface props {
     cities: ICity[]
     provinces: IProvince[]
 }
-export default function CityTable({ cities, provinces }: props) {
+export default function CityTable({ cities, provinces }: props): JSX.Element {
     const [tableCities, setTableCities] = useState<ICity[]>(cities)
     const [type, setType] = useState<string>('')
     const [entities, setEntities] = useState<any[]>([] as any[])
     const filterTypes = ['Provincia']
 
-    function selectEntity(e: ChangeEvent<HTMLSelectElement>) {
+    function selectEntity(e: ChangeEvent<HTMLSelectElement>): void {
         const { value } = e.target
         // +console.log(value);
 
         switch (type) {
             case 'Provincia':
-                setTableCities(cities.filter(city => city.province.name === value))
+                setTableCities(cities.filter(city => (city.province as IProvince).name === value))
                 break
             default:
                 setTableCities(cities)
@@ -28,7 +28,7 @@ export default function CityTable({ cities, provinces }: props) {
         }
     }
 
-    function selectType(e: ChangeEvent<HTMLSelectElement>) {
+    function selectType(e: ChangeEvent<HTMLSelectElement>): void {
         const { value } = e.target
 
         setType(value)
@@ -41,13 +41,13 @@ export default function CityTable({ cities, provinces }: props) {
         }
     }
 
-    function clearFilter() {
+    function clearFilter(): void {
         setType('')
         setEntities([] as any[])
         setTableCities(cities)
     }
-    const deleteCity = (id: string) => {
-        const newTable = (prev: ICity[]) => prev.filter(city => city._id !== id)
+    const deleteCity = (id: string): void => {
+        const newTable = (prev: ICity[]): ICity[] => prev.filter(city => city._id !== id)
         setTableCities(newTable(cities))
     }
 

@@ -3,7 +3,6 @@ import UserModel from '../models/User'
 import { type NextConnectApiRequest } from './interfaces'
 import { type ResponseData } from './types'
 import Mailer from 'lib/nodemailer'
-import { IUser } from '../models/interfaces'
 import { formatIds } from 'lib/utils'
 import dbConnect from 'lib/dbConnect'
 import { nanoid } from 'nanoid'
@@ -46,7 +45,7 @@ const UserController = {
         const password = nanoid(10)
         console.log(password)
 
-        const fullName = `${firstName} ${lastName}`
+        const fullName = `${firstName as string} ${lastName as string}`
         const newUser = { firstName, lastName, fullName, city, roles, email, password }
         await dbConnect()
         const deletedUser = await UserModel.findOne({ email })
@@ -63,7 +62,7 @@ const UserController = {
         }
         try {
             const docUser = await UserModel.create(newUser)
-            if (!docUser) return res.status(400).json({ error: 'failed to create user', statusCode: 400 })
+            if (docUser === undefined) return res.status(400).json({ error: 'failed to create user', statusCode: 400 })
             await Mailer.sendNewUserPassword(newUser)
             res.status(200).json({ data: { user: formatIds(docUser) }, statusCode: 200 })
         } catch (e) {
@@ -90,7 +89,7 @@ const UserController = {
         const { firstName, lastName, fullName, email, password } = user
         const newUser = { firstName, lastName, fullName, email, password }
         try {
-            user.save()
+            await user.save()
             await Mailer.sendResetPassword(newUser)
             res.status(200).json({ data: { user: formatIds(user) }, statusCode: 200 })
         } catch (error) {

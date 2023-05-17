@@ -30,7 +30,7 @@ const ClientController = {
             return res.json({ data: { deletedClient, message: 'created Client succesfully' } })
         }
         const newClient = await Client.create(clientForm)
-        if (!newClient) return res.json({ statusCode: 500, error: 'could not create Client' })
+        if (newClient === undefined) return res.json({ statusCode: 500, error: 'could not create Client' })
 
         const client = formatIds(newClient)
         res.json({ data: { client, message: 'created Client succesfully' } })

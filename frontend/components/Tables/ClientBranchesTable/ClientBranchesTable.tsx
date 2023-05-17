@@ -11,13 +11,13 @@ interface props {
     businesses: IBusiness[]
 }
 
-export default function BranchTable({ branches, cities, provinces, businesses }: props) {
+export default function BranchTable({ branches, cities, provinces, businesses }: props): JSX.Element {
     const [tableBranches, setTableBranches] = useState<IBranch[]>(branches)
     const [type, setType] = useState<string>('')
     const [entities, setEntities] = useState<any[]>([] as any[])
     const filterTypes = ['Localidad', 'Provincia', 'Empresa']
 
-    function selectEntity(e: ChangeEvent<HTMLSelectElement>) {
+    function selectEntity(e: ChangeEvent<HTMLSelectElement>): void {
         const { value } = e.target
         // +console.log(value);
 
@@ -27,7 +27,7 @@ export default function BranchTable({ branches, cities, provinces, businesses }:
                 setTableBranches(branches.filter(branch => branch.city.name === value))
                 break
             case 'Provincia':
-                setTableBranches(branches.filter(branch => branch.city.province.name === value))
+                setTableBranches(branches.filter(branch => (branch.city.province as IProvince).name === value))
                 break
             case 'Empresa':
                 setTableBranches(branches.filter(branch => branch.businesses.some(business => business.name === value)))
@@ -38,7 +38,7 @@ export default function BranchTable({ branches, cities, provinces, businesses }:
         }
     }
 
-    function selectType(e: ChangeEvent<HTMLSelectElement>) {
+    function selectType(e: ChangeEvent<HTMLSelectElement>): void {
         const { value } = e.target
 
         setType(value)
@@ -57,14 +57,14 @@ export default function BranchTable({ branches, cities, provinces, businesses }:
         }
     }
 
-    function clearFilter() {
+    function clearFilter(): void {
         setType('')
         setEntities([] as any[])
         setTableBranches(branches)
     }
 
-    const deleteBranch = (id: string) => {
-        const newTable = (prev: IBranch[]) => prev.filter(branch => branch._id !== id)
+    const deleteBranch = (id: string): void => {
+        const newTable = (prev: IBranch[]): IBranch[] => prev.filter(branch => branch._id !== id)
         setTableBranches(newTable(branches))
     }
 

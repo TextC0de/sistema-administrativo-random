@@ -1,6 +1,6 @@
 import { Button, Label, TextInput } from 'flowbite-react'
 import { useRouter } from 'next/router'
-import { type ChangeEvent, useEffect, useState } from 'react'
+import { type ChangeEvent, useEffect, useState, type FormEvent } from 'react'
 import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
 import useLoading from 'frontend/hooks/useLoading'
@@ -19,7 +19,7 @@ interface props {
     newClient?: boolean
 }
 
-export default function ClientForm({ clientForm, newClient = true }: props) {
+export default function ClientForm({ clientForm, newClient = true }: props): JSX.Element {
     const router = useRouter()
     const [form, setForm] = useState<IClientForm>({
         _id: clientForm._id,
@@ -30,7 +30,7 @@ export default function ClientForm({ clientForm, newClient = true }: props) {
     const [submitted, setSubmitted] = useState<boolean>(false)
     const { triggerAlert } = useAlert()
 
-    const postData = async (form: IClientForm) => {
+    const postData = async (form: IClientForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.post(form, api.techAdmin.clients)
@@ -44,7 +44,7 @@ export default function ClientForm({ clientForm, newClient = true }: props) {
         }
     }
 
-    const putData = async (form: IClientForm) => {
+    const putData = async (form: IClientForm): Promise<void> => {
         try {
             startLoading()
             await fetcher.put(form, api.techAdmin.clients)
@@ -58,16 +58,16 @@ export default function ClientForm({ clientForm, newClient = true }: props) {
         }
     }
 
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    function handleChange(e: ChangeEvent<HTMLInputElement>): void {
         const { value } = e.target
         setForm({ ...clientForm, name: value })
     }
 
-    const formValidate = () => {
+    const formValidate = (): IClientFormErrors => {
         const err: IClientFormErrors = {
            name: ''
         }
-        if (!form.name) err.name = 'Se debe especificar un nombre'
+        if (form.name === '') err.name = 'Se debe especificar un nombre'
         setErrors(err)
         return err
     }
@@ -76,21 +76,26 @@ export default function ClientForm({ clientForm, newClient = true }: props) {
         if (submitted)formValidate()
     }, [form])
 
-    async function goBack() {
+    async function goBack(): Promise<void> {
         startLoading()
         await router.push('/tech-admin/clients')
         stopLoading()
     }
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
         e.preventDefault()
         setSubmitted(true)
         const errs = formValidate()
         if (errs.name === '') {
-            newClient ? postData(form) : putData(form)
+            if (newClient) void postData(form)
+            else void putData(form)
         } else {
             setErrors(errs)
         }
+    }
+
+    const handleNavigate = (): void => {
+        void goBack()
     }
 
     return (
@@ -112,7 +117,7 @@ export default function ClientForm({ clientForm, newClient = true }: props) {
                     sizing='md'
                     placeholder={clientForm.name}
                     onChange={handleChange}
-                    color={errors.name ? 'failure' : ''}
+                    color={errors.name !== '' ? 'failure' : ''}
                     />
                     <div className='mb-2 block'>
                         <Label
@@ -125,7 +130,7 @@ export default function ClientForm({ clientForm, newClient = true }: props) {
                 </div>
 
                 <div className='flex flex-row justify-between'>
-                    <Button size='sm' onClick={goBack} color='gray'> Cancelar </Button>
+                    <Button size='sm' onClick={handleNavigate} color='gray' type='button'> Cancelar </Button>
                     <Button size='sm' type='submit'> Guardar </Button>
                 </div>
             </form>

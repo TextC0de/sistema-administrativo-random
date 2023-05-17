@@ -69,7 +69,7 @@ const TaskController = {
         const taskForm = { branch, business, assigned: assignedIds, taskType, openedAt, status, description, participants, activity, operatorName, image, workOrderNumber, closedAt }
         try {
             const newTask = await Task.create(taskForm)
-            if (!newTask) return res.json({ statusCode: 500, error: 'could not create Task' })
+            if (newTask === undefined) return res.json({ statusCode: 500, error: 'could not create Task' })
 
             return res.json({ statusCode: 200, data: { task: formatIds(newTask), message: 'created Task succesfully' } })
         } catch (error) {

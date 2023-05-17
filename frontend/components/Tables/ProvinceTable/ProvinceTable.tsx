@@ -1,17 +1,16 @@
 import { type IProvince } from 'backend/models/interfaces'
-import { memo, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Table } from 'flowbite-react'
 import Item from './Item'
-import useAlert from 'frontend/hooks/useAlert'
 
 interface props {
     provinces: IProvince[]
 }
 
-export default function ProvinceTable({ provinces }: props) {
+export default function ProvinceTable({ provinces }: props): JSX.Element {
     const [tableProvinces, setTableProvinces] = useState<IProvince[]>(provinces)
 
-    const deleteProvince = (id: string) => {
+    const deleteProvince = (id: string): void => {
         setTableProvinces(tableProvinces.filter(province => province._id !== id))
     }
 
@@ -29,6 +28,3 @@ export default function ProvinceTable({ provinces }: props) {
         </>
     )
 }
-
-// const MemoizedProvinceTable = memo(ProvinceTable);
-// export default MemoizedProvinceTable

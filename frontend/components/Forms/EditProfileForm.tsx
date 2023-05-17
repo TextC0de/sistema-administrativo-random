@@ -18,14 +18,14 @@ const emptyForm = {
     confirmNewPassword: ''
 }
 
-export default function EditProfileForm () {
+export default function EditProfileForm (): JSX.Element {
     const [form, setForm] = useState<IEditProfileForm>(emptyForm)
     const [errors, setErrors] = useState<IEditProfileForm>(emptyForm)
 
     const { triggerAlert } = useAlert()
     const { stopLoading, startLoading } = useLoading()
 
-    async function validateForm() {
+    async function validateForm(): Promise<IEditProfileForm> {
         let errs = emptyForm
         if (form.currentPassword === '') errs = { ...errs, currentPassword: 'Introduzca su contraseña actual' }
         try {
@@ -45,7 +45,7 @@ export default function EditProfileForm () {
         return errs
     }
 
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    function handleChange(e: ChangeEvent<HTMLInputElement>): void {
         const { value, name } = e.target
         setForm(
             {
@@ -55,13 +55,13 @@ export default function EditProfileForm () {
         )
     }
 
-    async function goBack() {
+    async function goBack(): Promise<void> {
         startLoading()
         await router.push('/')
         stopLoading()
     }
 
-    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    async function submit(e: FormEvent<HTMLFormElement>): Promise<void> {
         e.preventDefault()
         const errs = await validateForm()
         console.log(errs)
@@ -79,6 +79,14 @@ export default function EditProfileForm () {
                 stopLoading()
             }
         }
+    }
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+        void submit(e)
+    }
+
+    const handleNavigate = (): void => {
+        void goBack()
     }
 
     return (
@@ -102,7 +110,7 @@ export default function EditProfileForm () {
                     onChange={handleChange}
                     placeholder=''
                     value={form.currentPassword}
-                    color={errors.currentPassword ? 'failure' : ''}
+                    color={errors.currentPassword !== '' ? 'failure' : ''}
                 />
                 <div className='mb-2 block'>
                     <Label
@@ -129,7 +137,7 @@ export default function EditProfileForm () {
                     onChange={handleChange}
                     placeholder=''
                     value={form.newPassword}
-                    color={errors.newPassword ? 'failure' : ''}
+                    color={errors.newPassword !== '' ? 'failure' : ''}
                 />
                 <div className='mb-2 block'>
                     <Label
@@ -156,7 +164,7 @@ export default function EditProfileForm () {
                     sizing='md'
                     placeholder=''
                     value={form.confirmNewPassword}
-                    color={errors.confirmNewPassword ? 'failure' : ''}
+                    color={errors.confirmNewPassword !== '' ? 'failure' : ''}
                 />
                 <div className='mb-2 block'>
                     <Label
@@ -168,7 +176,7 @@ export default function EditProfileForm () {
                 </div>
             </div>
             <div className='flex flex-row justify-between'>
-                <Button size='sm' color='gray' onClick={goBack}> Cancelar</Button>
+                <Button size='sm' color='gray' onClick={handleNavigate}> Cancelar</Button>
                 <Button size='sm' type='submit'>Guardar</Button>
             </div>
         </form>
