@@ -110,7 +110,7 @@ export default function BusinessForm({ businessForm, newBusiness = true }: props
 						id="name"
 						type="text"
 						sizing="md"
-						color={errors.name !== '' ? 'failure' : ''}
+						color={errors.name !== undefined ? 'failure' : ''}
 						placeholder={businessForm.name}
 						onChange={handleChange}
 					/>
@@ -120,10 +120,9 @@ export default function BusinessForm({ businessForm, newBusiness = true }: props
 				</div>
 				<div className="flex flex-row justify-between">
 					<Button size="sm" color="gray" onClick={handleNavigate} type="button">
-						{' '}
-						Cancelar{' '}
+						Cancelar
 					</Button>
-					<Button size="sm"> Guardar </Button>
+					<Button size="sm" type='submit'> Guardar </Button>
 				</div>
 			</form>
 		</>

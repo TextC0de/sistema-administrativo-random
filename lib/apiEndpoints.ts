@@ -1,10 +1,3 @@
-export function removeCurrentPathname(url: string): string {
-	const currentPathname = new URL(window.location.href).pathname
-	const absoluteUrl = new URL(url, window.location.origin)
-	absoluteUrl.pathname = absoluteUrl.pathname.replace(currentPathname, '')
-	return absoluteUrl.toString()
-}
-
 export const baseApiUrl = '/api/'
 export const authUrl = baseApiUrl + 'auth/'
 export const logoutUrl = authUrl + 'logout/'

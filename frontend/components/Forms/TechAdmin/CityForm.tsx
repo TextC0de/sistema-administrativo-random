@@ -122,7 +122,7 @@ export default function CityForm({ cityForm, newCity = true, provinces }: props)
 						placeholder={cityForm.name}
 						onChange={handleChange}
 						value={form.name}
-						color={errors.name !== '' ? 'failure' : ''}
+						color={errors.name !== undefined ? 'failure' : ''}
 					/>
 					<div className="mb-2 block">
 						<Label htmlFor="name error" value={errors.name} className="text-lg" color="failure" />
@@ -138,7 +138,7 @@ export default function CityForm({ cityForm, newCity = true, provinces }: props)
 						onChange={selectProvince}
 						name="province"
 						defaultValue="default"
-						color={errors.province !== '' ? 'failure' : ''}
+						color={errors.province !== undefined ? 'failure' : ''}
 					>
 						<option value="default" disabled hidden>
 							{newCity ? 'Seleccione una provincia' : cityForm.province.name}
@@ -156,7 +156,7 @@ export default function CityForm({ cityForm, newCity = true, provinces }: props)
 						{' '}
 						Cancelar{' '}
 					</Button>
-					<Button size="sm"> Guardar </Button>
+					<Button size="sm" type='submit'> Guardar </Button>
 				</div>
 			</form>
 		</>

@@ -241,12 +241,10 @@ export default function UserForm({ userForm, newUser = true, cities }: props): J
 				</div>
 				<div className="flex flex-row justify-between">
 					<Button size="sm" onClick={handleNavigate} type="button" color="gray">
-						{' '}
-						Cancelar{' '}
+						Cancelar
 					</Button>
 					<Button size="sm" type="submit">
-						{' '}
-						Guardar{' '}
+						Guardar
 					</Button>
 				</div>
 			</form>

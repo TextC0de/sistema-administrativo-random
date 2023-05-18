@@ -1,10 +1,12 @@
-import { removeCurrentPathname } from './apiEndpoints'
+export function getFullUrl(url: string): string {
+	return window.location.origin + url
+}
 
 const contentType = 'application/json'
 
 const fetcher = {
 	post: async function (data: any, url: string) {
-		const modUrl = removeCurrentPathname(url)
+		const modUrl = getFullUrl(url)
 		const res: Response = await fetch(modUrl, {
 			method: 'POST',
 			headers: {
@@ -21,7 +23,7 @@ const fetcher = {
 		return await res.json()
 	},
 	put: async function (data: any, url: string) {
-		const modUrl = removeCurrentPathname(url)
+		const modUrl = getFullUrl(url)
 		const res: Response = await fetch(modUrl, {
 			method: 'PUT',
 			headers: {
@@ -38,7 +40,7 @@ const fetcher = {
 		return await res.json()
 	},
 	get: async function (url: string) {
-		const modUrl = removeCurrentPathname(url)
+		const modUrl = getFullUrl(url)
 		const res: Response = await fetch(modUrl, {
 			method: 'GET'
 		})
@@ -50,7 +52,7 @@ const fetcher = {
 		return await res.json()
 	},
 	delete: async function (data: any, url: string) {
-		const modUrl = removeCurrentPathname(url)
+		const modUrl = getFullUrl(url)
 		const res: Response = await fetch(modUrl, {
 			method: 'DELETE',
 			headers: {

@@ -113,7 +113,7 @@ export default function ClientForm({ clientForm, newClient = true }: props): JSX
 						sizing="md"
 						placeholder={clientForm.name}
 						onChange={handleChange}
-						color={errors.name !== '' ? 'failure' : ''}
+						color={errors.name !== undefined ? 'failure' : ''}
 					/>
 					<div className="mb-2 block">
 						<Label htmlFor="branch" value={errors.name} className="text-lg" color="failure" />
@@ -122,12 +122,10 @@ export default function ClientForm({ clientForm, newClient = true }: props): JSX
 
 				<div className="flex flex-row justify-between">
 					<Button size="sm" onClick={handleNavigate} color="gray" type="button">
-						{' '}
-						Cancelar{' '}
+						Cancelar
 					</Button>
 					<Button size="sm" type="submit">
-						{' '}
-						Guardar{' '}
+						Guardar
 					</Button>
 				</div>
 			</form>

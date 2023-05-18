@@ -10,7 +10,7 @@ import useAlert from 'frontend/hooks/useAlert'
 
 export interface IClientBranchForm {
 	_id: string
-	number: number
+	number: string
 	client: IClient
 	city: ICity
 	businesses: IBusiness[]
@@ -92,7 +92,7 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>): void {
 		const { value } = e.target
-		setForm({ ...form, number: parseInt(value) })
+		setForm({ ...form, number: value })
 	}
 
 	useEffect(() => {
@@ -105,7 +105,7 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
 			city: '',
 			businesses: ''
 		}
-		if (isNaN(form.number)) err.number = 'Se debe proporcionar un numero'
+		if (form.number === '') err.number = 'Se debe proporcionar un numero'
 		if (Object.keys(form.city).length < 1) err.city = 'Se debe especificar la ciudad'
 		if (form.businesses.length < 1) err.businesses = 'Se debe seleccionar al menos una empresa'
 		setErrors(err)
@@ -125,15 +125,15 @@ export default function ClientBranchForm({ branchForm, newBranch = true, cities,
 		const { value } = e.target
 		const business = businesses.find((business) => business.name === value)
 		if (business !== undefined) {
-setForm((prev) => {
-				return {
-					...prev,
-					businesses: !prev.businesses.some((x) => x._id === business._id)
-						? [...prev.businesses, business]
-						: prev.businesses
-				}
-			})
-}
+		setForm((prev) => {
+						return {
+							...prev,
+							businesses: !prev.businesses.some((x) => x._id === business._id)
+								? [...prev.businesses, business]
+								: prev.businesses
+						}
+					})
+		}
 	}
 
 	const deleteBranchBusiness = (id: string): void => {
@@ -175,7 +175,7 @@ setForm((prev) => {
 						onChange={handleChange}
 						value={form.number}
 						disabled={!newBranch}
-						color={errors.number !== '' ? 'failure' : ''}
+						color={errors.number !== undefined ? 'failure' : ''}
 					/>
 					<div className="mb-2 block">
 						<Label htmlFor="number error" value={errors.number} className="text-lg" color="failure" />
@@ -192,7 +192,7 @@ setForm((prev) => {
 						name="city"
 						defaultValue="default"
 						disabled={!newBranch}
-						color={errors.city !== '' ? 'failure' : ''}
+						color={errors.city !== undefined ? 'failure' : ''}
 					>
 						<option value="default" disabled hidden>
 							{newBranch
@@ -207,7 +207,6 @@ setForm((prev) => {
 						<Label htmlFor="city error" value={errors.city} className="text-lg" color="failure" />
 					</div>
 				</div>
-				<hr className="mt-1" />
 				<Label value="Empresas contratadas" className="text-lg" />
 				<div>
 					<Select
@@ -215,7 +214,7 @@ setForm((prev) => {
 						onChange={addBusiness}
 						value="default"
 						className="col-span-5"
-						color={errors.businesses !== '' ? 'failure' : ''}
+						color={errors.businesses !== undefined ? 'failure' : ''}
 					>
 						<option value="default" disabled hidden>
 							Seleccione las empresas a agregar
@@ -226,7 +225,7 @@ setForm((prev) => {
 							</option>
 						))}
 					</Select>
-					<ul>
+					<ul className='mt-4'>
 						{form.businesses.map((business, index) => {
 							return (
 								<li className="rounded-full bg-gray-300 py-2 px-3 mr-1 mb-2 inline-block" key={index}>
@@ -235,6 +234,7 @@ setForm((prev) => {
 										<button
 											className="rounded-full bg-white "
 											onClick={() => deleteBranchBusiness(business._id as string)}
+											type='button'
 										>
 											<BsFillXCircleFill color="gray" size={20} />
 										</button>
@@ -249,7 +249,6 @@ setForm((prev) => {
 				</div>
 				<div className="flex flex-row justify-between">
 					<Button size="sm" color="gray" onClick={handleNavigate} type="button">
-						{' '}
 						Cancelar
 					</Button>
 					<Button size="sm" type="submit">

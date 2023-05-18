@@ -264,7 +264,7 @@ setForm((prev) => {
 						onChange={selectClient}
 						name="select-client"
 						defaultValue={'default'}
-						color={errors.branch !== '' ? 'failure' : ''}
+						color={errors.branch !== undefined ? 'failure' : ''}
 					>
 						<option value="default" hidden disabled>
 							{newPreventive ? 'Seleccione un cliente...' : `${client}`}
@@ -287,7 +287,7 @@ setForm((prev) => {
 						onChange={selectBranch}
 						name="branch"
 						defaultValue="default"
-						color={errors.branch !== '' ? 'failure' : ''}
+						color={errors.branch !== undefined ? 'failure' : ''}
 					>
 						<option value="default" hidden disabled>
 							{newPreventive
@@ -313,7 +313,7 @@ setForm((prev) => {
 						onChange={selectBusiness}
 						name="business"
 						defaultValue="default"
-						color={errors.business !== '' ? 'failure' : ''}
+						color={errors.business !== undefined ? 'failure' : ''}
 					>
 						<option value="default" hidden disabled>
 							{newPreventive ? 'Seleccione una empresa...' : preventiveForm.business.name}
@@ -339,7 +339,7 @@ setForm((prev) => {
 						onChange={selectFrequency}
 						name="frequency"
 						defaultValue="default"
-						color={errors.frequency !== '' ? 'failure' : ''}
+						color={errors.frequency !== undefined ? 'failure' : ''}
 					>
 						<option value="default" hidden disabled>
 							{newPreventive
@@ -390,7 +390,7 @@ setForm((prev) => {
 							onChange={addTechnician}
 							value="default"
 							className="mb-4"
-							color={errors.assigned !== '' ? 'failure' : ''}
+							color={errors.assigned !== undefined ? 'failure' : ''}
 						>
 							<option value="default" disabled hidden>
 								Seleccione un tecnico para agregar
@@ -435,7 +435,7 @@ setForm((prev) => {
 							onChange={addMonth}
 							value="default"
 							className="mb-4"
-							color={errors.frequency !== '' ? 'failure' : ''}
+							color={errors.frequency !== undefined ? 'failure' : ''}
 						>
 							<option value="default" disabled hidden>
 								Seleccione un mes para agregar
@@ -467,8 +467,7 @@ setForm((prev) => {
 				</div>
 				<div className="flex flex-row justify-between">
 					<Button color="gray" onClick={handleNavigate} type="button">
-						{' '}
-						Cancelar{' '}
+						Cancelar
 					</Button>
 					<Button type="submit"> Guardar </Button>
 				</div>

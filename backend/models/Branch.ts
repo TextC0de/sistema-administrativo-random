@@ -19,8 +19,8 @@ import { type IPopulateParameter } from './interfaces'
 export class Branch {
 	_id: mongoose.Types.ObjectId | string
 
-	@prop({ type: Number, required: true })
-	number: number
+	@prop({ type: String, required: true })
+	number: string
 
 	@prop({ ref: 'City', required: true })
 	city: Ref<City>

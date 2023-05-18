@@ -16,7 +16,7 @@ interface props {
 export default function NewClientBranch({ cities, client, businesses }: props): JSX.Element {
 	const branchForm: IClientBranchForm = {
 		_id: '',
-		number: 0,
+		number: '',
 		client,
 		city: {} as ICity,
 		businesses: []

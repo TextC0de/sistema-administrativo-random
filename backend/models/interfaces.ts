@@ -89,7 +89,7 @@ export interface CityModel extends mongoose.Model<ICity, {}, ICityMethods> {
 
 export interface IBranch {
 	_id: mongoose.Types.ObjectId | string
-	number: number
+	number: string
 	city: ICity
 	client: IClient
 	businesses: IBusiness[]

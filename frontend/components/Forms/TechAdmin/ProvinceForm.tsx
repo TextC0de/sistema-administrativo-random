@@ -117,7 +117,7 @@ export default function ProvinceForm({ provinceForm, newProvince = true }: props
 						sizing="md"
 						placeholder={provinceForm.name}
 						onChange={handleChange}
-						color={errors.name !== '' ? 'failure' : ''}
+						color={errors.name !== undefined ? 'failure' : ''}
 					/>
 					<div className="mb-2 block">
 						<Label htmlFor="name error" value={errors.name} className="text-lg" color="failure" />
@@ -125,12 +125,10 @@ export default function ProvinceForm({ provinceForm, newProvince = true }: props
 				</div>
 				<div className="flex flex-row justify-between">
 					<Button size="sm" color="gray" onClick={handleNavigate} type="button">
-						{' '}
-						Cancelar{' '}
+						Cancelar
 					</Button>
 					<Button size="sm" type="submit">
-						{' '}
-						Guardar{' '}
+						Guardar
 					</Button>
 				</div>
 			</form>
