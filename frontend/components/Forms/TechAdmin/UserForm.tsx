@@ -163,7 +163,7 @@ export default function UserForm({ userForm, newUser = true, cities }: props): J
 						placeholder={userForm.firstName}
 						onChange={handleChange}
 						value={form.firstName}
-						color={errors.firstName !== '' ? 'failure' : ''}
+						color={errors.firstName !== undefined ? 'failure' : ''}
 					/>
 					<div className="mb-2 block">
 						<Label htmlFor="name error" value={errors.firstName} className="text-lg" color="failure" />
@@ -181,7 +181,7 @@ export default function UserForm({ userForm, newUser = true, cities }: props): J
 						placeholder={userForm.lastName}
 						onChange={handleChange}
 						value={form.lastName}
-						color={errors.lastName !== '' ? 'failure' : ''}
+						color={errors.lastName !== undefined ? 'failure' : ''}
 					/>
 					<div className="mb-2 block">
 						<Label htmlFor="name error" value={errors.lastName} className="text-lg" color="failure" />
@@ -199,7 +199,7 @@ export default function UserForm({ userForm, newUser = true, cities }: props): J
 						placeholder={userForm.email}
 						onChange={handleChange}
 						value={form.email}
-						color={errors.email !== '' ? 'failure' : ''}
+						color={errors.email !== undefined ? 'failure' : ''}
 					/>
 					<div className="mb-2 block">
 						<Label htmlFor="email error" value={errors.email} className="text-lg" color="failure" />
