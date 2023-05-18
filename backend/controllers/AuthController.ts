@@ -22,35 +22,40 @@ const AuthController = {
     }
     console.log(appRequest); */
 		await dbConnect()
-		if (req.body.appRequest as boolean) {
-			const { email, password } = req.body
-			// console.log('mobileauth');
+		try {
+			if (req.body.appRequest as boolean) {
+				const { email, password } = req.body
+				// console.log('mobileauth');
 
-			const docUser = await User.findOne({ email }).select('+password') /* find user by email */
-			// console.log(docUser)
-			if (docUser == null) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
-			if (!docUser.comparePassword(password)) { return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' }) }
-			// console.log('returned info');
-			const accessToken = getToken(docUser)
-			const keyPair = new RSA({ b: 512 })
-			const publicKey = keyPair.exportKey('public')
-			await docUser.setPrivateKey(keyPair.exportKey('private'))
-			const { _id, firstName, lastName, fullName, roles } = docUser
-			const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey })
-			const data = { user, accessToken }
-			res.status(201).json({ data, statusCode: 201 })
-		} else {
-			const { email, password } = req.body
-			const docUser = await User.findOne({ email }).select('+password') /* find user by email */
-			if (docUser == null) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
-			const passwordMatch = docUser.comparePassword(password)
-			if (!passwordMatch) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
-			const keyPair = new RSA({ b: 2048 })
-			await docUser.setPrivateKey(keyPair.exportKey('private'))
-			const { _id, firstName, lastName, fullName, roles } = docUser
-			const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey: keyPair.exportKey('public') })
-			res.setHeader('Set-Cookie', cookie.serialize('ras_access_token', getToken({ userId: docUser._id.toString(), userRoles: docUser.roles }), cookieOptionsLogin))
-			res.status(201).json({ statusCode: 201, data: { message: 'successful login', user } })
+				const docUser = await User.findOne({ email }).select('+password') /* find user by email */
+				// console.log(docUser)
+				if (docUser == null) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
+				if (!docUser.comparePassword(password)) { return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' }) }
+				// console.log('returned info');
+				const accessToken = getToken(docUser)
+				const keyPair = new RSA({ b: 512 })
+				const publicKey = keyPair.exportKey('public')
+				await docUser.setPrivateKey(keyPair.exportKey('private'))
+				const { _id, firstName, lastName, fullName, roles } = docUser
+				const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey })
+				const data = { user, accessToken }
+				res.status(201).json({ data, statusCode: 201 })
+			} else {
+				const { email, password } = req.body
+				const docUser = await User.findOne({ email }).select('+password') /* find user by email */
+				if (docUser == null) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
+				const passwordMatch = docUser.comparePassword(password)
+				if (!passwordMatch) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
+				const keyPair = new RSA({ b: 2048 })
+				await docUser.setPrivateKey(keyPair.exportKey('private'))
+				const { _id, firstName, lastName, fullName, roles } = docUser
+				const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey: keyPair.exportKey('public') })
+				res.setHeader('Set-Cookie', cookie.serialize('ras_access_token', getToken({ userId: docUser._id.toString(), userRoles: docUser.roles }), cookieOptionsLogin))
+				res.status(201).json({ statusCode: 201, data: { message: 'successful login', user } })
+			}
+		} catch (error) {
+			console.log(error)
+			res.json({ statusCode: 500, error: error as string })
 		}
 	},
 	logout: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
