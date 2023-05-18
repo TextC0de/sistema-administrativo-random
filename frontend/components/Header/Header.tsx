@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import * as apiEndpoints from 'lib/apiEndpoints'
-import useUser from 'frontend/hooks/useUser'
-import { useEffect } from 'react'
+import useUser from 'frontend/hooks/useUser'/*
+import { useEffect } from 'react' */
 import { Dropdown } from 'flowbite-react'
 import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
@@ -12,7 +12,7 @@ const logo = '/logo_placeholder.png'
 
 export default function Header(): JSX.Element {
 	const router = useRouter()
-	const { user, loginUser, logoutUser, isLoggedIn } = useUser()
+	const { user, logoutUser, isLoggedIn } = useUser()
 	const { startLoading, stopLoading } = useLoading()
 	const logout = async (): Promise<void> => {
 		try {
@@ -28,9 +28,9 @@ export default function Header(): JSX.Element {
 		stopLoading()
 	}
 
-	useEffect(() => {
-		if (!isLoggedIn) void loginUser()
-	}, [])
+	/* useEffect(() => {
+		if (isLoggedIn) void logout()
+	}, []) */
 
 	async function navigate(): Promise<void> {
 		startLoading()

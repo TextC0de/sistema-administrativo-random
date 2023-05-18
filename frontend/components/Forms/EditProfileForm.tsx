@@ -5,6 +5,8 @@ import router from 'next/router'
 import { type ChangeEvent, type FormEvent, useState } from 'react'
 import * as api from 'lib/apiEndpoints'
 import useAlert from 'frontend/hooks/useAlert'
+import useUser from 'frontend/hooks/useUser'
+import RSA from 'node-rsa'
 
 interface IEditProfileForm {
 	currentPassword: string
@@ -21,32 +23,39 @@ const emptyForm = {
 export default function EditProfileForm(): JSX.Element {
 	const [form, setForm] = useState<IEditProfileForm>(emptyForm)
 	const [errors, setErrors] = useState<IEditProfileForm>(emptyForm)
-
+	const { user } = useUser()
 	const { triggerAlert } = useAlert()
 	const { stopLoading, startLoading } = useLoading()
+
+	const encryptPassword = (password: string): string => {
+		const key = new RSA()
+		key.importKey(user.publicKey, 'public')
+		const encryptedPassword = key.encrypt(password, 'base64')
+		console.log(encryptedPassword)
+		return encryptedPassword
+	}
 
 	async function validateForm(): Promise<IEditProfileForm> {
 		let errs = emptyForm
 		if (form.currentPassword === '') errs = { ...errs, currentPassword: 'Introduzca su contraseña actual' }
 		try {
 			if (form.currentPassword !== '') {
-				const res = await fetcher.post({ currentPassword: form.currentPassword }, api.checkPassword)
+				const res = await fetcher.post({ currentPassword: encryptPassword(form.currentPassword) }, api.checkPassword)
 				console.log(res)
 			}
 		} catch (e) {
 			console.log(e)
-
 			errs = { ...errs, currentPassword: 'Contraseña incorrecta' }
 		}
 		if (form.newPassword === '') errs = { ...errs, newPassword: 'Introduzca una nueva contraseña' }
 		if (form.confirmNewPassword === '') errs = { ...errs, confirmNewPassword: 'Confirme su nueva contraseña' }
 		if (form.newPassword !== form.confirmNewPassword) {
-errs = {
+		errs = {
 				...errs,
 				newPassword: 'Las contraseñas no coinciden',
 				confirmNewPassword: 'Las contraseñas no coinciden'
 			}
-}
+		}
 		setErrors(errs)
 		return errs
 	}

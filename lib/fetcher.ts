@@ -1,5 +1,7 @@
 export function getFullUrl(url: string): string {
-	return window.location.origin + url
+	const modUrl = window.location.origin + url
+	console.log(modUrl)
+	return modUrl
 }
 
 const contentType = 'application/json'

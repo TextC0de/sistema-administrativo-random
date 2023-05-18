@@ -1,11 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import UserContext from './UserContext'
-import * as apiEndpoints from 'lib/apiEndpoints'
-import { type ResponseData } from 'backend/controllers/types'
 import { type IUser } from 'backend/models/interfaces'
 import { type ProviderProps } from '../interfaces'
-
-import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
 
 const INITIAL_STATE = {
@@ -14,7 +10,8 @@ const INITIAL_STATE = {
 	lastName: '',
 	fullname: '',
 	_id: '',
-	roles: []
+	roles: [],
+	publicKey: ''
 }
 
 const UserProvider = ({ children }: ProviderProps): JSX.Element => {
@@ -22,33 +19,28 @@ const UserProvider = ({ children }: ProviderProps): JSX.Element => {
 	const { startLoading, stopLoading } = useLoading()
 	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
 
-	async function getUser(): Promise<IUser> {
-		try {
-			const json: ResponseData = await fetcher.get(apiEndpoints.loggedInUser)
-			if (json.data.user === undefined) {
-				console.log('no user found')
-				return INITIAL_STATE
-			}
-			setIsLoggedIn(true)
-			return json.data.user
-		} catch (error) {
-			console.log(error)
-			setIsLoggedIn(false)
-			return INITIAL_STATE
-		}
-	}
-
-	// it logs in the user by sending a request to an endpoint that reads the access token cookie and returns the user corresponding to that access token
-	async function loginUser(): Promise<void> {
+	function loginUser(user: IUser): void {
+		if (user === undefined) return
 		startLoading()
-		setUser(await getUser())
+		localStorage.setItem('user', JSON.stringify(user))
+		setUser(user)
+		setIsLoggedIn(true)
 		stopLoading()
 	}
 
 	function logoutUser(): void {
 		setUser(INITIAL_STATE)
 		setIsLoggedIn(false)
+		localStorage.setItem('user', JSON.stringify(INITIAL_STATE))
 	}
+
+	useEffect(() => {
+		const storedUser = localStorage.getItem('user')
+		if (storedUser !== null) {
+			setUser(JSON.parse(storedUser))
+			setIsLoggedIn(true)
+		}
+	}, [])
 
 	const memoValue = useMemo(() => {
 		return { user, loginUser, logoutUser, isLoggedIn }

@@ -1,18 +1,20 @@
 import { type JwtPayload, sign, verify } from 'jsonwebtoken'
-import { type User } from 'backend/models/User'
 const secret = process.env.SECRET ?? ''
 
-export const getToken = (user: User): string => {
+interface MyJwtPayload extends JwtPayload {
+	payload: any
+}
+
+export const getToken = (payload: any): string => {
 	return sign(
 		{
 			exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
-			userId: user._id.toString(),
-			userRoles: user.roles
+			payload
 		},
 		secret
 	)
 }
 
-export const getPayload = (jwt: string): string | JwtPayload => {
-	return verify(jwt, secret)
+export const getPayload = (jwt: string): MyJwtPayload => {
+	return <MyJwtPayload>verify(jwt, secret)
 }

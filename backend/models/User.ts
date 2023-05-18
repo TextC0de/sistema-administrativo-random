@@ -15,6 +15,7 @@ import { type IPopulateParameter, type IUserActivities } from './interfaces'
 import ActivityModel, { type Activity } from './Activity'
 import mongoose, { type FilterQuery } from 'mongoose'
 import { City } from './City'
+import { getToken } from 'lib/jwt'
 
 @pre<User>('save', function (next: any) {
 	if (this.isModified('firstName') || this.isModified('lastName')) {
@@ -49,6 +50,9 @@ export class User {
 
 	@prop({ type: mongoose.SchemaTypes.Array, required: true })
 	roles: Role[]
+
+	@prop({ type: String, required: false, select: false })
+	privateKey: string
 
 	@prop({ type: Boolean, default: false })
 	deleted: boolean
@@ -85,13 +89,22 @@ export class User {
 	}
 
 	comparePassword(this: User, plaintext: string): boolean {
-		// console.log('trying to compare passwords');
 		try {
 			return bcryptjs.compareSync(plaintext, this.password)
 		} catch (error) {
 			console.log(error)
 			return false
 		}
+	}
+
+	async setPrivateKey(this: DocumentType<User>, privateKey: string): Promise<void> {
+		this.privateKey = getToken(privateKey)
+		await this.save()
+	}
+
+	async removePrivateKey(this: DocumentType<User>): Promise<void> {
+		this.privateKey = ''
+		await this.save()
 	}
 
 	async getTasks(this: User): Promise<Task[]> {

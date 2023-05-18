@@ -13,6 +13,7 @@ export interface IUser {
 	fullName?: string
 	roles?: types.Role[]
 	password?: string
+	publicKey: string
 }
 // User methods
 export interface IUserMethods {

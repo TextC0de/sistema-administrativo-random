@@ -1,7 +1,6 @@
 import { type NextConnectApiRequest } from '../controllers/interfaces'
 import { type NextApiResponse } from 'next'
 import { type ResponseData } from '../controllers/types'
-import { type UserIdJwtPayload } from 'jsonwebtoken'
 import { getPayload } from 'lib/jwt'
 import { type Role } from '../models/types'
 
@@ -24,15 +23,15 @@ const accessControl = async (
 	const { headers, cookies } = req
 	// console.log(headers.authorization);
 
-	const jwt = headers.authorization !== undefined ? headers.authorization : cookies.access_token
+	const jwt = headers.authorization !== undefined ? headers.authorization : cookies.ras_access_token
 
 	if (jwt === undefined) return res.status(401).json({ error: "You're not logged in", statusCode: 403 })
-	const result = <UserIdJwtPayload>getPayload(jwt) // it's verified with the secret key
+	const result = getPayload(jwt) // it's verified with the secret key
 
 	if (result === undefined) return res.status(401).json({ error: 'No user found', statusCode: 403 })
 
-	if (!isAuthorized(req.url as string, result.userRoles as Role[])) { return res.status(401).json({ error: "You're not authorized to access this resource", statusCode: 403 }) }
-	req.userId = result.userId
+	if (!isAuthorized(req.url as string, result.payload.userRoles as Role[])) { return res.status(401).json({ error: "You're not authorized to access this resource", statusCode: 403 }) }
+	req.userId = result.payload.userId
 
 	next()
 }

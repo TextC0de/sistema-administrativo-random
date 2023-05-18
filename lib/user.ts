@@ -30,10 +30,10 @@ export const userIdFromJWT = (jwtToken: string): string | undefined => {
 export async function getUserServer(req: NextApiRequest): Promise<IUser | undefined> {
 	await dbConnect()
 	const { cookies } = req
-	if (cookies.access_token === undefined) {
+	if (cookies.ras_access_token === undefined) {
 		return undefined
 	}
-	const jwt = cookies.access_token
+	const jwt = cookies.ras_access_token
 	const result = <UserIdJwtPayload>verify(jwt, secret)
 	if (result === undefined) {
 		return undefined

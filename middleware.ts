@@ -13,7 +13,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     const secret = process.env.SECRET
     const { pathname } = req.nextUrl
     // console.log(pathname)
-    const jwt = req.cookies.get('access_token') // (1)
+    const jwt = req.cookies.get('ras_access_token') // (1)
     // console.log(jwt);
     console.log(req.method, pathname, new Date())
 

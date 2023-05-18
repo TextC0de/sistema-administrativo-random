@@ -5,10 +5,10 @@ import cookie from 'cookie'
 import dbConnect from 'lib/dbConnect'
 import User from '../models/User'
 import { cookieOptionsLogin, cookieOptionsLogout } from 'lib/cookies'
-import { getToken } from 'lib/jwt'
-
+import { getPayload, getToken } from 'lib/jwt'
 import { type IUser } from '../models/interfaces'
 import { formatIds } from 'lib/utils'
+import RSA from 'node-rsa'
 
 const AuthController = {
 	login: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
@@ -22,7 +22,6 @@ const AuthController = {
     }
     console.log(appRequest); */
 		await dbConnect()
-
 		if (req.body.appRequest as boolean) {
 			const { email, password } = req.body
 			// console.log('mobileauth');
@@ -33,23 +32,34 @@ const AuthController = {
 			if (!docUser.comparePassword(password)) { return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' }) }
 			// console.log('returned info');
 			const accessToken = getToken(docUser)
+			const keyPair = new RSA({ b: 512 })
+			const publicKey = keyPair.exportKey('public')
+			await docUser.setPrivateKey(keyPair.exportKey('private'))
 			const { _id, firstName, lastName, fullName, roles } = docUser
-			const user = formatIds({ _id, email, firstName, lastName, fullName, roles })
+			const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey })
 			const data = { user, accessToken }
 			res.status(201).json({ data, statusCode: 201 })
 		} else {
 			const { email, password } = req.body
-			const user = await User.findOne({ email }).select('+password') /* find user by email */
-			if (user == null) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
-			const passwordMatch = user.comparePassword(password)
+			const docUser = await User.findOne({ email }).select('+password') /* find user by email */
+			if (docUser == null) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
+			const passwordMatch = docUser.comparePassword(password)
 			if (!passwordMatch) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
-			res.setHeader('Set-Cookie', cookie.serialize('access_token', getToken(user), cookieOptionsLogin))
-			res.status(201).json({ statusCode: 201, data: 'succesful login' })
+			const keyPair = new RSA({ b: 2048 })
+			await docUser.setPrivateKey(keyPair.exportKey('private'))
+			const { _id, firstName, lastName, fullName, roles } = docUser
+			const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey: keyPair.exportKey('public') })
+			res.setHeader('Set-Cookie', cookie.serialize('ras_access_token', getToken({ userId: docUser._id.toString(), userRoles: docUser.roles }), cookieOptionsLogin))
+			res.status(201).json({ statusCode: 201, data: { message: 'successful login', user } })
 		}
 	},
 	logout: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
-		res.setHeader('Set-Cookie', cookie.serialize('access_token', '', cookieOptionsLogout))
-		res.status(201).json({ data: { message: 'success' } })
+		const { userId } = req
+		const user = await User.findOne({ _id: userId })
+		if (user === null) return
+		await user.removePrivateKey()
+		res.setHeader('Set-Cookie', cookie.serialize('ras_access_token', '', cookieOptionsLogout))
+		res.status(201).json({ data: { message: 'successful logout' } })
 	},
 	register: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
 		const { password, firstName, lastName, email } = req.body
@@ -72,11 +82,13 @@ const AuthController = {
 			body: { currentPassword },
 			userId
 		} = req
-		console.log(currentPassword)
-
-		const user = await User.findById(userId).select('+password')
+		const user = await User.findById(userId).select('+password +privateKey')
 		if (user == null) return res.status(403).json({ error: 'no user found', statusCode: 403 })
-		const passwordMatch = user.comparePassword(currentPassword)
+		const key = new RSA()
+		const privateKey = getPayload(user.privateKey).payload as string
+		key.importKey(privateKey, 'private')
+		const decryptedPassword = key.decrypt(currentPassword, 'utf8')
+		const passwordMatch = user.comparePassword(decryptedPassword)
 		if (!passwordMatch) return res.status(403).json({ statusCode: 403, error: 'Wrong password' })
 		return res.status(200).json({ statusCode: 200, data: { message: 'Correct password' } })
 	},

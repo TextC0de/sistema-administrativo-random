@@ -13,6 +13,7 @@
   "dependencies": {
     "@google-cloud/storage": "^6.7.0",
     "@typegoose/typegoose": "^11.1.0",
+    "@types/node-rsa": "^1.1.1",
     "@types/nodemailer": "^6.4.7",
     "@typescript-eslint/parser": "^5.0.0",
     "axios": "^1.2.0",
@@ -27,6 +28,7 @@
     "nanoid": "^4.0.0",
     "next": "12.3.1",
     "next-connect": "^0.13.0",
+    "node-rsa": "^1.1.1",
     "nodemailer": "^6.9.1",
     "prettier": "^2.8.8",
     "react": "18.2.0",

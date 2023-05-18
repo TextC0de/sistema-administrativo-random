@@ -3,7 +3,7 @@ import { type IUser } from 'backend/models/interfaces'
 
 export interface UserContextProps {
 	user: IUser
-	loginUser: () => Promise<void>
+	loginUser: (user: IUser) => void
 	logoutUser: () => void
 	isLoggedIn: boolean
 }

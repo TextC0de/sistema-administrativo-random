@@ -53,8 +53,6 @@ const UserController = {
 			body: { firstName, lastName, city, roles, email }
 		} = req
 		const password = nanoid(10)
-		console.log(password)
-
 		const fullName = `${firstName as string} ${lastName as string}`
 		const newUser = { firstName, lastName, fullName, city, roles, email, password }
 		await dbConnect()
@@ -98,7 +96,6 @@ const UserController = {
 		const user = await UserModel.findById(_id)
 		if (user == null) return res.json({ error: 'no user found', statusCode: 400 })
 		const newPassword = nanoid(10)
-		console.log(newPassword)
 		user.password = newPassword
 		const { firstName, lastName, fullName, email, password } = user
 		const newUser = { firstName, lastName, fullName, email, password }

@@ -1,6 +1,6 @@
-import baseHandler from 'backend/handlers/baseHandler'
+import protectedHandler from 'backend/handlers/protectedHandler'
 import AuthController from 'backend/controllers/AuthController'
 
-baseHandler.get(AuthController.logout)
+protectedHandler.get(AuthController.logout)
 
-export default baseHandler
+export default protectedHandler

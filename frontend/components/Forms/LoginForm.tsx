@@ -25,14 +25,14 @@ export default function LoginForm(): JSX.Element {
 	const postData = async (form: UserLoginForm): Promise<void> => {
 		try {
 			startLoading()
-			await fetcher.post(form, api.authUrl)
-			void loginUser()
+			const json = await fetcher.post(form, api.authUrl)
+			loginUser(json.data.user)
 			await router.push('/')
 			stopLoading()
 		} catch (error) {
 			console.log(error)
 			stopLoading()
-			alert('wrong email/password')
+			alert('Email o contraseña incorrectos')
 		}
 	}
 
