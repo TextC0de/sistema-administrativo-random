@@ -8,7 +8,7 @@ import fetcher from 'lib/fetcher'
 import useLoading from 'frontend/hooks/useLoading'
 import { FaUserCircle } from 'react-icons/fa'
 
-const logo = 'logo_placeholder.png'
+const logo = '/logo_placeholder.png'
 
 export default function Header(): JSX.Element {
 	const router = useRouter()

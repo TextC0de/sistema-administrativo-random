@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint-fix": "eslint frontend/** lib/** backend/** pages/** --fix",
-    "prettier-write": "prettier frontend/** lib/** backend/** pages/** --write"
+    "lint-fix": "eslint frontend/** lib/** backend/** pages/** middleware.ts --fix",
+    "prettier-write": "prettier frontend/** lib/** backend/** pages/** middleware.ts --write"
   },
   "dependencies": {
     "@google-cloud/storage": "^6.7.0",

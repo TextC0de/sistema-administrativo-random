@@ -21,8 +21,7 @@ const accessControl = async (
 ): Promise<void> => {
 	console.log(req.method, req.url, new Date())
 
-	const { headers } = req
-	const { cookies } = req
+	const { headers, cookies } = req
 	// console.log(headers.authorization);
 
 	const jwt = headers.authorization !== undefined ? headers.authorization : cookies.access_token
@@ -32,7 +31,7 @@ const accessControl = async (
 
 	if (result === undefined) return res.status(401).json({ error: 'No user found', statusCode: 403 })
 
-	if (!isAuthorized(req.url as string, result.userRoles as Role[], req.method as string)) { return res.status(401).json({ error: "You're not authorized to access this resource", statusCode: 403 }) }
+	if (!isAuthorized(req.url as string, result.userRoles as Role[])) { return res.status(401).json({ error: "You're not authorized to access this resource", statusCode: 403 }) }
 	req.userId = result.userId
 
 	next()
@@ -42,7 +41,7 @@ const accessControl = async (
 /*
 switch for the role part of the pathname, it checks that the role is included in the roles of the user
 */
-const isAuthorized = (pathname: string, roles: Role[], method: string): boolean => {
+const isAuthorized = (pathname: string, roles: Role[]): boolean => {
 	const rolePath = pathname.slice(5, pathname.indexOf('/', 5))
 	if (rolePath === 'auth') return true
 	switch (rolePath) {

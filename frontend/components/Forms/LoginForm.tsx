@@ -1,7 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import useUser from 'frontend/hooks/useUser'
-import Link from 'next/link'
 import { Button, TextInput } from 'flowbite-react'
 import fetcher from 'lib/fetcher'
 import * as api from 'lib/apiEndpoints'
@@ -88,11 +87,6 @@ export default function LoginForm(): JSX.Element {
 				/>
 
 				<Button type="submit">Iniciar Sesion</Button>
-				<Link href="/login/register">
-					<Button>
-						<a>Registrarse</a>
-					</Button>
-				</Link>
 			</form>
 			<div>
 				{Object.keys(errors).map((err, index) => (

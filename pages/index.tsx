@@ -1,5 +1,5 @@
 const Index = (): JSX.Element => {
-	return <>This is Home</>
+	return <>Aca irian en tarjetas grandes las acciones principales que pueda tomar el usuario, talvez incluso algunas novedades</>
 }
 
 export default Index

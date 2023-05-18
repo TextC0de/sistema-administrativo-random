@@ -1,6 +1,5 @@
-import { Label, Select } from 'flowbite-react'
+import { Button, Label, Select } from 'flowbite-react'
 import { type ChangeEvent, createRef } from 'react'
-
 interface props {
 	types: string[]
 	entities: any[]
@@ -29,9 +28,7 @@ export default function Filter({ types, entities, selectType, selectEntity, clea
 
 	return (
 		<div className="flex flex-col">
-			Filtro
-			<hr />
-			<div className="flex flex-row">
+			<div className="flex flex-row p-4 gap-4 items-center">
 				<Label value="Filtrar por  " />
 				<Select defaultValue="default" placeholder="default" onChange={onSelectType} ref={typeRef}>
 					<option value="default" hidden disabled>
@@ -54,7 +51,7 @@ export default function Filter({ types, entities, selectType, selectEntity, clea
 						</option>
 					))}
 				</Select>
-				<button onClick={onClearFilter}>Borrar filtro</button>
+				<Button onClick={onClearFilter}>Borrar filtro</Button>
 			</div>
 		</div>
 	)
