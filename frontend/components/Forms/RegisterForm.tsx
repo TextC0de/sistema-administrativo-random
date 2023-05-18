@@ -34,9 +34,9 @@ const RegisterForm = (): JSX.Element => {
 	/* The POST method adds a new entry in the mongodb database. */
 	const postData = async (form: IUserRegisterForm): Promise<void> => {
 		try {
-			await fetcher.post(form, api.registerUrl)
+			const json = await fetcher.post(form, api.authUrl)
 			await fetcher.post({ email: form.email, password: form.password }, api.authUrl)
-			void loginUser()
+			loginUser(json.data.user)
 			void router.push('/')
 		} catch (error) {
 			console.log(error)
