@@ -43,6 +43,7 @@ export default function NewTask({ branches, clients, businesses, technicians, pr
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
 	const { params } = ctx
+	ctx.res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
 	if (params == null) return { props: {} as props }
 	await dbConnect()
 	const preventive = await Preventive.findById(params.id).populate(Preventive.getPopulateParameters())

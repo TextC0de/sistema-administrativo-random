@@ -37,6 +37,7 @@ export default function TechAdminTasks(props: props): JSX.Element {
 }
 
 export async function getServerSideProps({ req, res }: GetServerSidePropsContext): Promise<{ props: props }> {
+	res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
 	await dbConnect()
 	const allTasks = await Task.findUndeleted({})
 	if (allTasks === null) return { props: {} as props }

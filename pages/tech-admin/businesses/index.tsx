@@ -20,6 +20,7 @@ export default function Businesses({ businesses }: props): JSX.Element {
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
+	ctx.res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
 	await dbConnect()
 	const docBusinesses = await Business.findUndeleted({})
 	return { props: { businesses: formatIds(docBusinesses) } }

@@ -61,7 +61,7 @@ export default function Item({ client, deleteClient }: props): JSX.Element {
 	}
 
 	const handleDelete = (): void => {
-		void deleteData
+		void deleteData()
 	}
 
 	return (

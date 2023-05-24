@@ -44,6 +44,7 @@ export default function TaskView({ task, branches, clients, businesses, technici
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
+	ctx.res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
 	const { params } = ctx
 	await dbConnect()
 	const docTask = await Task.findById(params?.id).populate(Task.getPopulateParameters())

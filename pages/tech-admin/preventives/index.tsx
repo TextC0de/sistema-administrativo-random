@@ -42,6 +42,7 @@ export async function getServerSideProps({
 	req,
 	res
 }: GetServerSidePropsContext): Promise<{ props: IPreventiveProps }> {
+	res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
 	await dbConnect()
 	const preventives = await Preventive.findUndeleted({})
 	if (preventives === null) return { props: {} as IPreventiveProps }

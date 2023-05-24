@@ -24,6 +24,7 @@ export default function NewCity({ provinces }: props): JSX.Element {
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
+	ctx.res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
 	await dbConnect()
 	const docProvinces = await Province.findUndeleted({})
 	const provinces = formatIds(docProvinces)

@@ -181,6 +181,7 @@ const PreventiveForm = ({
 	}
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+		e.preventDefault()
 		startLoading()
 		setSubmitted(true)
 		const errs = formValidate()
@@ -202,15 +203,15 @@ const PreventiveForm = ({
 		const { value } = e.target
 		const technician = technicians.find((technician) => technician.fullName === value)
 		if (technician != null) {
-setForm((prev) => {
-				return {
-					...prev,
-					assigned: !prev.assigned.some((x) => x._id === technician._id)
-						? [...prev.assigned, technician]
-						: prev.assigned
-				}
-			})
-}
+		setForm((prev) => {
+						return {
+							...prev,
+							assigned: !prev.assigned.some((x) => x._id === technician._id)
+								? [...prev.assigned, technician]
+								: prev.assigned
+						}
+					})
+		}
 	}
 
 	const deleteTechnician = (id: string): void => {
