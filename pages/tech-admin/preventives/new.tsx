@@ -34,7 +34,7 @@ export default function NewTask(props: props): JSX.Element {
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
-	ctx.res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
+	// ctx.res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
 	await dbConnect()
 	const docBranches = await Branch.findUndeleted({})
 	const docClients = await Client.findUndeleted({})

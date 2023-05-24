@@ -30,7 +30,7 @@ export default function EditClientBranch({ branch, cities, businesses }: props):
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
-	ctx.res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
+	// ctx.res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
 	const { params } = ctx
 	if (params == null) return { props: {} as props }
 	await dbConnect()

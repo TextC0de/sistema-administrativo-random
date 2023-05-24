@@ -20,7 +20,7 @@ export default function Clients({ clients }: props): JSX.Element {
 }
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext): Promise<{ props: props }> {
-	ctx.res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
+	// ctx.res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
 	await dbConnect()
 	const docClients = await Client.findUndeleted({})
 	const clients = formatIds(docClients)
