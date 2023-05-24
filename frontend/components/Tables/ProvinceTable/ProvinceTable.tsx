@@ -2,6 +2,7 @@ import { type IProvince } from 'backend/models/interfaces'
 import { useState } from 'react'
 import { Table } from 'flowbite-react'
 import Item from './Item'
+import useRevalidate from 'frontend/hooks/useRevalidate'
 
 interface props {
 	provinces: IProvince[]
@@ -9,9 +10,14 @@ interface props {
 
 export default function ProvinceTable({ provinces }: props): JSX.Element {
 	const [tableProvinces, setTableProvinces] = useState<IProvince[]>(provinces)
-
-	const deleteProvince = (id: string): void => {
+	const revalidate = useRevalidate()
+	const deleteProvince = async(id: string): Promise<void> => {
+		await revalidate()
 		setTableProvinces(tableProvinces.filter((province) => province._id !== id))
+	}
+
+	const handleDelete = (id: string): void => {
+		void deleteProvince(id)
 	}
 
 	return (
@@ -23,7 +29,7 @@ export default function ProvinceTable({ provinces }: props): JSX.Element {
 				</Table.Head>
 				<Table.Body>
 					{tableProvinces.map((province, index) => (
-						<Item key={index} province={province} deleteProvince={deleteProvince} />
+						<Item key={index} province={province} deleteProvince={handleDelete} />
 					))}
 				</Table.Body>
 			</Table>

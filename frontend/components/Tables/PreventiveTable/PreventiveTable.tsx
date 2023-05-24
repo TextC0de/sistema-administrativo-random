@@ -6,7 +6,7 @@ import {
 	type IProvince,
 	type IUser
 } from 'backend/models/interfaces'
-
+import useRevalidate from 'frontend/hooks/useRevalidate'
 import Item from './Item'
 import { Table } from 'flowbite-react'
 import { type ChangeEvent, useState } from 'react'
@@ -33,7 +33,7 @@ export default function PreventiveTable({
 	const [type, setType] = useState<string>('')
 	const [entities, setEntities] = useState<any[]>([] as any[])
 	const filterTypes = ['Localidad', 'Provincia', 'Tecnico', 'Empresa', 'Cliente']
-
+	const revalidate = useRevalidate()
 	function selectEntity(e: ChangeEvent<HTMLSelectElement>): void {
 		const { value } = e.target
 		// +console.log(value);
@@ -96,8 +96,13 @@ export default function PreventiveTable({
 		setPreventivesTable(preventives)
 	}
 
-	const deletePreventive = (id: string): void => {
+	const deletePreventive = async (id: string): Promise<void> => {
+		await revalidate()
 		setPreventivesTable(preventivesTable.filter((preventive) => preventive._id !== id))
+	}
+
+	const handleDelete = (id: string): void => {
+		void deletePreventive(id)
 	}
 
 	return (
@@ -124,7 +129,7 @@ export default function PreventiveTable({
 				</Table.Head>
 				<Table.Body>
 					{preventivesTable.map((preventive, index) => (
-						<Item key={index} preventive={preventive} deletePreventive={deletePreventive} />
+						<Item key={index} preventive={preventive} deletePreventive={handleDelete} />
 					))}
 				</Table.Body>
 			</Table>
