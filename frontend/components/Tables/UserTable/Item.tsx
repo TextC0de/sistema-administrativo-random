@@ -99,7 +99,7 @@ export default function Item({ user, deleteUser }: props): JSX.Element {
 					<button className="p-0.5 hover:bg-gray-200 rounder-lg" onClick={handleRegeneratePassword}>
 						<CgPassword color="gray" size="15" />
 					</button>
-					<Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete} />
+					<Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete} msg='¿Seguro que quiere eliminar este usuario?'/>
 				</div>
 			</Table.Cell>
 		</Table.Row>

@@ -78,7 +78,7 @@ export default function Item({ client, deleteClient }: props): JSX.Element {
 					<button className="p-0.5 hover:bg-gray-200 rounder-lg" onClick={openModal}>
 						<BsFillTrashFill color="gray" size="15" />
 					</button>
-					<Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete} />
+					<Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete} msg='¿Seguro que quiere eliminar este cliente?'/>
 				</div>
 			</Table.Cell>
 		</Table.Row>

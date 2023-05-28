@@ -5,9 +5,10 @@ interface props {
 	openModal: boolean
 	handleToggleModal: () => void
 	handleDelete: () => void
+	msg: string
 }
 
-export default function Modal({ openModal, handleToggleModal, handleDelete }: props): JSX.Element {
+export default function Modal({ openModal, handleToggleModal, handleDelete, msg }: props): JSX.Element {
 	const handleDeleteOK = (): void => {
 		handleDelete()
 		handleToggleModal()
@@ -19,7 +20,7 @@ export default function Modal({ openModal, handleToggleModal, handleDelete }: pr
 					<div className=" bg-white p-5 rounded-md flex flex-col items-center gap-4 color-white">
 						<BsExclamationCircle size={40} color={'gray'} />
 						<h3 className="mb-1 text-lg font-normal text-gray-500 dark:text-gray-400">
-							¿Seguro que desea eliminar esta tarea?
+							{msg}
 						</h3>
 						<div className="flex gap-4 justify-center">
 							<Button color="failure" onClick={handleDeleteOK}>

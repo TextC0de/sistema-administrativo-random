@@ -75,7 +75,7 @@ export default function Item({ branch, deleteBranch }: props): JSX.Element {
 						<BsFillTrashFill color="gray" size="15" />
 					</button>
 
-					<Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete} />
+					<Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete} msg='¿Seguro que quiere eliminar esta sucursal?'/>
 				</div>
 			</Table.Cell>
 		</Table.Row>
