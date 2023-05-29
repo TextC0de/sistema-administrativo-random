@@ -18,16 +18,26 @@ interface props {
 export default function Item({ user, deleteUser }: props): JSX.Element {
 	const { startLoading, stopLoading } = useLoading()
 	const router = useRouter()
-	const [modal, setModal] = useState(false)
+	const [deleteModal, setDeleteModal] = useState<boolean>(false)
+	const [newPasswordModal, setNewPasswordModal] = useState<boolean>(false)
 	const { triggerAlert } = useAlert()
 
-	const openModal = (): void => {
-		setModal(true)
+	const openDeleteModal = (): void => {
+		setDeleteModal(true)
 	}
 
-	const closeModal = (): void => {
-		setModal(false)
+	const closeDeleteModal = (): void => {
+		setDeleteModal(false)
 	}
+
+	const openNewPasswordModal = (): void => {
+		setNewPasswordModal(true)
+	}
+
+	const closeNewPasswordModal = (): void => {
+		setNewPasswordModal(false)
+	}
+
 	const deleteData = async (): Promise<void> => {
 		try {
 			await fetcher.delete({ _id: user._id }, apiEndpoints.techAdmin.users)
@@ -78,6 +88,7 @@ export default function Item({ user, deleteUser }: props): JSX.Element {
 	const handleRegeneratePassword = (): void => {
 		void reGeneratePassword()
 	}
+
 	return (
 		<Table.Row className="border-b ">
 			<Table.Cell>{user.fullName}</Table.Cell>
@@ -93,13 +104,14 @@ export default function Item({ user, deleteUser }: props): JSX.Element {
 					<button className="p-0.5 hover:bg-gray-200 rounder-lg" onClick={handleNavigate}>
 						<BsFillPencilFill color="gray" size="15" />
 					</button>
-					<button className="p-0.5 hover:bg-gray-200 rounder-lg" onClick={openModal}>
+					<button className="p-0.5 hover:bg-gray-200 rounder-lg" onClick={openDeleteModal}>
 						<BsFillTrashFill color="gray" size="15" />
 					</button>
-					<button className="p-0.5 hover:bg-gray-200 rounder-lg" onClick={handleRegeneratePassword}>
+					<button className="p-0.5 hover:bg-gray-200 rounder-lg" onClick={openNewPasswordModal}>
 						<CgPassword color="gray" size="15" />
 					</button>
-					<Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete} msg='¿Seguro que quiere eliminar este usuario?'/>
+					<Modal openModal={deleteModal} handleToggleModal={closeDeleteModal} action={handleDelete} msg='¿Seguro que quiere eliminar este usuario?'/>
+					<Modal openModal={newPasswordModal} handleToggleModal={closeNewPasswordModal} action={handleRegeneratePassword} msg='¿Seguro que quiere generar una nueva contraseña para este usuario?'/>
 				</div>
 			</Table.Cell>
 		</Table.Row>

@@ -64,7 +64,7 @@ export default function Item({ province, deleteProvince }: props): JSX.Element {
 						<BsFillTrashFill color="gray" size="15" />
 					</button>
 
-					<Modal openModal={toggleModal} handleToggleModal={closeModal} handleDelete={handleDelete} msg='¿Seguro que quiere eliminar esta provincia?'/>
+					<Modal openModal={toggleModal} handleToggleModal={closeModal} action={handleDelete} msg='¿Seguro que quiere eliminar esta provincia?'/>
 				</div>
 			</Table.Cell>
 		</Table.Row>

@@ -91,7 +91,7 @@ export default function Item({ task, deleteTask }: props): JSX.Element {
 					</div>
 				</Table.Cell>
 			</Table.Row>
-			<Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete} msg='¿Seguro que quiere eliminar esta tarea?'/>
+			<Modal openModal={modal} handleToggleModal={closeModal} action={handleDelete} msg='¿Seguro que quiere eliminar esta tarea?'/>
 		</>
 	)
 }

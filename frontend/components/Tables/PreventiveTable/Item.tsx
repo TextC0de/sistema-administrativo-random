@@ -94,7 +94,7 @@ export default function Item({
 						<BsFillTrashFill color="gray" size="15" />
 					</button>
 				</div>
-				<Modal openModal={modal} handleToggleModal={closeModal} handleDelete={handleDelete} msg='¿Seguro que quiere eliminar este preventivo?'/>
+				<Modal openModal={modal} handleToggleModal={closeModal} action={handleDelete} msg='¿Seguro que quiere eliminar este preventivo?'/>
 			</Table.Cell>
 		</Table.Row>
 	)

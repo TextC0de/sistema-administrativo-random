@@ -4,15 +4,16 @@ import { BsExclamationCircle } from 'react-icons/bs'
 interface props {
 	openModal: boolean
 	handleToggleModal: () => void
-	handleDelete: () => void
+	action: () => void
 	msg: string
 }
 
-export default function Modal({ openModal, handleToggleModal, handleDelete, msg }: props): JSX.Element {
-	const handleDeleteOK = (): void => {
-		handleDelete()
+export default function Modal({ openModal, handleToggleModal, action, msg }: props): JSX.Element {
+	const handleOk = (): void => {
+		action()
 		handleToggleModal()
 	}
+
 	return (
 		<>
 			{openModal && (
@@ -23,7 +24,7 @@ export default function Modal({ openModal, handleToggleModal, handleDelete, msg 
 							{msg}
 						</h3>
 						<div className="flex gap-4 justify-center">
-							<Button color="failure" onClick={handleDeleteOK}>
+							<Button color="failure" onClick={handleOk}>
 								Si, aceptar.
 							</Button>
 							<Button color="gray" onClick={handleToggleModal}>
