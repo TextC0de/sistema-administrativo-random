@@ -5,19 +5,21 @@ import * as api from 'lib/apiEndpoints'
 import { useRouter } from 'next/router'
 import useLoading from 'frontend/hooks/useLoading'
 import { useState } from 'react'
-import { Badge, Table } from 'flowbite-react'
+import { Table } from 'flowbite-react'
 import { BsFillPencilFill, BsFillTrashFill } from 'react-icons/bs'
 import Modal from 'frontend/components/Modal'
 import useAlert from 'frontend/hooks/useAlert'
+import { type TaskStatus } from 'backend/models/types'
+import TaskStatusDropdown from 'frontend/components/Common/TaskStatusDropdown'
 
 interface props {
 	task: ITask
 	deleteTask: (id: string) => void
+	changeStatus: (id: string, status: TaskStatus) => void
 }
-export default function Item({ task, deleteTask }: props): JSX.Element {
+export default function Item({ task, deleteTask, changeStatus }: props): JSX.Element {
 	const openedAt = dmyDateString(new Date(task.openedAt))
 	const closedAt = task.closedAt !== undefined ? dmyDateString(new Date(task.closedAt)) : task.closedAt
-
 	const [modal, setModal] = useState(false)
 	const { triggerAlert } = useAlert()
 	const { startLoading, stopLoading } = useLoading()
@@ -57,6 +59,27 @@ export default function Item({ task, deleteTask }: props): JSX.Element {
 		}
 	}
 
+	const changeTaskStatus = async (status: TaskStatus): Promise<void> => {
+		try {
+			await fetcher.put({ ...task, status }, api.techAdmin.tasks)
+			changeStatus(task._id as string, status)
+			triggerAlert({
+				type: 'Success',
+				message: 'El estado de la tarea fue actualizado correctamente'
+			})
+		} catch (error) {
+			console.log(error)
+			triggerAlert({
+				type: 'Failure',
+				message: 'No se pudo actualizar el estado de la tarea'
+			})
+		}
+	}
+
+	const handleStatusChange = (status: TaskStatus): void => {
+		void changeTaskStatus(status)
+	}
+
 	const handleNavigateEdit = (): void => {
 		void navigateEdit()
 	}
@@ -77,7 +100,7 @@ export default function Item({ task, deleteTask }: props): JSX.Element {
 				<Table.Cell>{selectedTechs(task.assigned)}</Table.Cell>
 				<Table.Cell>{task.taskType}</Table.Cell>
 				<Table.Cell>
-					<Badge color="warning">{task.status}</Badge>
+					<TaskStatusDropdown setStatus={handleStatusChange} status={task.status}/>
 				</Table.Cell>
 				<Table.Cell>{closedAt ?? ''}</Table.Cell>
 				<Table.Cell>

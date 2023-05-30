@@ -10,6 +10,7 @@ import Item from './Item'
 import { Table } from 'flowbite-react'
 import { type ChangeEvent, useState } from 'react'
 import Filter from 'frontend/components/Filter'
+import type { TaskStatus } from 'backend/models/types'
 
 interface props {
 	tasks: ITask[]
@@ -89,6 +90,11 @@ export default function TechAdminTaskTable({
 	const deleteTask = (id: string): void => {
 		setTableTasks(tableTasks.filter((task) => task._id !== id))
 	}
+
+	const changeTaskStatus = (id: string, status: TaskStatus): void => {
+		setTableTasks(tableTasks.map(task => task._id === id ? { ...task, status } : task))
+	}
+
 	return (
 		<div className="bg-white sm:rounded-none shadow-gray-100">
 			<Filter
@@ -98,24 +104,26 @@ export default function TechAdminTaskTable({
 				selectEntity={selectEntity}
 				clearFilter={clearFilter}
 			/>
-			<Table hoverable={true} className="bg-white">
-				<Table.Head className="bg-white border-b">
-					<Table.HeadCell>Fecha apertura</Table.HeadCell>
-					<Table.HeadCell>Empresa</Table.HeadCell>
-					<Table.HeadCell>Cliente</Table.HeadCell>
-					<Table.HeadCell>Sucursal</Table.HeadCell>
-					<Table.HeadCell>Tecnico Asignado</Table.HeadCell>
-					<Table.HeadCell>Tipo</Table.HeadCell>
-					<Table.HeadCell>Estado</Table.HeadCell>
-					<Table.HeadCell>Fecha cierre</Table.HeadCell>
-					<Table.HeadCell>Acciones</Table.HeadCell>
-				</Table.Head>
-				<Table.Body className="bg-white">
-					{tableTasks.map((task, index) => (
-						<Item key={index} task={task} deleteTask={deleteTask} />
-					))}
-				</Table.Body>
-			</Table>
+			<div className='relative overflow-visible'>
+				<Table hoverable={true} className="bg-white z-10">
+					<Table.Head className="bg-white border-b">
+						<Table.HeadCell>Fecha apertura</Table.HeadCell>
+						<Table.HeadCell>Empresa</Table.HeadCell>
+						<Table.HeadCell>Cliente</Table.HeadCell>
+						<Table.HeadCell>Sucursal</Table.HeadCell>
+						<Table.HeadCell>Tecnico Asignado</Table.HeadCell>
+						<Table.HeadCell>Tipo</Table.HeadCell>
+						<Table.HeadCell>Estado</Table.HeadCell>
+						<Table.HeadCell>Fecha cierre</Table.HeadCell>
+						<Table.HeadCell>Acciones</Table.HeadCell>
+					</Table.Head>
+					<Table.Body className="bg-white">
+						{tableTasks.map((task, index) => (
+							<Item key={index} task={task} deleteTask={deleteTask} changeStatus={changeTaskStatus}/>
+							))}
+					</Table.Body>
+				</Table>
+			</div>
 		</div>
 	)
 }
