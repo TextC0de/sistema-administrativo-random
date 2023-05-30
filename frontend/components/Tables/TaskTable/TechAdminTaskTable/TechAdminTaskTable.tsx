@@ -10,7 +10,7 @@ import Item from './Item'
 import { Table } from 'flowbite-react'
 import { type ChangeEvent, useState } from 'react'
 import Filter from 'frontend/components/Filter'
-import type { TaskStatus } from 'backend/models/types'
+import { type TaskStatus, taskStatuses, taskTypes } from 'backend/models/types'
 
 interface props {
 	tasks: ITask[]
@@ -32,7 +32,7 @@ export default function TechAdminTaskTable({
 	const [tableTasks, setTableTasks] = useState<ITask[]>(tasks)
 	const [type, setType] = useState<string>('')
 	const [entities, setEntities] = useState<any[]>([] as any[])
-	const filterTypes = ['Localidad', 'Provincia', 'Tecnico', 'Empresa', 'Cliente']
+	const filterTypes = ['Localidad', 'Provincia', 'Tecnico', 'Empresa', 'Cliente', 'Estado', 'Tipo']
 
 	function selectEntity(e: ChangeEvent<HTMLSelectElement>): void {
 		const { value } = e.target
@@ -51,6 +51,12 @@ export default function TechAdminTaskTable({
 				break
 			case 'Cliente':
 				setTableTasks(tasks.filter((task) => task.branch.client.name === value))
+				break
+			case 'Estado':
+				setTableTasks(tasks.filter((task) => task.status === value))
+				break
+			case 'Tipo':
+				setTableTasks(tasks.filter((task) => task.taskType === value))
 				break
 			default:
 				setTableTasks(tasks)
@@ -76,6 +82,12 @@ export default function TechAdminTaskTable({
 				break
 			case 'Cliente':
 				setEntities(clients)
+				break
+			case 'Estado':
+				setEntities(taskStatuses)
+				break
+			case 'Tipo':
+				setEntities(taskTypes)
 				break
 			default:
 		}

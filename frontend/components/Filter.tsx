@@ -40,14 +40,14 @@ export default function Filter({ types, entities, selectType, selectEntity, clea
 						</option>
 					))}
 				</Select>
-				<Label value="Entidad: " />
+				<Label value="Valor: " />
 				<Select defaultValue="default" placeholder="default" onChange={selectEntity} ref={entityRef}>
 					<option value="default" hidden disabled>
 						Seleccione la entidad...
 					</option>
 					{entities.map((entity: any, index: number) => (
-						<option value={entity.name !== undefined ? entity.name : entity.fullName} key={index}>
-							{entity.name !== undefined ? entity.name : entity.fullName}
+						<option value={entity.name !== undefined ? entity.name : entity.fullName !== undefined ? entity.fullName : entity} key={index}>
+							{entity.name !== undefined ? entity.name : entity.fullName !== undefined ? entity.fullName : entity}
 						</option>
 					))}
 				</Select>

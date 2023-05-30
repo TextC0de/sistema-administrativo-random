@@ -39,11 +39,11 @@ export default function TechAdminTasks(props: props): JSX.Element {
 export async function getServerSideProps({ req, res }: GetServerSidePropsContext): Promise<{ props: props }> {
 	// res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=59')
 	await dbConnect()
-	const allTasks = await Task.findUndeleted({})
-	if (allTasks === null) return { props: {} as props }
-	const pendingTasks = allTasks.filter((task) => task.status === 'Pendiente')
-	const sentTasks = allTasks.filter((task) => task.status === 'Finalizada')
-	const tasks = pendingTasks.concat(sentTasks)
+	const tasks = await Task.findUndeleted({})
+	if (tasks === null) return { props: {} as props }
+	// const pendingTasks = allTasks.filter((task) => task.status === 'Pendiente')
+	// const sentTasks = allTasks.filter((task) => task.status === 'Finalizada')
+	// const tasks = pendingTasks.concat(sentTasks)
 	const cities = await City.findUndeleted()
 	const provinces = await Province.findUndeleted()
 	const clients = await Client.findUndeleted()
