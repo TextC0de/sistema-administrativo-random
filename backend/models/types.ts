@@ -20,7 +20,7 @@ export type ExpenseType = 'Comida' | 'Combustible' | 'Hospedaje' | 'Insumos' | '
 
 export type PaySource = 'Reintegro' | 'Tarjeta'
 
-export type TaskStatus = 'Sin asignar' | 'Pendiente' | 'Finalizado' | 'Aprobado'
+export type TaskStatus = 'Sin asignar' | 'Pendiente' | 'Finalizada' | 'Aprobada'
 
 export type TaskType = 'Preventivo' | 'Correctivo' | 'Instalacion' | 'Desmonte' | 'Actualizacion'
 
@@ -51,7 +51,7 @@ export const expenseTypes: ExpenseType[] = ['Combustible', 'Comida', 'Herramient
 
 export const paySources: PaySource[] = ['Reintegro', 'Tarjeta']
 
-export const taskStatuses: TaskStatus[] = ['Aprobado', 'Finalizado', 'Pendiente', 'Sin asignar']
+export const taskStatuses: TaskStatus[] = ['Aprobada', 'Finalizada', 'Pendiente', 'Sin asignar']
 
 export const taskTypes: TaskType[] = ['Preventivo', 'Correctivo', 'Actualizacion', 'Instalacion', 'Desmonte']
 

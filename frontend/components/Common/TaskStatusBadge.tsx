@@ -10,11 +10,11 @@ const TaskStatusBadge = ({ status }: Props): JSX.Element => {
         switch (status) {
             case 'Pendiente':
                 return 'warning'
-            case 'Finalizado':
+            case 'Finalizada':
                 return 'success'
             case 'Sin asignar':
                 return 'failure'
-            case 'Aprobado':
+            case 'Aprobada':
                 return 'dark'
         }
     }
