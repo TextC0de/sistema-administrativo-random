@@ -24,6 +24,7 @@ const AuthController = {
 		await dbConnect()
 		try {
 			if (req.body.appRequest as boolean) {
+				try {
 				const { email, password } = req.body
 				// console.log('mobileauth');
 
@@ -40,6 +41,10 @@ const AuthController = {
 				const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey })
 				const data = { user, accessToken }
 				res.status(201).json({ data, statusCode: 201 })
+				} catch (e) {
+					console.log(e)
+					res.json({ error: e as string, statusCode: 500 })
+				}
 			} else {
 				const { email, password } = req.body
 				const docUser = await User.findOne({ email }).select('+password') /* find user by email */
