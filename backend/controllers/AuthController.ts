@@ -5,7 +5,7 @@ import cookie from 'cookie'
 import dbConnect from 'lib/dbConnect'
 import User from '../models/User'
 import { cookieOptionsLogin, cookieOptionsLogout } from 'lib/cookies'
-import { getPayload, getToken } from 'lib/jwt'
+import { getPayload, getUserToken } from 'lib/jwt'
 import { type IUser } from '../models/interfaces'
 import { formatIds } from 'lib/utils'
 import RSA from 'node-rsa'
@@ -32,7 +32,7 @@ const AuthController = {
 				if (docUser == null) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
 				if (!docUser.comparePassword(password)) { return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' }) }
 				// console.log('returned info');
-				const accessToken = getToken(docUser)
+				const accessToken = getUserToken(docUser)
 				const keyPair = new RSA({ b: 512 })
 				const publicKey = keyPair.exportKey('public')
 				await docUser.setPrivateKey(keyPair.exportKey('private'))
@@ -50,7 +50,7 @@ const AuthController = {
 				await docUser.setPrivateKey(keyPair.exportKey('private'))
 				const { _id, firstName, lastName, fullName, roles } = docUser
 				const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey: keyPair.exportKey('public') })
-				res.setHeader('Set-Cookie', cookie.serialize('ras_access_token', getToken({ userId: docUser._id.toString(), userRoles: docUser.roles }), cookieOptionsLogin))
+				res.setHeader('Set-Cookie', cookie.serialize('ras_access_token', getUserToken(docUser), cookieOptionsLogin))
 				res.status(201).json({ statusCode: 201, data: { message: 'successful login', user } })
 			}
 		} catch (error) {
