@@ -1,15 +1,12 @@
-import baseHandler from 'backend/handlers/baseHandler'
 import ImageController from 'backend/controllers/ImageController'
-import { upload } from 'backend/middleware/multer'
+import singleImageHandler from 'backend/handlers/singleImageHandler'
 
-baseHandler.use(upload.array('image'))
+singleImageHandler.post(ImageController.postImage)
 
-baseHandler.post(ImageController.postImage)
+export default singleImageHandler
 
 export const config = {
 	api: {
 		bodyParser: false // Disallow body parsing, consume as stream
 	}
 }
-
-export default baseHandler
