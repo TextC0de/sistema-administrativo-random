@@ -15,6 +15,16 @@ export const getToken = (payload: any): string => {
 	)
 }
 
+export const getUserToken = (docUser: any): string => {
+	return sign(
+		{
+			exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
+			payload: { userId: docUser._id.toString(), userRoles: docUser.roles }
+		},
+		secret
+	)
+}
+
 export const getPayload = (jwt: string): MyJwtPayload => {
 	return <MyJwtPayload>verify(jwt, secret)
 }
