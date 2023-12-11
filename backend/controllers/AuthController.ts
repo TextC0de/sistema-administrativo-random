@@ -11,7 +11,8 @@ import { formatIds } from 'lib/utils'
 import RSA from 'node-rsa'
 
 const AuthController = {
-	login: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+	login: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => 
+
 		/* let appRequest = false
     let parsedBody
     try {

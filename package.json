@@ -11,6 +11,7 @@
     "prettier-write": "prettier frontend/** lib/** backend/** pages/** middleware.ts --write"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.423.0",
     "@google-cloud/storage": "^6.7.0",
     "@typegoose/typegoose": "^11.1.0",
     "@types/multer-s3": "^3.0.0",

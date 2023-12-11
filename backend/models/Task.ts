@@ -53,8 +53,8 @@ export class Task {
 	@prop({ type: String, required: false })
 	operatorName?: string
 
-	@prop({ ref: 'Image', required: false })
-	image?: Ref<Image>
+	@prop({ type: mongoose.SchemaTypes.Array, ref: 'Image', required: false })
+	image?: Array<Ref<Image>>
 
 	@prop({ type: Number, required: false })
 	workOrderNumber?: number

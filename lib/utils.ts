@@ -88,6 +88,7 @@ export function trimTask(task: ITask): ITask {
 		status: task.status,
 		description: task.description,
 		deleted: task.deleted,
-		assigned: task.assigned
+		assigned: task.assigned,
+		image: task.image,
 	}
 }
