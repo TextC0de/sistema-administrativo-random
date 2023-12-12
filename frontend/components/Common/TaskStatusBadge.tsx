@@ -1,27 +1,26 @@
-import type { TaskStatus } from 'backend/models/types'
-import { Badge } from 'flowbite-react'
+import { Badge } from 'flowbite-react';
+
+import type { TaskStatus } from 'backend/models/types';
 
 interface Props {
-    status: TaskStatus
+    status: TaskStatus;
 }
 
 const TaskStatusBadge = ({ status }: Props): JSX.Element => {
     const color = (): string => {
         switch (status) {
             case 'Pendiente':
-                return 'warning'
+                return 'warning';
             case 'Finalizada':
-                return 'success'
+                return 'success';
             case 'Sin asignar':
-                return 'failure'
+                return 'failure';
             case 'Aprobada':
-                return 'dark'
+                return 'dark';
         }
-    }
+    };
 
-    return (
-        <Badge color={color()}>{status}</Badge>
-    )
-}
+    return <Badge color={color()}>{status}</Badge>;
+};
 
-export default TaskStatusBadge
+export default TaskStatusBadge;

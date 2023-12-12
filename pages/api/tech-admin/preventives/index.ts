@@ -1,15 +1,16 @@
-import PreventiveController from 'backend/controllers/PreventiveController'
-import accessControl from 'backend/middleware/accessControl'
-import { onError, onNoMatch } from 'backend/controllers/NextConnectController'
-import nc from 'next-connect'
+import nc from 'next-connect';
 
-const protectedHandler = nc({ onError, onNoMatch })
-protectedHandler.use(accessControl)
+import { onError, onNoMatch } from 'backend/controllers/NextConnectController';
+import PreventiveController from 'backend/controllers/PreventiveController';
+import accessControl from 'backend/middleware/accessControl';
 
-protectedHandler.post(PreventiveController.postPreventive)
+const protectedHandler = nc({ onError, onNoMatch });
+protectedHandler.use(accessControl);
 
-protectedHandler.put(PreventiveController.putPreventive)
+protectedHandler.post(PreventiveController.postPreventive);
 
-protectedHandler.delete(PreventiveController.deletePreventive)
+protectedHandler.put(PreventiveController.putPreventive);
 
-export default protectedHandler
+protectedHandler.delete(PreventiveController.deletePreventive);
+
+export default protectedHandler;

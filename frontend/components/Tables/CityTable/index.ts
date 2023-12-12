@@ -1,1 +1,1 @@
-export { default } from './CityTable'
+export { default } from './CityTable';

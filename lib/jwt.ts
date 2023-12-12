@@ -1,30 +1,30 @@
-import { type JwtPayload, sign, verify } from 'jsonwebtoken'
-const secret = process.env.SECRET ?? ''
+import { type JwtPayload, sign, verify } from 'jsonwebtoken';
+const secret = process.env.SECRET ?? '';
 
 interface MyJwtPayload extends JwtPayload {
-	payload: any
+    payload: any;
 }
 
 export const getToken = (payload: any): string => {
-	return sign(
-		{
-			exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
-			payload
-		},
-		secret
-	)
-}
+    return sign(
+        {
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
+            payload,
+        },
+        secret,
+    );
+};
 
 export const getUserToken = (docUser: any): string => {
-	return sign(
-		{
-			exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
-			payload: { userId: docUser._id.toString(), userRoles: docUser.roles }
-		},
-		secret
-	)
-}
+    return sign(
+        {
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
+            payload: { userId: docUser._id.toString(), userRoles: docUser.roles },
+        },
+        secret,
+    );
+};
 
 export const getPayload = (jwt: string): MyJwtPayload => {
-	return <MyJwtPayload>verify(jwt, secret)
-}
+    return <MyJwtPayload>verify(jwt, secret);
+};

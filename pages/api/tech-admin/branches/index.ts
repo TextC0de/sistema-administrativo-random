@@ -1,14 +1,15 @@
-import BranchController from 'backend/controllers/BranchController'
-import accessControl from 'backend/middleware/accessControl'
-import { onError, onNoMatch } from 'backend/controllers/NextConnectController'
-import nc from 'next-connect'
+import nc from 'next-connect';
 
-const protectedHandler = nc({ onError, onNoMatch })
-protectedHandler.use(accessControl)
-protectedHandler.post(BranchController.postBranch)
+import BranchController from 'backend/controllers/BranchController';
+import { onError, onNoMatch } from 'backend/controllers/NextConnectController';
+import accessControl from 'backend/middleware/accessControl';
 
-protectedHandler.put(BranchController.putBranch)
+const protectedHandler = nc({ onError, onNoMatch });
+protectedHandler.use(accessControl);
+protectedHandler.post(BranchController.postBranch);
 
-protectedHandler.delete(BranchController.deleteBranch)
+protectedHandler.put(BranchController.putBranch);
 
-export default protectedHandler
+protectedHandler.delete(BranchController.deleteBranch);
+
+export default protectedHandler;

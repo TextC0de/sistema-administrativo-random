@@ -1,5 +1,6 @@
-import { NextResponse, type NextRequest } from 'next/server'
-import { jwtVerify } from 'jose'
+import { NextResponse, type NextRequest } from 'next/server';
+
+import { jwtVerify } from 'jose';
 /**
  * Function that executes first whenever a request comes to the server.
  * Here you can validate JWT or other data when coming trough any specific route.
@@ -10,36 +11,38 @@ import { jwtVerify } from 'jose'
  */
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
-    const secret = process.env.SECRET
-    const { pathname } = req.nextUrl
+    const secret = process.env.SECRET;
+    const { pathname } = req.nextUrl;
     // console.log(pathname)
-    const jwt = req.cookies.get('ras_access_token') // (1)
+    const jwt = req.cookies.get('ras_access_token'); // (1)
     // console.log(jwt);
-    console.log(req.method, pathname, new Date())
+    console.log(req.method, pathname, new Date());
 
     if (pathname.includes('/api') || pathname.includes('/login')) {
-        return NextResponse.next()
+        return NextResponse.next();
     }
     if (jwt === undefined) {
         // console.log('nohay jwt')
         // console.log(req.url);
-        const url = new URL('/login', /* apiEndpoints.baseUrl */req.nextUrl.origin)
+        const url = new URL('/login', /* apiEndpoints.baseUrl */ req.nextUrl.origin);
 
-        return NextResponse.redirect(url)
+        return NextResponse.redirect(url);
     }
     try {
-        await jwtVerify(jwt, new TextEncoder().encode(secret))
-        return NextResponse.next()
+        await jwtVerify(jwt, new TextEncoder().encode(secret));
+        return NextResponse.next();
     } catch (error) {
-        console.error(error)
-        console.log('error')
+        console.error(error);
+        console.log('error');
 
-        return NextResponse.redirect(new URL('/login', /* apiEndpoints.baseUrl */req.nextUrl.origin))
+        return NextResponse.redirect(
+            new URL('/login', /* apiEndpoints.baseUrl */ req.nextUrl.origin),
+        );
     }
 }
 export const config = {
-    matcher: ['/', '/tech-admin/:path*', '/test']
-}
+    matcher: ['/', '/tech-admin/:path*', '/test'],
+};
 
 /* export const config = {
     matcher: [

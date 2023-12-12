@@ -1,8 +1,10 @@
-import uploadImage from '../middleware/multer'
-import nc from 'next-connect'
-import { onError, onNoMatch } from 'backend/controllers/NextConnectController'
+import nc from 'next-connect';
 
-const singleImageHandler = nc({ onError, onNoMatch })
-singleImageHandler.use(uploadImage.single('image'))
+import { onError, onNoMatch } from 'backend/controllers/NextConnectController';
 
-export default singleImageHandler
+import uploadImage from '../middleware/multer';
+
+const singleImageHandler = nc({ onError, onNoMatch });
+singleImageHandler.use(uploadImage.single('image'));
+
+export default singleImageHandler;
