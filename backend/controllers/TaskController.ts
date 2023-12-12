@@ -6,6 +6,16 @@ import { type NextConnectApiRequest } from './interfaces'
 import { type ResponseData } from './types'
 import UserModel, { type User } from 'backend/models/User'
 import { type ITask } from 'backend/models/interfaces'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
+
+const newS3: S3Client = new S3Client({
+	region: process.env.AWS_REGION,
+	credentials: {
+		accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+		secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string
+	}
+})
 
 const TaskController = {
 	putTask: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
@@ -112,14 +122,39 @@ const TaskController = {
 		res.json({ statusCode: 200, data: { message: 'deleted Task succesfully' } })
 	},
 	getTechTasks: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
-		const { userId } = req
 		await dbConnect()
+
+		const { userId } = req
 		const docUser = await UserModel.findById(userId)
 		if (docUser == null) return res.json({ statusCode: 500, error: 'User not found' })
-		const docTasks = await docUser.getTasks()
-		const tasks = formatIds(docTasks)
+		const allTasks = await docUser.getTasks()
+
+		const tasks = formatIds(allTasks)
 		const trimmedTasks = tasks.map((task: ITask) => trimTask(task))
-		// console.log(trimmedTasks)
+
+		for (let i = 0; i < trimmedTasks.length; i++) {
+			const task = trimmedTasks[i]
+
+			const images = task.image
+
+			for (let j = 0; j < images.length; j++) {
+				const image = images[j]
+				const s3ObjectUrl = image.url
+				const key = s3ObjectUrl.split('/').pop()
+
+				const command = new GetObjectCommand({
+					Bucket: process.env.AWS_S3_BUCKET_NAME as string,
+					Key: key
+				})
+
+				const url = await getSignedUrl(newS3, command, {
+					expiresIn: 3600 // 1 hour,
+				})
+
+				task.image[j].url = url
+			}
+		}
+
 		res.json({ statusCode: 200, data: { tasks: trimmedTasks } })
 	},
 	postTechTask: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {

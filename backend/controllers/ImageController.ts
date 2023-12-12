@@ -1,51 +1,47 @@
-import Image from '../models/Image'
-import dbConnect from 'lib/dbConnect';
-import { type NextConnectApiRequest } from './interfaces'
 import { type ResponseData } from './types'
 import { type NextApiResponse } from 'next'
-import TaskModel, { Task } from '../models/Task';
-import { DocumentType, getModelForClass } from '@typegoose/typegoose';
+import { type NextConnectApiRequest } from './interfaces'
+import TaskModel, { type Task } from 'backend/models/Task'
+import dbConnect from 'lib/dbConnect'
+import { type DocumentType } from '@typegoose/typegoose'
+import ImageModel from 'backend/models/Image'
+import { mongo } from 'mongoose'
 
+const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME ?? ''
 
 const ImageController = {
 	postImage: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
-		console.log("LLEGÓ A postController");
-		console.log(req.body.image);
-		
 		await dbConnect()
 
-		const {file} = req.body
-		console.log("file en imageController:", file);
-		
-		// Obtén la clave "key" de la imagen que subiste a S3, probablemente la generaste en tu middleware
-		const imageKey = file.key;
-
-		console.log("imageKey en imageController",imageKey);
-		
-		// Construye la URL de acceso público a la imagen en S3
-		const imageUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${imageKey}`;
-
-		const newImage = {
+		const file = req.file
+		const imageKey = file.key as string
+		const imageUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${imageKey}`
+		const image = await ImageModel.create({
 			name: file.originalname,
 			url: imageUrl
-		}
+		})
 
-		const image = await Image.create(newImage)
+		if (image === undefined) return res.status(500).json({ error: 'Could not create Image' })
 
-		console.log("image en base de datos:", image);
-		
-
-		if (image == undefined) return res.status(500).json({ error: 'Could not create Image' })
-		const taskId = req.query.taskId;
-		const task = (await TaskModel.findOneUndeleted({ _id: taskId })) as DocumentType<Task>;
+		const taskId = req.query.taskId as string
+		const task = (await TaskModel.findOneUndeleted({ _id: taskId })) as DocumentType<Task>
 
 		if (task == null) return res.status(500).json({ error: 'Task not found' })
-		task.image?.push(image._id);
-		await task.save();
+
+		await TaskModel.findOneAndUpdate(
+			{ _id: taskId },
+			{
+				$push: {
+					image: image._id
+				}
+			},
+			{
+				runValidators: true
+			}
+		)
 
 		res.status(200).json({ data: { imageId: image._id } })
-	},
-
+	}
 }
 
 export default ImageController

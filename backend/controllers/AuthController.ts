@@ -11,37 +11,29 @@ import { formatIds } from 'lib/utils'
 import RSA from 'node-rsa'
 
 const AuthController = {
-	login: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => 
-
-		/* let appRequest = false
-    let parsedBody
-    try {
-      parsedBody = JSON.parse(req.body)
-      appRequest = parsedBody.appRequest
-    } catch (error) {
-      console.log(error)
-    }
-    console.log(appRequest); */
+	login: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
 		await dbConnect()
 		try {
 			if (req.body.appRequest as boolean) {
 				try {
-				const { email, password } = req.body
-				// console.log('mobileauth');
+					const { email, password } = req.body
+					// console.log('mobileauth');
 
-				const docUser = await User.findOne({ email }).select('+password') /* find user by email */
-				// console.log(docUser)
-				if (docUser == null) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
-				if (!docUser.comparePassword(password)) { return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' }) }
-				// console.log('returned info');
-				const accessToken = getUserToken(docUser)
-				const keyPair = new RSA({ b: 512 })
-				const publicKey = keyPair.exportKey('public')
-				await docUser.setPrivateKey(keyPair.exportKey('private'))
-				const { _id, firstName, lastName, fullName, roles } = docUser
-				const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey })
-				const data = { user, accessToken }
-				res.status(201).json({ data, statusCode: 201 })
+					const docUser = await User.findOne({ email }).select('+password') /* find user by email */
+					// console.log(docUser)
+					if (docUser == null) return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
+					if (!docUser.comparePassword(password)) {
+						return res.status(403).json({ statusCode: 403, error: 'Wrong password/email' })
+					}
+					// console.log('returned info');
+					const accessToken = getUserToken(docUser)
+					const keyPair = new RSA({ b: 512 })
+					const publicKey = keyPair.exportKey('public')
+					await docUser.setPrivateKey(keyPair.exportKey('private'))
+					const { _id, firstName, lastName, fullName, roles } = docUser
+					const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey })
+					const data = { user, accessToken }
+					res.status(201).json({ data, statusCode: 201 })
 				} catch (e) {
 					console.log(e)
 					res.json({ error: e as string, statusCode: 500 })
@@ -55,7 +47,15 @@ const AuthController = {
 				const keyPair = new RSA({ b: 2048 })
 				await docUser.setPrivateKey(keyPair.exportKey('private'))
 				const { _id, firstName, lastName, fullName, roles } = docUser
-				const user = formatIds({ _id, email, firstName, lastName, fullName, roles, publicKey: keyPair.exportKey('public') })
+				const user = formatIds({
+					_id,
+					email,
+					firstName,
+					lastName,
+					fullName,
+					roles,
+					publicKey: keyPair.exportKey('public')
+				})
 				res.setHeader('Set-Cookie', cookie.serialize('ras_access_token', getUserToken(docUser), cookieOptionsLogin))
 				res.status(201).json({ statusCode: 201, data: { message: 'successful login', user } })
 			}
@@ -110,7 +110,9 @@ const AuthController = {
 		} = req
 		const user = await User.findById(userId).select('+password')
 		if (user == null) return res.status(403).json({ error: 'no user found', statusCode: 403 })
-		if (!user.comparePassword(currentPassword)) { return res.status(403).json({ statusCode: 403, error: 'Wrong password' }) }
+		if (!user.comparePassword(currentPassword)) {
+			return res.status(403).json({ statusCode: 403, error: 'Wrong password' })
+		}
 		user.password = newPassword
 		await user.save()
 		return res.status(200).json({ statusCode: 200, data: { message: 'Correct password' } })
