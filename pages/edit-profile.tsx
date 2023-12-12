@@ -1,11 +1,11 @@
-import EditProfileForm from 'frontend/components/Forms/EditProfileForm'
+import EditProfileForm from 'frontend/components/Forms/EditProfileForm';
 
 const EditProfile = (): JSX.Element => {
-	return (
-		<>
-			<EditProfileForm />
-		</>
-	)
-}
+    return (
+        <>
+            <EditProfileForm />
+        </>
+    );
+};
 
-export default EditProfile
+export default EditProfile;

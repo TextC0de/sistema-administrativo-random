@@ -1,10 +1,11 @@
-import AuthController from 'backend/controllers/AuthController'
-import accessControl from 'backend/middleware/accessControl'
-import { onError, onNoMatch } from 'backend/controllers/NextConnectController'
-import nc from 'next-connect'
+import nc from 'next-connect';
 
-const protectedHandler = nc({ onError, onNoMatch })
-protectedHandler.use(accessControl)
-protectedHandler.post(AuthController.changePassword)
+import AuthController from 'backend/controllers/AuthController';
+import { onError, onNoMatch } from 'backend/controllers/NextConnectController';
+import accessControl from 'backend/middleware/accessControl';
 
-export default protectedHandler
+const protectedHandler = nc({ onError, onNoMatch });
+protectedHandler.use(accessControl);
+protectedHandler.post(AuthController.changePassword);
+
+export default protectedHandler;

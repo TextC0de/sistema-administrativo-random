@@ -1,16 +1,17 @@
-import ClientController from 'backend/controllers/ClientController'
-import accessControl from 'backend/middleware/accessControl'
-import { onError, onNoMatch } from 'backend/controllers/NextConnectController'
-import nc from 'next-connect'
+import nc from 'next-connect';
 
-const protectedHandler = nc({ onError, onNoMatch })
+import ClientController from 'backend/controllers/ClientController';
+import { onError, onNoMatch } from 'backend/controllers/NextConnectController';
+import accessControl from 'backend/middleware/accessControl';
 
-protectedHandler.use(accessControl)
+const protectedHandler = nc({ onError, onNoMatch });
 
-protectedHandler.post(ClientController.postClient)
+protectedHandler.use(accessControl);
 
-protectedHandler.put(ClientController.putClient)
+protectedHandler.post(ClientController.postClient);
 
-protectedHandler.delete(ClientController.deleteClient)
+protectedHandler.put(ClientController.putClient);
 
-export default protectedHandler
+protectedHandler.delete(ClientController.deleteClient);
+
+export default protectedHandler;

@@ -1,1 +1,1 @@
-export { default } from './BusinessTable'
+export { default } from './BusinessTable';

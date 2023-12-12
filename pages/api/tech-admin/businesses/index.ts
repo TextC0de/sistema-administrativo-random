@@ -1,14 +1,15 @@
-import BusinessController from 'backend/controllers/BusinessController'
-import accessControl from 'backend/middleware/accessControl'
-import { onError, onNoMatch } from 'backend/controllers/NextConnectController'
-import nc from 'next-connect'
+import nc from 'next-connect';
 
-const protectedHandler = nc({ onError, onNoMatch })
-protectedHandler.use(accessControl)
-protectedHandler.post(BusinessController.postBusiness)
+import BusinessController from 'backend/controllers/BusinessController';
+import { onError, onNoMatch } from 'backend/controllers/NextConnectController';
+import accessControl from 'backend/middleware/accessControl';
 
-protectedHandler.put(BusinessController.putBusiness)
+const protectedHandler = nc({ onError, onNoMatch });
+protectedHandler.use(accessControl);
+protectedHandler.post(BusinessController.postBusiness);
 
-protectedHandler.delete(BusinessController.deleteBusiness)
+protectedHandler.put(BusinessController.putBusiness);
 
-export default protectedHandler
+protectedHandler.delete(BusinessController.deleteBusiness);
+
+export default protectedHandler;

@@ -1,8 +1,9 @@
-import AuthController from 'backend/controllers/AuthController'
-import { onError, onNoMatch } from 'backend/controllers/NextConnectController'
-import nc from 'next-connect'
+import nc from 'next-connect';
 
-const handler = nc({ onError, onNoMatch })
-handler.post(AuthController.login)
+import AuthController from 'backend/controllers/AuthController';
+import { onError, onNoMatch } from 'backend/controllers/NextConnectController';
 
-export default handler
+const handler = nc({ onError, onNoMatch });
+handler.post(AuthController.login);
+
+export default handler;

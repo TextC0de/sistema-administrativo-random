@@ -1,11 +1,11 @@
-import { createContext } from 'react'
+import { createContext } from 'react';
 
 export interface LoadingContextProps {
-	isLoading: boolean
-	startLoading: () => void
-	stopLoading: () => void
+    isLoading: boolean;
+    startLoading: () => void;
+    stopLoading: () => void;
 }
 
-const LoadingContext = createContext<LoadingContextProps>({} as LoadingContextProps)
+const LoadingContext = createContext<LoadingContextProps>({} as LoadingContextProps);
 
-export default LoadingContext
+export default LoadingContext;

@@ -1,15 +1,16 @@
-import ProvinceController from 'backend/controllers/ProvinceController'
-import accessControl from 'backend/middleware/accessControl'
-import { onError, onNoMatch } from 'backend/controllers/NextConnectController'
-import nc from 'next-connect'
+import nc from 'next-connect';
 
-const protectedHandler = nc({ onError, onNoMatch })
-protectedHandler.use(accessControl)
+import { onError, onNoMatch } from 'backend/controllers/NextConnectController';
+import ProvinceController from 'backend/controllers/ProvinceController';
+import accessControl from 'backend/middleware/accessControl';
 
-protectedHandler.post(ProvinceController.postProvince)
+const protectedHandler = nc({ onError, onNoMatch });
+protectedHandler.use(accessControl);
 
-protectedHandler.put(ProvinceController.putProvince)
+protectedHandler.post(ProvinceController.postProvince);
 
-protectedHandler.delete(ProvinceController.deleteProvince)
+protectedHandler.put(ProvinceController.putProvince);
 
-export default protectedHandler
+protectedHandler.delete(ProvinceController.deleteProvince);
+
+export default protectedHandler;

@@ -1,15 +1,16 @@
-import CityController from 'backend/controllers/CityController'
-import accessControl from 'backend/middleware/accessControl'
-import { onError, onNoMatch } from 'backend/controllers/NextConnectController'
-import nc from 'next-connect'
+import nc from 'next-connect';
 
-const protectedHandler = nc({ onError, onNoMatch })
-protectedHandler.use(accessControl)
+import CityController from 'backend/controllers/CityController';
+import { onError, onNoMatch } from 'backend/controllers/NextConnectController';
+import accessControl from 'backend/middleware/accessControl';
 
-protectedHandler.post(CityController.postCity)
+const protectedHandler = nc({ onError, onNoMatch });
+protectedHandler.use(accessControl);
 
-protectedHandler.put(CityController.putCity)
+protectedHandler.post(CityController.postCity);
 
-protectedHandler.delete(CityController.deleteCity)
+protectedHandler.put(CityController.putCity);
 
-export default protectedHandler
+protectedHandler.delete(CityController.deleteCity);
+
+export default protectedHandler;

@@ -1,11 +1,11 @@
-import LoginForm from 'frontend/components/Forms/LoginForm'
+import LoginForm from 'frontend/components/Forms/LoginForm';
 
 const Login = (): JSX.Element => {
-	return (
-		<>
-			<LoginForm />
-		</>
-	)
-}
+    return (
+        <>
+            <LoginForm />
+        </>
+    );
+};
 
-export default Login
+export default Login;

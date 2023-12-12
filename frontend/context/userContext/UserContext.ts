@@ -1,13 +1,14 @@
-import { createContext } from 'react'
-import { type IUser } from 'backend/models/interfaces'
+import { createContext } from 'react';
+
+import { type IUser } from 'backend/models/interfaces';
 
 export interface UserContextProps {
-	user: IUser
-	loginUser: (user: IUser) => void
-	logoutUser: () => void
-	isLoggedIn: boolean
+    user: IUser;
+    loginUser: (user: IUser) => void;
+    logoutUser: () => void;
+    isLoggedIn: boolean;
 }
 
-const UserContext = createContext<UserContextProps>({} as UserContextProps)
+const UserContext = createContext<UserContextProps>({} as UserContextProps);
 
-export default UserContext
+export default UserContext;

@@ -1,6 +1,7 @@
-import nc from 'next-connect'
-import { onError, onNoMatch } from '../controllers/NextConnectController'
+import nc from 'next-connect';
 
-const baseHandler = nc({ onError, onNoMatch })
+import { onError, onNoMatch } from '../controllers/NextConnectController';
 
-export default baseHandler
+const baseHandler = nc({ onError, onNoMatch });
+
+export default baseHandler;

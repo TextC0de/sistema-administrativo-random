@@ -1,11 +1,14 @@
-import { type UserIdJwtPayload, verify } from 'jsonwebtoken'
-import { type NextApiRequest } from 'next'
-import { type IUser } from 'backend/models/interfaces'
-import User from 'backend/models/User'
-import dbConnect from './dbConnect'
-import { formatIds } from './utils'
+import { type NextApiRequest } from 'next';
 
-const secret = process.env.SECRET ?? ''
+import { type UserIdJwtPayload, verify } from 'jsonwebtoken';
+
+import dbConnect from './dbConnect';
+import { formatIds } from './utils';
+
+import { type IUser } from 'backend/models/interfaces';
+import User from 'backend/models/User';
+
+const secret = process.env.SECRET ?? '';
 
 /* import * as jwt from 'jsonwebtoken'
 
@@ -28,21 +31,21 @@ export const userIdFromJWT = (jwtToken: string): string | undefined => {
 // function for getting the user on GetServerSideProps
 
 export async function getUserServer(req: NextApiRequest): Promise<IUser | undefined> {
-	await dbConnect()
-	const { cookies } = req
-	if (cookies.ras_access_token === undefined) {
-		return undefined
-	}
-	const jwt = cookies.ras_access_token
-	const result = <UserIdJwtPayload>verify(jwt, secret)
-	if (result === undefined) {
-		return undefined
-	}
-	const _id = result._id
-	const docUser = await User.findById(_id)
-	if (docUser === null) {
-		return undefined
-	}
-	const user = formatIds(docUser)
-	return user
+    await dbConnect();
+    const { cookies } = req;
+    if (cookies.ras_access_token === undefined) {
+        return undefined;
+    }
+    const jwt = cookies.ras_access_token;
+    const result = <UserIdJwtPayload>verify(jwt, secret);
+    if (result === undefined) {
+        return undefined;
+    }
+    const _id = result._id;
+    const docUser = await User.findById(_id);
+    if (docUser === null) {
+        return undefined;
+    }
+    const user = formatIds(docUser);
+    return user;
 }
