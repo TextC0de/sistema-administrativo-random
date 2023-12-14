@@ -10,7 +10,7 @@ import {
 import mongoose, { type FilterQuery } from 'mongoose';
 
 import { Business } from './Business';
-import { City } from './City';
+import CityModel, { City } from './City';
 import { Client } from './Client';
 import { type IPopulateParameter } from './interfaces';
 import TaskModel, { type Task } from './Task';
@@ -39,10 +39,11 @@ export class Branch {
         getModelForClass(City);
         getModelForClass(Client);
         getModelForClass(Business);
+
         return [
             {
                 path: 'city',
-                populate: City.getPopulateParameters(),
+                populate: CityModel.getPopulateParameters(),
             },
             {
                 path: 'client',
@@ -86,4 +87,5 @@ export class Branch {
     }
 }
 
-export default getModelForClass(Branch);
+const BranchModel = getModelForClass(Branch);
+export default BranchModel;

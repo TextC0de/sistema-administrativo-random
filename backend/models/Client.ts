@@ -49,4 +49,5 @@ export class Client {
     }
 }
 
-export default getModelForClass(Client);
+const ClientModel = getModelForClass(Client);
+export default ClientModel;

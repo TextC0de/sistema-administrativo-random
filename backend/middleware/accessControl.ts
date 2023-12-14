@@ -1,9 +1,8 @@
-import { type NextApiResponse } from 'next';
+import { NextApiResponse } from 'next';
 
-import { getPayload } from 'lib/jwt';
+import { getPayload } from '@/lib/jwt';
+import { NextConnectApiRequest } from 'backend/controllers/interfaces';
 
-import { type NextConnectApiRequest } from '../controllers/interfaces';
-import { type ResponseData } from '../controllers/types';
 import { type Role } from '../models/types';
 
 // with this middleware I want to check authorization, since authentication is achieved on login
@@ -17,13 +16,10 @@ import { type Role } from '../models/types';
 
 const accessControl = async (
     req: NextConnectApiRequest,
-    res: NextApiResponse<ResponseData>,
+    res: NextApiResponse,
     next: any,
 ): Promise<void> => {
-    console.log(req.method, req.url, new Date());
-
     const { headers, cookies } = req;
-    // console.log(headers.authorization);
 
     const jwt =
         headers.authorization !== undefined

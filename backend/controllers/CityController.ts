@@ -1,14 +1,13 @@
 import { type NextApiResponse } from 'next';
 
-import { type NextConnectApiRequest } from './interfaces';
-import { type ResponseData } from './types';
+import { NextConnectApiRequest } from './interfaces';
 
+import dbConnect from '@/lib/dbConnect';
+import { formatIds } from '@/lib/utils';
 import CityModel from 'backend/models/City';
-import dbConnect from 'lib/dbConnect';
-import { formatIds } from 'lib/utils';
 
 const CityController = {
-    putCity: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    putCity: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { _id, name, province },
         } = req;
@@ -24,7 +23,7 @@ const CityController = {
         const city = formatIds(newCity);
         res.json({ data: { city, message: 'updated city succesfully' } });
     },
-    postCity: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    postCity: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { name, province },
         } = req;
@@ -43,18 +42,13 @@ const CityController = {
             const city = formatIds(newCity);
             return res.json({ data: { city, message: 'created city succesfully' } });
         } catch (error) {
-            console.log(error);
             return res.json({ statusCode: 500, error: 'could not create city' });
         }
     },
-    deleteCity: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    deleteCity: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { _id },
         } = req;
-        // console.log(_id);
 
         await dbConnect();
         const deletedCity = await CityModel.findById(_id);
@@ -62,7 +56,6 @@ const CityController = {
             return res.json({ statusCode: 500, error: 'could not delete city' });
         await deletedCity.softDelete();
 
-        // const City = formatIds(newCity)
         res.json({ data: { message: 'deleted city succesfully' } });
     },
 };

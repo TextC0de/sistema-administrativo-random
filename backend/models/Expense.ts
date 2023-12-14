@@ -55,6 +55,7 @@ export class Expense {
         getModelForClass(Image);
         getModelForClass(Task);
         getModelForClass(Activity);
+
         return [
             {
                 path: 'doneBy',
@@ -104,4 +105,5 @@ export class Expense {
     }
 }
 
-export default getModelForClass(Expense);
+const ExpenseModel = getModelForClass(Expense);
+export default ExpenseModel;

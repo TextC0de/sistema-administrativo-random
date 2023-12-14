@@ -7,7 +7,7 @@ import {
     type ReturnModelType,
     type DocumentType,
 } from '@typegoose/typegoose';
-import bcryptjs from 'bcryptjs';
+import { compareSync, hashSync } from 'bcryptjs';
 import mongoose, { type FilterQuery } from 'mongoose';
 
 import ActivityModel, { type Activity } from './Activity';
@@ -17,14 +17,14 @@ import { type IPopulateParameter, type IUserActivities } from './interfaces';
 import TaskModel, { Task } from './Task';
 import { type ExpenseStatus, type Role, type TaskStatus } from './types';
 
-import { getToken } from 'lib/jwt';
+import { getToken } from '@/lib/jwt';
 
 @pre<User>('save', function (next: any) {
     if (this.isModified('firstName') || this.isModified('lastName')) {
         this.fullName = `${this.firstName} ${this.lastName}`;
     }
     if (this.isModified('password') && this.password !== '') {
-        this.password = bcryptjs.hashSync(this.password, 10);
+        this.password = hashSync(this.password, 10);
     }
     next();
 })
@@ -61,6 +61,7 @@ export class User {
 
     static getPopulateParameters(): IPopulateParameter[] {
         getModelForClass(City);
+
         return [
             {
                 path: 'city',
@@ -99,9 +100,8 @@ export class User {
 
     comparePassword(this: User, plaintext: string): boolean {
         try {
-            return bcryptjs.compareSync(plaintext, this.password);
+            return compareSync(plaintext, this.password);
         } catch (error) {
-            console.log(error);
             return false;
         }
     }
@@ -117,15 +117,11 @@ export class User {
     }
 
     async getTasks(this: User): Promise<Task[]> {
-        console.log('user tasks');
-
         const allTasks = await TaskModel.find().populate(Task.getPopulateParameters());
 
         const tasks = allTasks.filter((task) =>
             task.assigned.some((user) => (user as User).fullName === this.fullName),
         );
-
-        console.log(tasks);
 
         return tasks;
     }
@@ -155,7 +151,4 @@ export class User {
 }
 
 const UserModel = getModelForClass(User);
-
-// UserModel.schema.path('roles', mongoose.SchemaTypes.Array)
-
 export default UserModel;

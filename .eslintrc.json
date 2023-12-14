@@ -3,9 +3,11 @@
     "extends": [
         "plugin:@typescript-eslint/recommended",
         "next/core-web-vitals",
-        "plugin:prettier/recommended", // <-- this runs Prettier as a rule
-        "prettier", // <-- this turns off all rules that conflict with Prettier
-        "plugin:tailwindcss/recommended"
+        "plugin:prettier/recommended",
+        "prettier",
+        "plugin:tailwindcss/recommended",
+        "plugin:import/errors",
+        "plugin:import/warnings"
     ],
     "settings": {
         "import/resolver": {
@@ -49,17 +51,7 @@
                         "position": "before"
                     },
                     {
-                        "pattern": "@/api/**",
-                        "group": "internal",
-                        "position": "before"
-                    },
-                    {
-                        "pattern": "@/modules/**",
-                        "group": "internal",
-                        "position": "before"
-                    },
-                    {
-                        "pattern": "@/app/**",
+                        "pattern": "@/",
                         "group": "internal",
                         "position": "before"
                     },

@@ -3,30 +3,28 @@ import { type NextApiResponse } from 'next';
 import cookie from 'cookie';
 import RSA from 'node-rsa';
 
-import { type NextConnectApiRequest, type UserData } from './interfaces';
-import { type ResponseData } from './types';
+import { NextConnectApiRequest, type UserData } from './interfaces';
 
-import { cookieOptionsLogin, cookieOptionsLogout } from 'lib/cookies';
-import dbConnect from 'lib/dbConnect';
-import { getPayload, getUserToken } from 'lib/jwt';
-import { formatIds } from 'lib/utils';
+import { cookieOptionsLogin, cookieOptionsLogout } from '@/lib/cookies';
+import dbConnect from '@/lib/dbConnect';
+import { getPayload, getUserToken } from '@/lib/jwt';
+import { formatIds } from '@/lib/utils';
+import UserModel from 'backend/models/User';
 
 import { type IUser } from '../models/interfaces';
-import User from '../models/User';
 
 const AuthController = {
-    login: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    login: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         await dbConnect();
         try {
             if (req.body.appRequest as boolean) {
                 try {
                     const { email, password } = req.body;
-                    // console.log('mobileauth');
 
-                    const docUser = await User.findOne({ email }).select(
+                    const docUser = await UserModel.findOne({ email }).select(
                         '+password',
-                    ); /* find user by email */
-                    // console.log(docUser)
+                    );
+
                     if (docUser == null)
                         return res
                             .status(403)
@@ -36,7 +34,7 @@ const AuthController = {
                             .status(403)
                             .json({ statusCode: 403, error: 'Wrong password/email' });
                     }
-                    // console.log('returned info');
+
                     const accessToken = getUserToken(docUser);
                     const keyPair = new RSA({ b: 512 });
                     const publicKey = keyPair.exportKey('public');
@@ -54,12 +52,11 @@ const AuthController = {
                     const data = { user, accessToken };
                     res.status(201).json({ data, statusCode: 201 });
                 } catch (e) {
-                    console.log(e);
                     res.json({ error: e as string, statusCode: 500 });
                 }
             } else {
                 const { email, password } = req.body;
-                const docUser = await User.findOne({ email }).select(
+                const docUser = await UserModel.findOne({ email }).select(
                     '+password',
                 ); /* find user by email */
                 if (docUser == null)
@@ -97,13 +94,12 @@ const AuthController = {
                 });
             }
         } catch (error) {
-            console.log(error);
             res.json({ statusCode: 500, error: error as string });
         }
     },
-    logout: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    logout: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const { userId } = req;
-        const user = await User.findOne({ _id: userId });
+        const user = await UserModel.findOne({ _id: userId });
         if (user === null) return;
         await user.removePrivateKey();
         res.setHeader(
@@ -112,7 +108,7 @@ const AuthController = {
         );
         res.status(201).json({ data: { message: 'successful logout' } });
     },
-    register: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    register: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const { password, firstName, lastName, email } = req.body;
         const userData: UserData = {
             password,
@@ -126,23 +122,19 @@ const AuthController = {
         await dbConnect();
         /* create a new model in the database */
         try {
-            const user = await User.create(userData);
+            const user = await UserModel.create(userData);
             const reducedUser: IUser = formatIds(user);
             res.status(201).json({ data: { user: reducedUser }, statusCode: 201 });
         } catch (error) {
-            console.log(error);
             res.status(500).json({ error: 'failed to create user', statusCode: 500 });
         }
     },
-    checkPassword: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    checkPassword: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { currentPassword },
             userId,
         } = req;
-        const user = await User.findById(userId).select('+password +privateKey');
+        const user = await UserModel.findById(userId).select('+password +privateKey');
         if (user == null)
             return res.status(403).json({ error: 'no user found', statusCode: 403 });
         const key = new RSA();
@@ -156,15 +148,12 @@ const AuthController = {
             .status(200)
             .json({ statusCode: 200, data: { message: 'Correct password' } });
     },
-    changePassword: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    changePassword: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { currentPassword, newPassword },
             userId,
         } = req;
-        const user = await User.findById(userId).select('+password');
+        const user = await UserModel.findById(userId).select('+password');
         if (user == null)
             return res.status(403).json({ error: 'no user found', statusCode: 403 });
         if (!user.comparePassword(currentPassword)) {

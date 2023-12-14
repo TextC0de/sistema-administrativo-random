@@ -2,21 +2,20 @@ import { type NextApiResponse } from 'next';
 
 import { type DocumentType } from '@typegoose/typegoose';
 
-import { type NextConnectApiRequest } from './interfaces';
-import { type ResponseData } from './types';
+import { NextConnectApiRequest } from './interfaces';
 
+import dbConnect from '@/lib/dbConnect';
 import ImageModel from 'backend/models/Image';
 import TaskModel, { type Task } from 'backend/models/Task';
-import dbConnect from 'lib/dbConnect';
 
 const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME ?? '';
 
 const ImageController = {
-    postImage: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    postImage: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         await dbConnect();
 
         const file = req.file;
-        const imageKey = file.key as string;
+        const imageKey = file.key;
         const imageUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/${imageKey}`;
         const image = await ImageModel.create({
             name: file.originalname,

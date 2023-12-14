@@ -2,36 +2,28 @@ import { type NextApiResponse } from 'next';
 
 import { nanoid } from 'nanoid';
 
-import { type NextConnectApiRequest } from './interfaces';
-import { type ResponseData } from './types';
+import { NextConnectApiRequest } from './interfaces';
 
-import dbConnect from 'lib/dbConnect';
-import Mailer from 'lib/nodemailer';
-import { formatIds } from 'lib/utils';
+import dbConnect from '@/lib/dbConnect';
+import Mailer from '@/lib/nodemailer';
+import { formatIds } from '@/lib/utils';
 
 import UserModel from '../models/User';
 
 const UserController = {
-    getLoggedInUser: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
-        // console.log('loggedInUser')
+    getLoggedInUser: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         await dbConnect();
         try {
             const docUser = await UserModel.findById(req.userId);
-            // console.log(docUser)
             if (docUser == null)
                 return res.json({ error: 'no user found', statusCode: 402 });
             res.status(200).json({
                 data: { user: formatIds(docUser), message: 'User found' },
                 statusCode: 200,
             });
-        } catch (error) {
-            console.log(error);
-        }
+        } catch (error) {}
     },
-    getUser: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    getUser: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             query: { id },
         } = req;
@@ -43,7 +35,7 @@ const UserController = {
         const user = formatIds(docUser);
         res.status(200).json({ data: { user, message: 'User found' }, statusCode: 200 });
     },
-    putUser: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    putUser: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { _id, firstName, lastName, city, roles, email },
         } = req;
@@ -62,7 +54,7 @@ const UserController = {
                 .json({ error: 'failed to update user', statusCode: 400 });
         res.status(200).json({ data: { user: formatIds(docUser) }, statusCode: 200 });
     },
-    postUser: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    postUser: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { firstName, lastName, city, roles, email },
         } = req;
@@ -96,10 +88,7 @@ const UserController = {
             console.log(e);
         }
     },
-    deleteUser: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    deleteUser: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { _id },
         } = req;
@@ -112,11 +101,7 @@ const UserController = {
         await docUser.softDelete();
         res.status(200).json({ data: { user: formatIds(docUser) }, statusCode: 200 });
     },
-    generateNewPassword: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
-        // console.log('generateNewPassword endpoint')
+    generateNewPassword: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { _id },
         } = req;
@@ -128,11 +113,10 @@ const UserController = {
         const { firstName, lastName, fullName, email, password } = user;
         const newUser = { firstName, lastName, fullName, email, password };
         try {
-            await user.save();
+            await user.updateOne(newUser);
             await Mailer.sendResetPassword(newUser);
             res.status(200).json({ data: { user: formatIds(user) }, statusCode: 200 });
         } catch (error) {
-            console.log(error);
             res.json({ error: 'could not generate new password', statusCode: 400 });
         }
     },

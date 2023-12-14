@@ -98,4 +98,6 @@ export class Preventive {
     }
 }
 
-export default getModelForClass(Preventive);
+const PreventiveModel = getModelForClass(Preventive);
+
+export default PreventiveModel;
