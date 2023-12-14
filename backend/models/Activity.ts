@@ -88,4 +88,5 @@ export class Activity {
     }
 }
 
-export default getModelForClass(Activity);
+const ActivityModel = getModelForClass(Activity);
+export default ActivityModel;

@@ -2,23 +2,21 @@ import { type NextApiResponse } from 'next';
 
 import type mongoose from 'mongoose';
 
-import { type NextConnectApiRequest } from './interfaces';
-import { type ResponseData } from './types';
+import { NextConnectApiRequest } from './interfaces';
 
+import dbConnect from '@/lib/dbConnect';
+import { formatIds } from '@/lib/utils';
 import BranchModel from 'backend/models/Branch';
 import { type Business } from 'backend/models/Business';
-import dbConnect from 'lib/dbConnect';
-import { formatIds } from 'lib/utils';
 
 const BranchController = {
-    putBranch: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    putBranch: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { _id, number, city, client, businesses },
         } = req;
         const businessesIds: mongoose.Types.ObjectId[] = businesses.map(
             (business: Business) => business._id,
         );
-        // console.log(businessesIds)
         await dbConnect();
         const branchForm = {
             number,
@@ -26,7 +24,7 @@ const BranchController = {
             client: client._id,
             businesses: businessesIds,
         };
-        // console.log(branchForm)
+
         try {
             const newBranch = await BranchModel.findByIdAndUpdate(_id, branchForm, {
                 new: true,
@@ -34,18 +32,14 @@ const BranchController = {
             });
             if (newBranch == null)
                 res.json({ statusCode: 500, error: 'could not update branch' });
-            // console.log(newBranch)
+
             const branch = formatIds(newBranch);
             res.json({ data: { branch, message: 'updated branch succesfully' } });
         } catch (error) {
-            console.log(error);
             return res.json({ statusCode: 500, error: 'could not update branch' });
         }
     },
-    postBranch: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    postBranch: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { number, city, client, businesses },
         } = req;
@@ -73,30 +67,23 @@ const BranchController = {
                 return res.json({ statusCode: 500, error: 'could not create branch' });
             return res.json({ data: { message: 'created branch succesfully' } });
         } catch (error) {
-            console.log(error);
             return res.json({ statusCode: 500, error: 'could not create branch' });
         }
     },
-    deleteBranch: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    deleteBranch: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { _id },
         } = req;
         await dbConnect();
         try {
             const deletedBranch = await BranchModel.findById(_id);
-            console.log(deletedBranch);
 
             if (deletedBranch == null)
                 return res.json({ statusCode: 500, error: 'could not delete Branch' });
             await deletedBranch.softDelete();
             // const branch = formatIds(newBranch)
             res.json({ data: { message: 'deleted branch succesfully' } });
-        } catch (error) {
-            console.log(error);
-        }
+        } catch (error) {}
     },
 };
 

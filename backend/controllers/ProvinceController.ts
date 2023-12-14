@@ -1,18 +1,14 @@
 import { type NextApiResponse } from 'next';
 
-import { type NextConnectApiRequest } from './interfaces';
-import { type ResponseData } from './types';
+import { NextConnectApiRequest } from './interfaces';
 
-import dbConnect from 'lib/dbConnect';
-import { formatIds } from 'lib/utils';
+import dbConnect from '@/lib/dbConnect';
+import { formatIds } from '@/lib/utils';
 
 import Province from '../models/Province';
 
 const ProvinceController = {
-    putProvince: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    putProvince: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { _id, name },
         } = req;
@@ -28,10 +24,7 @@ const ProvinceController = {
         const province = formatIds(newProvince);
         res.json({ data: { province, message: 'updated province succesfully' } });
     },
-    postProvince: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    postProvince: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { name },
         } = req;
@@ -51,10 +44,7 @@ const ProvinceController = {
         const province = formatIds(newProvince);
         res.json({ data: { province, message: 'created province succesfully' } });
     },
-    deleteProvince: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    deleteProvince: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const {
             body: { _id },
         } = req;

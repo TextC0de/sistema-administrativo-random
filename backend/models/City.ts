@@ -30,7 +30,7 @@ export class City {
 
     static getPopulateParameters(): IPopulateParameter[] {
         getModelForClass(Province);
-        return [{ path: 'province', model: 'Province' }];
+        return [{ path: 'province' }];
     }
 
     static async findUndeleted(
@@ -66,4 +66,5 @@ export class City {
     }
 }
 
-export default getModelForClass(City);
+const CityModel = getModelForClass(City);
+export default CityModel;

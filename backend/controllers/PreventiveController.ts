@@ -1,19 +1,15 @@
 import { type NextApiResponse } from 'next';
 
-import { type NextConnectApiRequest } from './interfaces';
-import { type ResponseData } from './types';
+import { NextConnectApiRequest } from './interfaces';
 
+import dbConnect from '@/lib/dbConnect';
+import { formatIds } from '@/lib/utils';
 import { type User } from 'backend/models/User';
-import dbConnect from 'lib/dbConnect';
-import { formatIds } from 'lib/utils';
 
 import Preventive from '../models/Preventive';
 
 const PreventiveController = {
-    putPreventive: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    putPreventive: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const { body } = req;
         await dbConnect();
         const {
@@ -61,14 +57,10 @@ const PreventiveController = {
                 },
             });
         } catch (error) {
-            console.log(error);
             return res.json({ statusCode: 500, error: 'could not update Preventive' });
         }
     },
-    postPreventive: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    postPreventive: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const { body } = req;
         await dbConnect();
         const {
@@ -128,14 +120,10 @@ const PreventiveController = {
                 },
             });
         } catch (error) {
-            console.log(error);
             return res.json({ statusCode: 500, error: 'could not create Preventive' });
         }
     },
-    deletePreventive: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    deletePreventive: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const { body } = req;
         await dbConnect();
         const deletedPreventive = await Preventive.findById(body._id);

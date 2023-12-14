@@ -5,8 +5,7 @@ import {
     type ReturnModelType,
     type DocumentType,
 } from '@typegoose/typegoose';
-import type mongoose from 'mongoose';
-import { type FilterQuery } from 'mongoose';
+import mongoose, { type FilterQuery } from 'mongoose';
 
 import BranchModel, { type Branch } from './Branch';
 import CityModel, { type City } from './City';
@@ -54,4 +53,5 @@ export class Province {
     }
 }
 
-export default getModelForClass(Province);
+const ProvinceModel = getModelForClass(Province);
+export default ProvinceModel;

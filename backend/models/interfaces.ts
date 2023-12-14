@@ -155,7 +155,7 @@ export interface ITask {
     auditor?: IUser;
     activity?: IActivity;
     operatorName?: string;
-    image?: IImage;
+    image?: IImage[];
     workOrderNumber?: number;
     closedAt?: Date;
     deleted: boolean;

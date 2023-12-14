@@ -70,8 +70,8 @@ export class Task {
         getModelForClass(Branch);
         getModelForClass(Business);
         getModelForClass(User);
-        getModelForClass(Image);
         getModelForClass(Activity);
+        getModelForClass(Image);
 
         return [
             {

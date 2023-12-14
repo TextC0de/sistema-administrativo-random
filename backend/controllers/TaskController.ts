@@ -4,14 +4,12 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import { type NextConnectApiRequest } from './interfaces';
-import { type ResponseData } from './types';
 
+import dbConnect from '@/lib/dbConnect';
+import { formatIds, trimTask } from '@/lib/utils';
 import { type ITask } from 'backend/models/interfaces';
+import TaskModel from 'backend/models/Task';
 import UserModel, { type User } from 'backend/models/User';
-import dbConnect from 'lib/dbConnect';
-import { formatIds, trimTask } from 'lib/utils';
-
-import Task from '../models/Task';
 
 const newS3: S3Client = new S3Client({
     region: process.env.AWS_REGION,
@@ -22,7 +20,7 @@ const newS3: S3Client = new S3Client({
 });
 
 const TaskController = {
-    putTask: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    putTask: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const { body } = req;
         await dbConnect();
         const {
@@ -61,7 +59,7 @@ const TaskController = {
         };
 
         try {
-            const newTask = await Task.findByIdAndUpdate(_id, taskForm, {
+            const newTask = await TaskModel.findByIdAndUpdate(_id, taskForm, {
                 new: true,
                 runValidators: true,
             });
@@ -73,11 +71,10 @@ const TaskController = {
                 data: { task: formatIds(newTask), message: 'updated Task succesfully' },
             });
         } catch (error) {
-            console.log(error);
             return res.json({ statusCode: 500, error: 'could not update Task' });
         }
     },
-    postTask: async (req: NextConnectApiRequest, res: NextApiResponse<ResponseData>) => {
+    postTask: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const { body } = req;
         await dbConnect();
         const {
@@ -112,7 +109,7 @@ const TaskController = {
             closedAt,
         };
         try {
-            const newTask = await Task.create(taskForm);
+            const newTask = await TaskModel.create(taskForm);
             if (newTask === undefined)
                 return res.json({ statusCode: 500, error: 'could not create Task' });
 
@@ -121,26 +118,19 @@ const TaskController = {
                 data: { task: formatIds(newTask), message: 'created Task succesfully' },
             });
         } catch (error) {
-            console.log(error);
             return res.json({ statusCode: 500, error: 'could not create Task' });
         }
     },
-    deleteTask: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    deleteTask: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         const { body } = req;
         await dbConnect();
-        const deletedTask = await Task.findById(body._id);
+        const deletedTask = await TaskModel.findById(body._id);
         if (deletedTask == null)
             return res.json({ statusCode: 500, error: 'could not delete Task' });
         await deletedTask.softDelete();
         res.json({ statusCode: 200, data: { message: 'deleted Task succesfully' } });
     },
-    getTechTasks: async (
-        req: NextConnectApiRequest,
-        res: NextApiResponse<ResponseData>,
-    ) => {
+    getTechTasks: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         await dbConnect();
 
         const { userId } = req;
@@ -156,22 +146,25 @@ const TaskController = {
             const task = trimmedTasks[i];
 
             const images = task.image;
+            console.log(images);
 
-            for (let j = 0; j < images.length; j++) {
-                const image = images[j];
-                const s3ObjectUrl = image.url;
-                const key = s3ObjectUrl.split('/').pop();
+            if (images) {
+                for (let j = 0; j < images.length; j++) {
+                    const image = images[j];
+                    const s3ObjectUrl = image.url;
+                    const key = s3ObjectUrl.split('/').pop();
 
-                const command = new GetObjectCommand({
-                    Bucket: process.env.AWS_S3_BUCKET_NAME as string,
-                    Key: key,
-                });
+                    const command = new GetObjectCommand({
+                        Bucket: process.env.AWS_S3_BUCKET_NAME as string,
+                        Key: key,
+                    });
 
-                const url = await getSignedUrl(newS3, command, {
-                    expiresIn: 3600, // 1 hour,
-                });
+                    const url = await getSignedUrl(newS3, command, {
+                        expiresIn: 3600, // 1 hour,
+                    });
 
-                task.image[j].url = url;
+                    images[j].url = url;
+                }
             }
         }
 

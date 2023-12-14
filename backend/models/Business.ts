@@ -8,7 +8,7 @@ import {
 import type mongoose from 'mongoose';
 import { type FilterQuery } from 'mongoose';
 
-import BranchModel, { type Branch } from './Branch';
+// import BranchModel, { type Branch } from './Branch';
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 export class Business {
@@ -44,9 +44,10 @@ export class Business {
         await this.save();
     }
 
-    async getBranches(this: Business): Promise<Branch[]> {
-        return await BranchModel.findUndeleted({ businesses: this });
-    }
+    // async getBranches(this: Business): Promise<Branch[]> {
+    //     return await BranchModel.findUndeleted({ businesses: this });
+    // }
 }
 
-export default getModelForClass(Business);
+const BusinessModel = getModelForClass(Business);
+export default BusinessModel;
