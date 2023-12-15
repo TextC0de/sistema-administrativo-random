@@ -21,6 +21,11 @@ export class Image {
     @prop({ type: Boolean, default: false })
     deleted: boolean;
 
+    @prop({ type: String, required: true })
+    key: string;
+
+
+
     static async findUndeleted(
         this: ReturnModelType<typeof Image>,
         filter: FilterQuery<Image> = {},
