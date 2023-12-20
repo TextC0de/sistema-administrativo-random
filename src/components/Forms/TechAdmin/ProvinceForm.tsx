@@ -1,8 +1,9 @@
 import { useRouter } from 'next/navigation';
 
-import { Button, Label, TextInput } from 'flowbite-react';
+import { Label, TextInput } from 'flowbite-react';
 import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import useAlert from '@/hooks/useAlert';
 import useLoading from '@/hooks/useLoading';
 import * as api from '@/lib/apiEndpoints';
@@ -151,12 +152,10 @@ export default function ProvinceForm({
                     </div>
                 </div>
                 <div className="flex flex-row justify-between">
-                    <Button size="sm" color="gray" onClick={handleNavigate} type="button">
+                    <Button variant="secondary" onClick={handleNavigate} type="button">
                         Cancelar
                     </Button>
-                    <Button size="sm" type="submit">
-                        Guardar
-                    </Button>
+                    <Button type="submit">Guardar</Button>
                 </div>
             </form>
         </>

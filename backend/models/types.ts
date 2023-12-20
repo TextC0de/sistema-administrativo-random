@@ -28,14 +28,20 @@ export type ExpenseType =
 
 export type PaySource = 'Reintegro' | 'Tarjeta';
 
-export type TaskStatus = 'Sin asignar' | 'Pendiente' | 'Finalizada' | 'Aprobada';
+export enum TaskStatus {
+    SinAsignar = 'Sin asignar',
+    Pendiente = 'Pendiente',
+    Finalizada = 'Finalizada',
+    Aprobada = 'Aprobada',
+}
 
-export type TaskType =
-    | 'Preventivo'
-    | 'Correctivo'
-    | 'Instalacion'
-    | 'Desmonte'
-    | 'Actualizacion';
+export enum TaskType {
+    Preventivo = 'Preventivo',
+    Correctivo = 'Correctivo',
+    Instalacion = 'Instalacion',
+    Desmonte = 'Desmonte',
+    Actualizacion = 'Actualizacion',
+}
 
 export type Role =
     | 'Tecnico'
@@ -73,10 +79,10 @@ export const expenseTypes: ExpenseType[] = [
 export const paySources: PaySource[] = ['Reintegro', 'Tarjeta'];
 
 export const taskStatuses: TaskStatus[] = [
-    'Aprobada',
-    'Finalizada',
-    'Pendiente',
-    'Sin asignar',
+    TaskStatus.SinAsignar,
+    TaskStatus.Pendiente,
+    TaskStatus.Finalizada,
+    TaskStatus.Aprobada,
 ];
 
 export const taskTypes: TaskType[] = [

@@ -1,8 +1,14 @@
-import { Table } from 'flowbite-react';
 import { useState } from 'react';
 
 import Item from './Item';
 
+import {
+    Table,
+    TableBody,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { type IProvince } from 'backend/models/interfaces';
 
 interface Props {
@@ -20,22 +26,18 @@ export default function ProvinceTable({ provinces }: Props): JSX.Element {
     };
 
     return (
-        <>
-            <Table hoverable={true} className="bg-white">
-                <Table.Head className="border-b bg-white">
-                    <Table.HeadCell>Nombre</Table.HeadCell>
-                    <Table.HeadCell className="w-40 text-center">Acciones</Table.HeadCell>
-                </Table.Head>
-                <Table.Body>
-                    {tableProvinces.map((province, index) => (
-                        <Item
-                            key={index}
-                            province={province}
-                            deleteProvince={handleDelete}
-                        />
-                    ))}
-                </Table.Body>
-            </Table>
-        </>
+        <Table>
+            <TableHeader className="border-b bg-white">
+                <TableRow>
+                    <TableHead>Nombre</TableHead>
+                    <TableHead className="w-40 text-center">Acciones</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {tableProvinces.map((province, index) => (
+                    <Item key={index} province={province} deleteProvince={handleDelete} />
+                ))}
+            </TableBody>
+        </Table>
     );
 }

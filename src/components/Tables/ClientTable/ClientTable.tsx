@@ -1,8 +1,14 @@
-import { Table } from 'flowbite-react';
 import { useState } from 'react';
 
 import Item from './Item';
 
+import {
+    Table,
+    TableBody,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { type IClient } from 'backend/models/interfaces';
 
 interface Props {
@@ -17,16 +23,18 @@ export default function ClientTable({ clients }: Props): JSX.Element {
 
     return (
         <div className="mb-6">
-            <Table hoverable={true} className="bg-white">
-                <Table.Head className="border-b bg-white">
-                    <Table.HeadCell>Nombre</Table.HeadCell>
-                    <Table.HeadCell className="w-40 text-center">Acciones</Table.HeadCell>
-                </Table.Head>
-                <Table.Body>
+            <Table>
+                <TableHeader className="border-b bg-white">
+                    <TableRow>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead className="w-40 text-center">Acciones</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
                     {tableClients.map((client, index) => (
                         <Item key={index} client={client} deleteClient={deleteClient} />
                     ))}
-                </Table.Body>
+                </TableBody>
             </Table>
         </div>
     );

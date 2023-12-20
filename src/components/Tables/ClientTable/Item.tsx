@@ -1,11 +1,11 @@
 import { useRouter } from 'next/navigation';
 
-import { Table } from 'flowbite-react';
 import { useState } from 'react';
 import { BsFillPencilFill, BsFillTrashFill } from 'react-icons/bs';
 import { HiMagnifyingGlassPlus } from 'react-icons/hi2';
 
 import Modal from '@/components/Modal';
+import { TableCell, TableRow } from '@/components/ui/table';
 import useAlert from '@/hooks/useAlert';
 import useLoading from '@/hooks/useLoading';
 import * as apiEndpoints from '@/lib/apiEndpoints';
@@ -72,9 +72,9 @@ export default function Item({ client, deleteClient }: Props): JSX.Element {
     };
 
     return (
-        <Table.Row className="border-b">
-            <Table.Cell>{client.name}</Table.Cell>
-            <Table.Cell>
+        <TableRow className="border-b">
+            <TableCell>{client.name}</TableCell>
+            <TableCell>
                 <div className="flex items-center justify-center gap-2">
                     <button
                         className="rounded-lg p-0.5 hover:bg-gray-200"
@@ -101,7 +101,7 @@ export default function Item({ client, deleteClient }: Props): JSX.Element {
                         msg="¿Seguro que quiere eliminar este cliente?"
                     />
                 </div>
-            </Table.Cell>
-        </Table.Row>
+            </TableCell>
+        </TableRow>
     );
 }

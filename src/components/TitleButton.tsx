@@ -2,6 +2,7 @@ import { useRouter } from 'next/navigation';
 
 import { BsPlus } from 'react-icons/bs';
 
+import { Button } from '@/components/ui/button';
 import useLoading from '@/hooks/useLoading';
 
 interface Props {
@@ -27,13 +28,10 @@ export default function TitleButton({ title, path, nameButton }: Props): JSX.Ele
         <>
             <div className="flex items-center justify-between border-gray-400 bg-white px-5 py-4">
                 <h2 className="text-xl font-semibold text-gray-600">{title}</h2>
-                <button
-                    onClick={handleClick}
-                    className="flex select-none items-center justify-between gap-2 rounded-lg border border-gray-300 bg-gray-900  py-2 pl-2 pr-3 text-sm text-white hover:bg-gray-700"
-                >
+                <Button onClick={handleClick} className="flex items-center space-x-2">
                     <BsPlus size="20" />
-                    <h4>{nameButton}</h4>
-                </button>
+                    <span>{nameButton}</span>
+                </Button>
             </div>
             <hr className="mb-2 bg-gray-100" />
         </>

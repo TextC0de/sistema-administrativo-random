@@ -1,8 +1,16 @@
-import { Table } from 'flowbite-react';
 import { useState } from 'react';
 
-import Item from './Item';
+import UserItemActions from './Item';
 
+import { Badge } from '@/components/ui/badge';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { type IUser } from 'backend/models/interfaces';
 
 interface Props {
@@ -19,19 +27,40 @@ export default function UserTable({ users }: Props): JSX.Element {
 
     return (
         <div className="rounded-none shadow-none">
-            <Table hoverable={true} className="rounded-none bg-white shadow-none">
-                <Table.Head className="border-b bg-white">
-                    <Table.HeadCell>Nombre</Table.HeadCell>
-                    <Table.HeadCell>Ciudad</Table.HeadCell>
-                    <Table.HeadCell>Email</Table.HeadCell>
-                    <Table.HeadCell>Roles</Table.HeadCell>
-                    <Table.HeadCell className="w-40 text-center">Acciones</Table.HeadCell>
-                </Table.Head>
-                <Table.Body className="rounded-none shadow-none">
+            <Table>
+                <TableHeader className="border-b bg-white">
+                    <TableRow>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Ciudad</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Roles</TableHead>
+                        <TableHead className="w-40 text-center">Acciones</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
                     {tableUsers.map((user, index) => (
-                        <Item key={index} user={user} deleteUser={deleteUser} />
+                        <TableRow key={index}>
+                            <TableCell>
+                                {user.firstName} {user.lastName}
+                            </TableCell>
+                            <TableCell>{user.city?.name}</TableCell>
+
+                            <TableCell>{user.email}</TableCell>
+                            <TableCell>
+                                <div className="-ml-1 -mt-1 flex flex-wrap">
+                                    {user.roles?.map((rol) => {
+                                        return (
+                                            <Badge key={rol} className="ml-1 mt-1">
+                                                {rol}
+                                            </Badge>
+                                        );
+                                    })}
+                                </div>
+                            </TableCell>
+                            <UserItemActions user={user} deleteUser={deleteUser} />
+                        </TableRow>
                     ))}
-                </Table.Body>
+                </TableBody>
             </Table>
         </div>
     );

@@ -1,10 +1,11 @@
 import { useRouter } from 'next/navigation';
 
-import { Table, Badge } from 'flowbite-react';
 import { useState } from 'react';
 import { BsFillPencilFill, BsFillTrashFill } from 'react-icons/bs';
 
 import Modal from '@/components/Modal';
+import { Badge } from '@/components/ui/badge';
+import { TableCell, TableRow } from '@/components/ui/table';
 import useAlert from '@/hooks/useAlert';
 import useLoading from '@/hooks/useLoading';
 import * as api from '@/lib/apiEndpoints';
@@ -74,33 +75,33 @@ export default function Item({
     };
 
     return (
-        <Table.Row className="border-b">
-            <Table.Cell>{preventive.business.name}</Table.Cell>
-            <Table.Cell>{`${preventive.branch.number}, ${preventive.branch.client.name}, ${preventive.branch.city.name}`}</Table.Cell>
-            <Table.Cell>{selectedTechs(preventive.assigned)}</Table.Cell>
-            <Table.Cell>
+        <TableRow className="border-b">
+            <TableCell>{preventive.business.name}</TableCell>
+            <TableCell>{`${preventive.branch.number}, ${preventive.branch.client.name}, ${preventive.branch.city.name}`}</TableCell>
+            <TableCell>{selectedTechs(preventive.assigned)}</TableCell>
+            <TableCell>
                 {preventive.frequency !== undefined
                     ? `Cada ${preventive.frequency} meses`
                     : ''}
-            </Table.Cell>
-            <Table.Cell>
+            </TableCell>
+            <TableCell>
                 {preventive.months != null ? imposedMonths(preventive.months) : ''}
-            </Table.Cell>
-            <Table.Cell>{preventive.observations}</Table.Cell>
-            <Table.Cell>
+            </TableCell>
+            <TableCell>{preventive.observations}</TableCell>
+            <TableCell>
                 {preventive.lastDoneAt != null
                     ? dmyDateString(new Date(preventive.lastDoneAt))
                     : ''}
-            </Table.Cell>
-            <Table.Cell>
-                <Badge color="warning">{preventive.status}</Badge>
-            </Table.Cell>
-            <Table.Cell>
+            </TableCell>
+            <TableCell>
+                <Badge variant="secondary">{preventive.status}</Badge>
+            </TableCell>
+            <TableCell>
                 {preventive.batteryChangedAt != null
                     ? dmyDateString(new Date(preventive.batteryChangedAt))
                     : ''}
-            </Table.Cell>
-            <Table.Cell>
+            </TableCell>
+            <TableCell>
                 <div className="flex items-center justify-evenly">
                     <button
                         className="rounded-lg p-0.5 hover:bg-gray-200 "
@@ -121,7 +122,7 @@ export default function Item({
                     action={handleDelete}
                     msg="¿Seguro que quiere eliminar este preventivo?"
                 />
-            </Table.Cell>
-        </Table.Row>
+            </TableCell>
+        </TableRow>
     );
 }

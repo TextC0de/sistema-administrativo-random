@@ -66,6 +66,9 @@ const ImageController = {
         });
 
         if (!image) return res.status(500).json({ error: 'Could not create Image' });
+        console.log(req.query);
+        console.log(image);
+        console.log(imageKey);
 
         if (req.query.taskId) {
             const taskId = req.query.taskId as string;

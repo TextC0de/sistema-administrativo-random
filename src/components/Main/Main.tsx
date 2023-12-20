@@ -7,6 +7,7 @@ import SideMenu from './SideMenu';
 
 import { useUserContext } from '@/context/userContext/UserProvider';
 import useLoading from '@/hooks/useLoading';
+import { cn } from '@/lib/utils';
 
 const Main: React.FC<PropsWithChildren> = ({ children }) => {
     const { isLoggedIn } = useUserContext();
@@ -28,15 +29,17 @@ const Main: React.FC<PropsWithChildren> = ({ children }) => {
 
     function Main(): JSX.Element {
         return (
-            <main className="h-screen select-none pt-16">
+            <main className={cn('h-screen', isLoggedIn && 'flex')}>
                 {isLoggedIn && (
-                    <div className="h-full">
+                    <>
                         <SideMenu />
-                        <div className="h-full pl-52 pt-4">
+
+                        <div className="flex-1 pl-4 pt-4">
                             <LoadingWrapper />
                         </div>
-                    </div>
+                    </>
                 )}
+
                 {!isLoggedIn && <LoadingWrapper />}
             </main>
         );

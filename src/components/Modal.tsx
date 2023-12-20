@@ -1,5 +1,7 @@
-import { Button } from 'flowbite-react';
+import { useEffect } from 'react';
 import { BsExclamationCircle } from 'react-icons/bs';
+
+import { Button } from './ui/button';
 
 interface Props {
     openModal: boolean;
@@ -19,6 +21,20 @@ export default function Modal({
         handleToggleModal();
     };
 
+    useEffect(() => {
+        const handleEsc = (event: KeyboardEvent): void => {
+            if (event.key === 'Escape') {
+                handleToggleModal();
+            }
+        };
+
+        window.addEventListener('keydown', handleEsc);
+
+        return (): void => {
+            window.removeEventListener('keydown', handleEsc);
+        };
+    }, [handleToggleModal]);
+
     return (
         <>
             {openModal && (
@@ -29,11 +45,12 @@ export default function Modal({
                             {msg}
                         </h3>
                         <div className="flex justify-center gap-4">
+                            <Button variant="secondary" onClick={handleToggleModal}>
+                                No, cancelar.
+                            </Button>
+
                             <Button color="failure" onClick={handleOk}>
                                 Si, aceptar.
-                            </Button>
-                            <Button color="gray" onClick={handleToggleModal}>
-                                No, cancelar.
                             </Button>
                         </div>
                     </div>

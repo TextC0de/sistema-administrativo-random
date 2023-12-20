@@ -1,9 +1,10 @@
 import { useRouter } from 'next/navigation';
 
-import { Button, Label, Select, TextInput } from 'flowbite-react';
+import { Label, Select, TextInput } from 'flowbite-react';
 import { type ChangeEvent, useEffect, useState } from 'react';
 import { BsFillXCircleFill } from 'react-icons/bs';
 
+import { Button } from '@/components/ui/button';
 import useAlert from '@/hooks/useAlert';
 import useLoading from '@/hooks/useLoading';
 import * as api from '@/lib/apiEndpoints';
@@ -300,12 +301,10 @@ export default function ClientBranchForm({
                     </div>
                 </div>
                 <div className="flex flex-row justify-between">
-                    <Button size="sm" color="gray" onClick={handleNavigate} type="button">
+                    <Button variant="secondary" onClick={handleNavigate} type="button">
                         Cancelar
                     </Button>
-                    <Button size="sm" type="submit">
-                        Guardar
-                    </Button>
+                    <Button type="submit">Guardar</Button>
                 </div>
             </form>
         </>

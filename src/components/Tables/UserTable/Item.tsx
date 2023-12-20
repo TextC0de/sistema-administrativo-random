@@ -1,23 +1,23 @@
 import { useRouter } from 'next/navigation';
 
-import { Table } from 'flowbite-react';
 import { useState } from 'react';
 import { BsFillPencilFill, BsFillTrashFill } from 'react-icons/bs';
 import { CgPassword } from 'react-icons/cg';
 
 import Modal from '@/components/Modal';
+import { TableCell } from '@/components/ui/table';
 import useAlert from '@/hooks/useAlert';
 import useLoading from '@/hooks/useLoading';
 import * as apiEndpoints from '@/lib/apiEndpoints';
 import fetcher from '@/lib/fetcher';
-import { type IProvince, type IUser } from 'backend/models/interfaces';
+import { type IUser } from 'backend/models/interfaces';
 
 interface Props {
     user: IUser;
     deleteUser: (id: string) => void;
 }
 
-export default function Item({ user, deleteUser }: Props): JSX.Element {
+export default function UserItemActions({ user, deleteUser }: Props): JSX.Element {
     const { startLoading, stopLoading } = useLoading();
     const router = useRouter();
     const [deleteModal, setDeleteModal] = useState<boolean>(false);
@@ -100,53 +100,39 @@ export default function Item({ user, deleteUser }: Props): JSX.Element {
     };
 
     return (
-        <Table.Row className="border-b ">
-            <Table.Cell>{user.fullName}</Table.Cell>
-            <Table.Cell>
-                {user.city != null
-                    ? `${user.city?.name}, ${(user.city?.province as IProvince).name}`
-                    : ''}
-            </Table.Cell>
-            <Table.Cell>{user.email}</Table.Cell>
-            <Table.Cell>
-                {(user.roles?.length as number) > 1
-                    ? user.roles?.map((role) => `${role}, `)
-                    : user.roles?.[0]}
-            </Table.Cell>
-            <Table.Cell>
-                <div className="flex items-center justify-center gap-2">
-                    <button
-                        className="rounded-lg p-0.5 hover:bg-gray-200"
-                        onClick={handleNavigate}
-                    >
-                        <BsFillPencilFill color="gray" size="15" />
-                    </button>
-                    <button
-                        className="rounded-lg p-0.5 hover:bg-gray-200"
-                        onClick={openDeleteModal}
-                    >
-                        <BsFillTrashFill color="gray" size="15" />
-                    </button>
-                    <button
-                        className="rounded-lg p-0.5 hover:bg-gray-200"
-                        onClick={openNewPasswordModal}
-                    >
-                        <CgPassword color="gray" size="15" />
-                    </button>
-                    <Modal
-                        openModal={deleteModal}
-                        handleToggleModal={closeDeleteModal}
-                        action={handleDelete}
-                        msg="¿Seguro que quiere eliminar este usuario?"
-                    />
-                    <Modal
-                        openModal={newPasswordModal}
-                        handleToggleModal={closeNewPasswordModal}
-                        action={handleRegeneratePassword}
-                        msg="¿Seguro que quiere generar una nueva contraseña para este usuario?"
-                    />
-                </div>
-            </Table.Cell>
-        </Table.Row>
+        <TableCell>
+            <div className="flex items-center justify-center gap-2">
+                <button
+                    className="rounded-lg p-0.5 hover:bg-gray-200"
+                    onClick={handleNavigate}
+                >
+                    <BsFillPencilFill color="gray" size="15" />
+                </button>
+                <button
+                    className="rounded-lg p-0.5 hover:bg-gray-200"
+                    onClick={openDeleteModal}
+                >
+                    <BsFillTrashFill color="gray" size="15" />
+                </button>
+                <button
+                    className="rounded-lg p-0.5 hover:bg-gray-200"
+                    onClick={openNewPasswordModal}
+                >
+                    <CgPassword color="gray" size="15" />
+                </button>
+                <Modal
+                    openModal={deleteModal}
+                    handleToggleModal={closeDeleteModal}
+                    action={handleDelete}
+                    msg="¿Seguro que quiere eliminar este usuario?"
+                />
+                <Modal
+                    openModal={newPasswordModal}
+                    handleToggleModal={closeNewPasswordModal}
+                    action={handleRegeneratePassword}
+                    msg="¿Seguro que quiere generar una nueva contraseña para este usuario?"
+                />
+            </div>
+        </TableCell>
     );
 }

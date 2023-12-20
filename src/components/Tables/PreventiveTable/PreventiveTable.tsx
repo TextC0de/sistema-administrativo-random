@@ -1,9 +1,15 @@
-import { Table } from 'flowbite-react';
 import { type ChangeEvent, useState } from 'react';
 
 import Item from './Item';
 
 import Filter from '@/components/Filter';
+import {
+    Table,
+    TableBody,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import {
     type IBusiness,
     type ICity,
@@ -131,20 +137,22 @@ export default function PreventiveTable({
                 selectEntity={selectEntity}
                 clearFilter={clearFilter}
             />
-            <Table hoverable={true} className="bg-white">
-                <Table.Head className="border-b bg-white">
-                    <Table.HeadCell>Empresa</Table.HeadCell>
-                    <Table.HeadCell>Sucursal</Table.HeadCell>
-                    <Table.HeadCell>Tecnico Asignado</Table.HeadCell>
-                    <Table.HeadCell>Frecuencia</Table.HeadCell>
-                    <Table.HeadCell>Meses impuestos</Table.HeadCell>
-                    <Table.HeadCell>Observaciones</Table.HeadCell>
-                    <Table.HeadCell>Ultima vez</Table.HeadCell>
-                    <Table.HeadCell>Estado</Table.HeadCell>
-                    <Table.HeadCell>Fecha bateria</Table.HeadCell>
-                    <Table.HeadCell>Acciones</Table.HeadCell>
-                </Table.Head>
-                <Table.Body>
+            <Table>
+                <TableHeader className="border-b bg-white">
+                    <TableRow>
+                        <TableHead>Empresa</TableHead>
+                        <TableHead>Sucursal</TableHead>
+                        <TableHead>Tecnico Asignado</TableHead>
+                        <TableHead>Frecuencia</TableHead>
+                        <TableHead>Meses impuestos</TableHead>
+                        <TableHead>Observaciones</TableHead>
+                        <TableHead>Ultima vez</TableHead>
+                        <TableHead>Estado</TableHead>
+                        <TableHead>Fecha bateria</TableHead>
+                        <TableHead>Acciones</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
                     {preventivesTable.map((preventive, index) => (
                         <Item
                             key={index}
@@ -152,7 +160,7 @@ export default function PreventiveTable({
                             deletePreventive={handleDelete}
                         />
                     ))}
-                </Table.Body>
+                </TableBody>
             </Table>
         </>
     );

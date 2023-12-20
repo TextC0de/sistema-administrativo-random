@@ -1,9 +1,15 @@
-import { Table } from 'flowbite-react';
 import { type ChangeEvent, useState } from 'react';
 
 import Item from './Item';
 
 import Filter from '@/components/Filter';
+import {
+    Table,
+    TableBody,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { type ICity, type IProvince } from 'backend/models/interfaces';
 
 interface Props {
@@ -64,17 +70,20 @@ export default function CityTable({ cities, provinces }: Props): JSX.Element {
                 selectEntity={selectEntity}
                 clearFilter={clearFilter}
             />
-            <Table hoverable={true} className="bg-white">
-                <Table.Head className="border-b bg-white">
-                    <Table.HeadCell>Nombre</Table.HeadCell>
-                    <Table.HeadCell>Provincia</Table.HeadCell>
-                    <Table.HeadCell className="w-40 text-center">Acciones</Table.HeadCell>
-                </Table.Head>
-                <Table.Body>
+
+            <Table>
+                <TableHeader className="border-b bg-white">
+                    <TableRow>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Provincia</TableHead>
+                        <TableHead className="w-40 text-center">Acciones</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
                     {tableCities.map((city, index) => (
                         <Item key={index} city={city} deleteCity={deleteCity} />
                     ))}
-                </Table.Body>
+                </TableBody>
             </Table>
         </div>
     );

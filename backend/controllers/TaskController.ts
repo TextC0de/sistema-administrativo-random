@@ -1,16 +1,87 @@
 import { type NextApiResponse } from 'next';
 
-import { Types as MongooseTypes } from 'mongoose';
+import { FilterQuery, Types as MongooseTypes } from 'mongoose';
 
 import { type NextConnectApiRequest } from './interfaces';
 
 import dbConnect from '@/lib/dbConnect';
 import { formatIds } from '@/lib/utils';
 import ExpenseModel from 'backend/models/Expense';
-import { Image } from 'backend/models/Image';
-import TaskModel from 'backend/models/Task';
+import ImageModel, { Image } from 'backend/models/Image';
+import TaskModel, { Task } from 'backend/models/Task';
+import { TaskStatus } from 'backend/models/types';
 import { type User } from 'backend/models/User';
 import { createImageSignedUrl } from 'backend/s3Client';
+
+const getTaskById = async (taskId: string, userId: string) => {
+    const task = await TaskModel.findOne({
+        deleted: false,
+        _id: new MongooseTypes.ObjectId(taskId),
+        assigned: userId,
+    })
+        .populate([
+            {
+                path: 'branch',
+                select: 'number',
+                populate: {
+                    path: 'client',
+                    select: 'name',
+                },
+            },
+            {
+                path: 'business',
+                select: 'name',
+            },
+            {
+                path: 'image',
+            },
+        ])
+        .lean()
+        .exec();
+
+    if (!task) {
+        return null;
+    }
+
+    let images = task.image as undefined | Pick<Image, 'url' | '_id'>[];
+    if (!images) {
+        images = [];
+    } else {
+        images = await Promise.all(
+            images.map(async (image) => {
+                const url = await createImageSignedUrl(image);
+
+                return {
+                    ...image,
+                    url,
+                };
+            }),
+        );
+    }
+
+    const expenses = await ExpenseModel.find({
+        task: task._id,
+        deleted: false,
+    })
+        .populate([
+            {
+                path: 'image',
+                select: 'url',
+            },
+            {
+                path: 'auditor',
+                select: 'name',
+            },
+        ])
+        .lean()
+        .exec();
+
+    (task as any).images = images;
+    (task as any).expenses = expenses;
+    delete task.image;
+
+    return task;
+};
 
 const TaskController = {
     putTask: async (req: NextConnectApiRequest, res: NextApiResponse) => {
@@ -126,11 +197,22 @@ const TaskController = {
     getTechTasks: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         await dbConnect();
 
-        const tasks = await TaskModel.find({
+        const filter = {
             deleted: false,
             assigned: req.user._id.toString(),
-            status: req.query.status,
-        })
+        } as FilterQuery<Task>;
+
+        if (req.query.status) {
+            if (Array.isArray(req.query.status)) {
+                filter.status = { $in: req.query.status };
+            }
+
+            if (typeof req.query.status === 'string') {
+                filter.status = req.query.status;
+            }
+        }
+
+        const tasks = await TaskModel.find(filter)
             .populate([
                 {
                     path: 'branch',
@@ -153,73 +235,73 @@ const TaskController = {
     getTechTaskById: async (req: NextConnectApiRequest, res: NextApiResponse) => {
         await dbConnect();
 
-        const task = await TaskModel.findOne({
-            deleted: false,
-            _id: new MongooseTypes.ObjectId(req.query.id as string),
-            assigned: req.user._id.toString(),
-        })
-            .populate([
-                {
-                    path: 'branch',
-                    select: 'number',
-                    populate: {
-                        path: 'client',
-                        select: 'name',
-                    },
-                },
-                {
-                    path: 'business',
-                    select: 'name',
-                },
-                {
-                    path: 'image',
-                },
-            ])
-            .lean()
-            .exec();
+        const task = await getTaskById(req.query.id as string, req.user._id.toString());
 
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
 
-        let images = task.image as undefined | Pick<Image, 'url' | '_id'>[];
-        if (!images) {
-            images = [];
-        } else {
-            images = await Promise.all(
-                images.map(async (image) => {
-                    const url = await createImageSignedUrl(image);
+        res.status(200).json({ data: task });
+    },
+    putTechTask: async (req: NextConnectApiRequest, res: NextApiResponse) => {
+        await dbConnect();
 
-                    return {
-                        ...image,
-                        url,
-                    };
-                }),
-            );
+        const taskId = req.query.id as string;
+        const { isClosed, workOrder, imageIdToDelete } = req.body;
+        const user = req.user;
+        const userTask = await TaskModel.findOne({
+            _id: new MongooseTypes.ObjectId(taskId),
+            assigned: user._id.toString(),
+            deleted: false,
+        });
+
+        if (!userTask) {
+            return res.status(404).json({ message: 'Task not found' });
         }
 
-        const expenses = await ExpenseModel.find({
-            task: task._id,
-            deleted: false,
-        })
-            .populate([
-                {
-                    path: 'image',
-                    select: 'url',
-                },
-                {
-                    path: 'auditor',
-                    select: 'name',
-                },
-            ])
-            .lean()
-            .exec();
+        if (
+            isClosed !== undefined &&
+            (userTask.status === TaskStatus.Pendiente ||
+                userTask.status === TaskStatus.Finalizada)
+        ) {
+            if (isClosed) {
+                userTask.status = TaskStatus.Finalizada;
+                userTask.closedAt = new Date();
+            } else {
+                userTask.status = TaskStatus.Pendiente;
+                userTask.closedAt = undefined;
+            }
+        }
 
-        (task as any).images = images;
-        (task as any).expenses = expenses;
-        delete task.image;
+        if (workOrder) {
+            userTask.workOrderNumber = parseInt(workOrder, 10);
+        }
 
-        res.status(200).json({ data: task });
+        if (imageIdToDelete) {
+            const imageBelongsToTask = userTask.image?.includes(imageIdToDelete);
+            if (!imageBelongsToTask) {
+                return res.status(404).json({ message: 'Image not found' });
+            }
+
+            const image = ImageModel.findOne({
+                _id: new MongooseTypes.ObjectId(imageIdToDelete),
+                deleted: false,
+            });
+
+            if (!image) {
+                return res.status(404).json({ message: 'Image not found' });
+            }
+
+            await image.deleteOne();
+        }
+
+        await userTask.save();
+
+        const result = await getTaskById(taskId, user._id.toString());
+
+        res.status(200).json({
+            data: result,
+        });
     },
     postTechTask: async (req: NextConnectApiRequest) => {
         const { body } = req;

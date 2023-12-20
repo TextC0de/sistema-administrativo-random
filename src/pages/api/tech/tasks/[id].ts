@@ -7,6 +7,7 @@ const protectedHandler = createApiRouter();
 protectedHandler.use(accessControl);
 protectedHandler.get(TaskController.getTechTaskById);
 protectedHandler.post(TaskController.postTechTask);
+protectedHandler.put(TaskController.putTechTask);
 
 export default protectedHandler.handler({
     onError: onError,

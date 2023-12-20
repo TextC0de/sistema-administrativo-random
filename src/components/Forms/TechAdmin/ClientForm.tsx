@@ -1,8 +1,9 @@
 import { useRouter } from 'next/navigation';
 
-import { Button, Label, TextInput } from 'flowbite-react';
+import { Label, TextInput } from 'flowbite-react';
 import { type ChangeEvent, useEffect, useState, type FormEvent } from 'react';
 
+import { Button } from '@/components/ui/button';
 import useAlert from '@/hooks/useAlert';
 import useLoading from '@/hooks/useLoading';
 import * as api from '@/lib/apiEndpoints';
@@ -147,12 +148,10 @@ export default function ClientForm({ clientForm, newClient = true }: Props): JSX
                 </div>
 
                 <div className="flex flex-row justify-between">
-                    <Button size="sm" onClick={handleNavigate} color="gray" type="button">
+                    <Button variant="secondary" onClick={handleNavigate} type="button">
                         Cancelar
                     </Button>
-                    <Button size="sm" type="submit">
-                        Guardar
-                    </Button>
+                    <Button type="submit">Guardar</Button>
                 </div>
             </form>
         </>

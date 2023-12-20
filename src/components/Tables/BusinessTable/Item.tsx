@@ -1,10 +1,10 @@
 import { useRouter } from 'next/navigation';
 
-import { Table } from 'flowbite-react';
 import { useState } from 'react';
 import { BsFillPencilFill, BsFillTrashFill } from 'react-icons/bs';
 
 import Modal from '@/components/Modal';
+import { TableCell, TableRow } from '@/components/ui/table';
 import useAlert from '@/hooks/useAlert';
 import useLoading from '@/hooks/useLoading';
 import * as apiEndpoints from '@/lib/apiEndpoints';
@@ -63,9 +63,9 @@ export default function Item({ business, deleteBusiness }: Props): JSX.Element {
     };
 
     return (
-        <Table.Row className="border-b">
-            <Table.Cell>{business.name}</Table.Cell>
-            <Table.Cell className="w-40">
+        <TableRow className="border-b">
+            <TableCell>{business.name}</TableCell>
+            <TableCell className="w-40">
                 <div className="flex items-center justify-center gap-2">
                     <button
                         className="rounded-lg p-0.5 hover:bg-gray-200"
@@ -86,7 +86,7 @@ export default function Item({ business, deleteBusiness }: Props): JSX.Element {
                         msg="¿Seguro que quiere eliminar esta empresa?"
                     />
                 </div>
-            </Table.Cell>
-        </Table.Row>
+            </TableCell>
+        </TableRow>
     );
 }

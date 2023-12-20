@@ -1,5 +1,5 @@
-/* eslint-disable array-callback-return */
-import { useState } from 'react';
+import Link from 'next/link';
+
 import {
     RiDashboardFill,
     RiTaskLine,
@@ -11,10 +11,8 @@ import {
     RiCustomerService2Line,
 } from 'react-icons/ri';
 
-import Item from './Item';
-
+import { Button } from '@/components/ui/button';
 import { useUserContext } from '@/context/userContext/UserProvider';
-import { type Role, roles } from 'backend/models/types';
 
 interface IItem {
     id: number;
@@ -94,56 +92,42 @@ const items: IItem[] = [
 
 export default function SideMenu(): JSX.Element {
     const { user } = useUserContext();
-    const [sideMenu, setSideMenu] = useState(items);
-
-    function selectItem(id: number): void {
-        setSideMenu(
-            sideMenu.map((item) =>
-                item.id === id ? { ...item, toggle: true } : { ...item, toggle: false },
-            ),
-        );
-    }
 
     return (
-        <div className="fixed flex h-full w-52 flex-col items-center overflow-hidden bg-gray-900 text-gray-400">
-            <div className="w-full px-1">
-                <>
-                    {sideMenu.map((item: IItem) => {
-                        if (item.role === '')
-                            return (
-                                <Item key={item.id} selectItem={selectItem} {...item} />
-                            );
-                    })}
-                    {roles.map((role: Role, index: number) => {
-                        if (role === 'Tecnico' || role === null) return;
+        <div className="flex h-screen w-80 flex-col border-r border-gray-200">
+            <div className="space-y-4 pt-4">
+                <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+                    Random SRL
+                </h2>
 
+                <div className="space-y-1">
+                    {items.map((item: IItem) => {
                         return (
-                            role !== null &&
-                            (user?.roles?.includes(role) ?? false) && (
-                                <div
-                                    key={index}
-                                    className="mt-1 flex w-full flex-col items-center border-t border-gray-700"
+                            <Link className="block" href={item.path} key={item.id}>
+                                <Button
+                                    variant="ghost"
+                                    className="flex w-full items-center justify-start space-x-2"
                                 >
-                                    {sideMenu.map((item: IItem) => {
-                                        if (
-                                            (user.roles?.includes(item.role as Role) ??
-                                                false) &&
-                                            item.role === role
-                                        ) {
-                                            return (
-                                                <Item
-                                                    key={item.id}
-                                                    selectItem={selectItem}
-                                                    {...item}
-                                                />
-                                            );
-                                        }
-                                    })}
-                                </div>
-                            )
+                                    {item.icon}
+
+                                    <span>{item.title}</span>
+                                </Button>
+                            </Link>
                         );
                     })}
-                </>
+                </div>
+            </div>
+
+            <div className="mt-auto flex items-center space-x-4 px-4 pb-6">
+                <svg
+                    className="h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                >
+                    <path d="M399 384.2C376.9 345.8 335.4 320 288 320H224c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z" />
+                </svg>
+
+                <p className="text-sm">{user.email}</p>
             </div>
         </div>
     );

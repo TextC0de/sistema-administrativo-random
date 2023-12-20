@@ -1,5 +1,7 @@
-import { Button, Label, Select } from 'flowbite-react';
+import { Label, Select } from 'flowbite-react';
 import { type ChangeEvent, createRef } from 'react';
+
+import { Button } from '@/components/ui/button';
 interface Props {
     types: string[];
     entities: any[];

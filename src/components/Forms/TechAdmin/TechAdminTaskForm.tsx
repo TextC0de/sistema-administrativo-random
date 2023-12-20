@@ -1,9 +1,10 @@
 import { useRouter } from 'next/navigation';
 
-import { Button, Label, Select, Textarea } from 'flowbite-react';
+import { Label, Select, Textarea } from 'flowbite-react';
 import { type ChangeEvent, useEffect, useState } from 'react';
 import { BsFillXCircleFill } from 'react-icons/bs';
 
+import { Button } from '@/components/ui/button';
 import useAlert from '@/hooks/useAlert';
 import useLoading from '@/hooks/useLoading';
 import * as api from '@/lib/apiEndpoints';
@@ -484,10 +485,10 @@ const TechAdminTaskForm = ({
                     </div>
                 </div>
                 <div className="mt-4 flex flex-row justify-between">
-                    <Button color="gray" onClick={handleNavigate} type="button">
+                    <Button variant="secondary" onClick={handleNavigate} type="button">
                         Cancelar
                     </Button>
-                    <Button type="submit"> Guardar </Button>
+                    <Button type="submit">Guardar</Button>
                 </div>
             </form>
         </>

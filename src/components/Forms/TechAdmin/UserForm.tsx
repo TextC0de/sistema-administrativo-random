@@ -1,8 +1,9 @@
 import { useRouter } from 'next/navigation';
 
-import { Label, TextInput, Select, Button, Checkbox } from 'flowbite-react';
+import { Label, TextInput, Select, Checkbox } from 'flowbite-react';
 import { useState, type ChangeEvent, useEffect, type FormEvent } from 'react';
 
+import { Button } from '@/components/ui/button';
 import useAlert from '@/hooks/useAlert';
 import useLoading from '@/hooks/useLoading';
 import * as api from '@/lib/apiEndpoints';
@@ -309,12 +310,10 @@ export default function UserForm({
                     </Select>
                 </div>
                 <div className="flex flex-row justify-between">
-                    <Button size="sm" onClick={handleNavigate} type="button" color="gray">
+                    <Button onClick={handleNavigate} type="button" variant="secondary">
                         Cancelar
                     </Button>
-                    <Button size="sm" type="submit">
-                        Guardar
-                    </Button>
+                    <Button type="submit">Guardar</Button>
                 </div>
             </form>
         </>
